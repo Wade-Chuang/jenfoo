@@ -295,6 +295,15 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:8px 28px;justify-content:space-betw
   .steps{grid-template-columns:1fr}
   .visit img{max-width:360px}
   .method-grid figure img{aspect-ratio:4/3}
+  .util .wrap{font-size:12px;gap:4px 14px}
+  .util .tel{margin-left:0}
+  .count .wrap{grid-template-columns:1fr}
+  .cd{padding:12px 0;border-right:0;border-bottom:1px solid rgba(238,241,232,.14)}
+  .cd:last-child{border-bottom:0}
+  .rollgrid{grid-template-columns:repeat(2,1fr);gap:18px}
+  .cgrid,.vgrid{grid-template-columns:repeat(2,1fr)}
+  .nitem{grid-template-columns:1fr;gap:6px}
+  .nitem .kind{justify-self:start}
 }
 @media (max-width:560px){
   .brand small{display:none}
@@ -306,7 +315,108 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:8px 28px;justify-content:space-betw
   .trust .wrap{grid-template-columns:1fr}
   .trust img{aspect-ratio:16/11}
   .visit dl{grid-template-columns:80px 1fr}
+  .cgrid,.vgrid{grid-template-columns:1fr}
+  .cd .nums i{font-size:22px}
 }
+
+/* ===== utility bar ===== */
+.util{background:var(--ink);color:var(--paper);font-size:13px}
+.util .wrap{display:flex;flex-wrap:wrap;align-items:center;gap:6px 20px;padding-block:8px}
+.util a{text-decoration:none;opacity:.82}
+.util a:hover{opacity:1;text-decoration:underline}
+.util .tel{margin-left:auto;font:700 13px var(--mono);letter-spacing:.04em}
+
+/* ===== countdown strip ===== */
+.count{background:var(--board);color:var(--chalk);border-bottom:1px solid rgba(238,241,232,.14)}
+.count .wrap{display:grid;grid-template-columns:repeat(3,1fr)}
+.cd{display:flex;align-items:center;gap:14px;padding:16px 20px;border-right:1px solid rgba(238,241,232,.14)}
+.cd:first-child{padding-left:0}
+.cd:last-child{border-right:0;padding-right:0}
+.cd .ex{line-height:1.3}
+.cd .ex b{display:block;font-family:var(--serif);font-weight:900;font-size:17px}
+.cd .ex small{font-size:11px;color:var(--chalk-dim);white-space:nowrap}
+.cd .nums{margin-left:auto;display:flex;align-items:baseline;gap:5px;font-variant-numeric:tabular-nums}
+.cd .nums i{font-style:normal;font:700 26px/1 var(--mono);color:var(--chalk-gold)}
+.cd .nums u{text-decoration:none;font-size:11px;color:var(--chalk-dim);margin-right:3px}
+
+@media (max-width:1180px){
+  .cd{gap:10px;padding:14px 12px}
+  .cd .nums i{font-size:21px}
+  .cd .ex b{font-size:16px}
+}
+
+/* ===== honor roll ===== */
+.roll{background:var(--surface);border-block:1px solid var(--line);padding-block:72px}
+.roll h2{font-size:clamp(26px,3.6vw,38px);font-weight:900;margin:12px 0 10px}
+.roll .sub{color:var(--ink-2);max-width:40em;margin-bottom:34px;font-size:15px}
+.rollgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
+.rollgrid div{border-top:3px solid var(--brass);padding-top:16px}
+.rollgrid b{display:block;font:900 clamp(30px,4vw,46px)/1 var(--serif);font-variant-numeric:tabular-nums;white-space:nowrap}
+.rollgrid b em{font-style:normal;font-size:.48em;margin-left:4px}
+.rollgrid span{display:block;margin-top:8px;font-size:14px;color:var(--ink-2)}
+.todo{margin-top:24px;border:1px dashed var(--brass);background:var(--brass-soft);padding:16px 20px;border-radius:4px;font-size:14px;color:var(--ink-2)}
+.todo b{color:var(--ink)}
+
+/* ===== class list ===== */
+.classes{padding-block:88px}
+.classes h2{font-size:clamp(28px,4vw,40px);font-weight:900;margin:14px 0 10px}
+.classes .sub{color:var(--ink-2);margin-bottom:34px}
+.cgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.ccard{background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:4px;padding:22px 24px;display:flex;flex-direction:column;gap:8px}
+.ccard .tag{font:700 11px var(--mono);letter-spacing:.1em;color:var(--accent)}
+.ccard h3{font-size:19px;font-weight:900}
+.ccard p{font-size:14px;color:var(--ink-2)}
+.ccard .slot{margin-top:auto;padding-top:10px;font:500 13px var(--mono);color:var(--ink-2);border-top:1px dashed var(--line)}
+
+/* ===== news ===== */
+.news{background:var(--surface);border-block:1px solid var(--line);padding-block:80px}
+.news .head{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:16px}
+.news h2{font-size:clamp(28px,4vw,40px);font-weight:900;margin-top:12px}
+.news .more{font-weight:700;font-size:14px;color:var(--brass);text-decoration:none}
+.nlist{margin-top:30px;border-top:1px solid var(--line)}
+.nitem{display:grid;grid-template-columns:110px 1fr 92px;gap:20px;align-items:baseline;padding:20px 0;border-bottom:1px solid var(--line);text-decoration:none}
+.nitem:hover h3{text-decoration:underline}
+.nitem time{font:500 13px var(--mono);color:var(--ink-2)}
+.nitem .kind{font:700 11px var(--mono);letter-spacing:.08em;color:var(--brass);border:1px solid var(--line);padding:3px 8px;border-radius:999px;white-space:nowrap;text-align:center}
+.nitem h3{font-size:17px;font-weight:900}
+.nitem p{font-size:14px;color:var(--ink-2);margin-top:4px}
+
+/* ===== videos ===== */
+.videos{padding-block:88px}
+.videos .head{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:16px}
+.videos h2{font-size:clamp(28px,4vw,40px);font-weight:900;margin-top:12px}
+.vgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:32px}
+.vcard{text-decoration:none;display:block}
+.vthumb{position:relative;border-radius:4px;overflow:hidden;background:var(--ink)}
+.vthumb img{width:100%;aspect-ratio:16/9;object-fit:cover;transition:transform .3s}
+.vcard:hover .vthumb img{transform:scale(1.04)}
+.play{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:2;width:52px;height:36px;border-radius:8px;background:#ff0033;display:grid;place-items:center}
+.play::before{content:"";border:9px solid transparent;border-left:15px solid #fff;margin-left:5px}
+.vcard h3{margin-top:12px;font-size:16px;font-weight:900;line-height:1.5}
+.vcard span{font:500 12px var(--mono);color:var(--ink-2)}
+
+/* ===== calendar ===== */
+.cal{background:var(--board);color:var(--chalk);padding-block:80px}
+.cal .label{color:var(--chalk-gold)}
+.cal h2{font-size:clamp(28px,4vw,40px);font-weight:900;margin:14px 0 10px}
+.cal .sub{color:var(--chalk-dim);max-width:40em}
+.calwrap{overflow-x:auto;margin-top:32px}
+.caltable{width:100%;border-collapse:collapse;font-size:15px;min-width:520px}
+.caltable th,.caltable td{text-align:left;padding:16px 12px;border-bottom:1px solid rgba(238,241,232,.18)}
+.caltable th{font:700 12px var(--mono);letter-spacing:.1em;color:var(--chalk-dim)}
+.caltable td:first-child{font-family:var(--serif);font-weight:900;white-space:nowrap}
+.caltable .d{font:500 15px var(--mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+.pill{font:700 11px var(--mono);padding:3px 9px;border-radius:999px;border:1px solid currentColor;white-space:nowrap}
+.pill.ok{color:var(--chalk-gold)}
+.pill.tbd{color:var(--chalk-dim)}
+.cal .note{margin-top:20px;font-size:13px;color:var(--chalk-dim)}
+
+/* ===== subscribe card ===== */
+.sub-card{margin-top:30px;border:1px solid color-mix(in srgb,var(--paper) 22%,transparent);border-radius:4px;padding:24px;display:flex;flex-wrap:wrap;gap:16px;align-items:center}
+.sub-card div{flex:1;min-width:230px}
+.sub-card h3{font-size:19px;margin-bottom:6px}
+.sub-card p{font-size:14px;opacity:.78}
+
 /* sticky LINE bar (phones) */
 .callbar{display:none}
 @media (max-width:900px){
@@ -329,15 +439,26 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:8px 28px;justify-content:space-betw
 </head>
 <body>
 <a class="skip" href="#main">跳到主要內容</a>
+<div class="util">
+  <div class="wrap">
+    <a href="https://www.youtube.com/@chuanglaomath" target="_blank" rel="noopener">莊老數學教室 YouTube</a>
+    <a href="https://wade-chuang.github.io/math-comics-site/" target="_blank" rel="noopener">免費學測數學漫畫</a>
+    <a href="https://www.facebook.com/profile.php?id=100054212841294" target="_blank" rel="noopener">FB 粉專</a>
+    <a href="https://www.instagram.com/jf_chuang/" target="_blank" rel="noopener">IG</a>
+    <a href="#visit">交通位置</a>
+    <span class="tel">03-955-8652</span>
+  </div>
+</div>
 <header class="top">
   <div class="wrap">
     <a class="brand" href="#main"><img src="img/logo.png" width="34" height="34" alt="">正賦文理<small>短期補習班</small></a>
     <nav aria-label="主選單">
-      <a href="#courses">課程範圍</a>
+      <a href="#classes">班別</a>
+      <a href="#news">最新消息</a>
+      <a href="#videos">影音</a>
       <a href="#teacher">莊老師</a>
-      <a href="#method">上課方式</a>
-      <a href="#faq">常見問題</a>
-      <a href="#visit">交通位置</a>
+      <a href="#calendar">行事曆</a>
+      <a href="#visit">交通</a>
     </nav>
     <a class="btn-line small" href="https://line.me/ti/p/~jenfoo2021" target="_blank" rel="noopener">
       <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 3C6.5 3 2 6.6 2 11c0 3.9 3.5 7.2 8.3 7.9.3.1.8.2.9.5.1.3.1.7 0 1l-.1.9c0 .3-.2 1 .9.5 1.1-.5 5.9-3.5 8.1-6C21.4 14.3 22 12.7 22 11c0-4.4-4.5-8-10-8z"/></svg>
@@ -347,6 +468,24 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:8px 28px;justify-content:space-betw
 </header>
 
 <main id="main">
+
+<section class="count" aria-label="大考倒數">
+  <div class="wrap">
+    <div class="cd" data-exam="2027-01-22T08:00:00+08:00">
+      <div class="ex"><b>學測</b><small>1/22–1/24</small></div>
+      <div class="nums"><i>—</i><u>天</u><i>—</i><u>時</u><i>—</i><u>分</u><i>—</i><u>秒</u></div>
+    </div>
+    <div class="cd" data-exam="2027-05-01T08:00:00+08:00">
+      <div class="ex"><b>統測</b><small>5 月初・預定</small></div>
+      <div class="nums"><i>—</i><u>天</u><i>—</i><u>時</u><i>—</i><u>分</u><i>—</i><u>秒</u></div>
+    </div>
+    <div class="cd" data-exam="2027-05-15T08:00:00+08:00">
+      <div class="ex"><b>會考</b><small>5 月中・預定</small></div>
+      <div class="nums"><i>—</i><u>天</u><i>—</i><u>時</u><i>—</i><u>分</u><i>—</i><u>秒</u></div>
+    </div>
+  </div>
+</section>
+
 <section class="hero">
   <div class="wrap">
     <div>
@@ -370,6 +509,22 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:8px 28px;justify-content:space-betw
       <img src="img/teacher.jpg" width="900" height="936" fetchpriority="high" decoding="async" alt="莊老師坐在正賦文理教室中，後方螢幕顯示會考倒數">
       <figcaption><b>莊智偉 老師</b><br>正賦文理 數學授課</figcaption>
     </figure>
+  </div>
+</section>
+
+
+<section class="roll" id="record">
+  <div class="wrap">
+    <p class="label">辦學紀錄</p>
+    <h2>十六年，都是同一個老師在教。</h2>
+    <p class="sub">正賦沒有分校、沒有輪替的助教。孩子從國小坐進這間教室，一直到高三、到大一先修，面對的是同一位老師、同一套講法。</p>
+    <div class="rollgrid">
+      <div><b>16<em>年</em></b><span>民國 99 年立案，深耕羅東</span></div>
+      <div><b>8<em>個年級</em></b><span>小五到高三，再加大一先修</span></div>
+      <div><b>1<em>位老師</em></b><span>從國小帶到大學先修</span></div>
+      <div><b>115<em>年</em></b><span>獲選優質補習班</span></div>
+    </div>
+    <p class="todo"><b>（上線前待補）</b>升學榜單數字，例如歷屆考上蘭陽女中、宜蘭高中、羅東高中的人數，或會考數學 A++ 的人數。請提供真實數字，再補成大字排版。</p>
   </div>
 </section>
 
@@ -413,6 +568,71 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:8px 28px;justify-content:space-betw
   </div>
 </section>
 
+
+<section class="classes" id="classes">
+  <div class="wrap">
+    <p class="label">課程資訊</p>
+    <h2>開設班別一覽</h2>
+    <p class="sub">各班依學校進度分開上課。班別時段與收費請加 LINE 詢問，老師會依孩子的年級與學校安排。</p>
+    <div class="cgrid">
+      <article class="ccard" style="--accent:#4d7f63">
+        <span class="tag">國小</span>
+        <h3>國小數學班</h3>
+        <p>五、六年級。分數、小數、比與比值、面積體積，計算做穩、應用題讀懂。</p>
+        <span class="slot">上課時段・費用 → LINE 洽詢</span>
+      </article>
+      <article class="ccard" style="--accent:#a8822a">
+        <span class="tag">國中</span>
+        <h3>國一數學</h3>
+        <p>正負數、一元一次方程式、幾何基礎，跟著學校進度顧段考。</p>
+        <span class="slot">上課時段・費用 → LINE 洽詢</span>
+      </article>
+      <article class="ccard" style="--accent:#a8822a">
+        <span class="tag">國中</span>
+        <h3>國二數學</h3>
+        <p>聯立方程式、函數、三角形性質，國中數學最容易掉隊的一年。</p>
+        <span class="slot">上課時段・費用 → LINE 洽詢</span>
+      </article>
+      <article class="ccard" style="--accent:#a8822a">
+        <span class="tag">國中</span>
+        <h3>國三數學・會考總複習</h3>
+        <p>二次函數、圓、相似形，加上三年範圍系統複習，直攻會考。</p>
+        <span class="slot">上課時段・費用 → LINE 洽詢</span>
+      </article>
+      <article class="ccard" style="--accent:#4a6fa5">
+        <span class="tag">高中</span>
+        <h3>高一數學</h3>
+        <p>數與式、多項式、指對數，銜接國中最關鍵的一段。</p>
+        <span class="slot">上課時段・費用 → LINE 洽詢</span>
+      </article>
+      <article class="ccard" style="--accent:#4a6fa5">
+        <span class="tag">高中</span>
+        <h3>高二數A／數B</h3>
+        <p>依組別分開上：數 A 走三角、向量、空間；數 B 走機率統計與應用。</p>
+        <span class="slot">上課時段・費用 → LINE 洽詢</span>
+      </article>
+      <article class="ccard" style="--accent:#4a6fa5">
+        <span class="tag">高中</span>
+        <h3>高三學測・分科</h3>
+        <p>三年範圍總複習加考古題，抓必考題型與作答節奏。</p>
+        <span class="slot">上課時段・費用 → LINE 洽詢</span>
+      </article>
+      <article class="ccard" style="--accent:#8a5a3b">
+        <span class="tag">高職</span>
+        <h3>統測數學C</h3>
+        <p>照羅東高工的進度走，對應四技二專統測數學 C。</p>
+        <span class="slot">上課時段・費用 → LINE 洽詢</span>
+      </article>
+      <article class="ccard" style="--accent:#5b4a8a">
+        <span class="tag">大學</span>
+        <h3>大一微積分先修</h3>
+        <p>考完學測到開學前的空檔，先建立極限、導數、積分的觀念。</p>
+        <span class="slot">上課時段・費用 → LINE 洽詢</span>
+      </article>
+    </div>
+  </div>
+</section>
+
 <section class="teacher" id="teacher">
   <div class="wrap">
     <img src="img/smile.jpg" width="600" height="600" loading="lazy" decoding="async" alt="莊老師在黑板前微笑比手勢">
@@ -429,6 +649,38 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:8px 28px;justify-content:space-betw
         <a class="ch" href="https://www.instagram.com/jf_chuang/" target="_blank" rel="noopener"><small>INSTAGRAM</small><b>@jf_chuang</b><span>教室日常・解題小提醒</span></a>
         <a class="ch" href="https://www.facebook.com/profile.php?id=100054212841294" target="_blank" rel="noopener"><small>FACEBOOK</small><b>正賦文理短期補習班</b><span>招生資訊・課程公告</span></a>
       </div>
+    </div>
+  </div>
+</section>
+
+
+<section class="news" id="news">
+  <div class="wrap">
+    <div class="head">
+      <div><p class="label">最新消息</p><h2>教室公告與新上架內容</h2></div>
+      <a class="more" href="https://www.facebook.com/profile.php?id=100054212841294" target="_blank" rel="noopener">更多消息看 FB 粉專 →</a>
+    </div>
+    <div class="nlist">
+      <a class="nitem" href="https://www.youtube.com/@chuanglaomath" target="_blank" rel="noopener">
+        <time>2026.10</time>
+        <div><h3>統測數學 C 解題短片陸續上架</h3><p>線性規劃、三角函數判斷，照羅工進度走的單題講解。</p></div>
+        <span class="kind">新影片</span>
+      </a>
+      <a class="nitem" href="https://www.youtube.com/@chuanglaomath" target="_blank" rel="noopener">
+        <time>2026.09</time>
+        <div><h3>高中各年級第一次段考總複習影片完成</h3><p>高一上、高二數 A、高二數 B，一支影片複習整個段考範圍。</p></div>
+        <span class="kind">新影片</span>
+      </a>
+      <a class="nitem" href="#record">
+        <time>2026.09</time>
+        <div><h3>獲選 115 年優質補習班</h3><p>中華民國補習教育全國總會與宜蘭縣補習教育事業協會聯合推薦。</p></div>
+        <span class="kind">教室公告</span>
+      </a>
+      <a class="nitem" href="https://wade-chuang.github.io/math-comics-site/" target="_blank" rel="noopener">
+        <time>2026.08</time>
+        <div><h3>學測數學漫畫系列全部開放</h3><p>高一數與式到高二數 A／數 B，手機就能讀，不用註冊。</p></div>
+        <span class="kind">免費資源</span>
+      </a>
     </div>
   </div>
 </section>
@@ -451,11 +703,68 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:8px 28px;justify-content:space-betw
   </div>
 </section>
 
+
+<section class="videos" id="videos">
+  <div class="wrap">
+    <div class="head">
+      <div><p class="label">影音教學</p><h2>聽不懂的題型，回家再看一次</h2></div>
+      <a class="more" href="https://www.youtube.com/@chuanglaomath" target="_blank" rel="noopener">訂閱莊老數學教室 →</a>
+    </div>
+    <div class="vgrid">
+      <a class="vcard" href="https://www.youtube.com/watch?v=N1GlT7svZPs" target="_blank" rel="noopener">
+        <div class="vthumb"><img src="img/yt-N1GlT7svZPs.jpg" width="480" height="270" loading="lazy" decoding="async" alt="正弦還是餘弦？看題目一秒決定"><span class="play"></span></div>
+        <h3>正弦還是餘弦？看題目一秒決定</h3><span>統測數學C</span>
+      </a>
+      <a class="vcard" href="https://www.youtube.com/watch?v=It5smtK6qR8" target="_blank" rel="noopener">
+        <div class="vthumb"><img src="img/yt-It5smtK6qR8.jpg" width="480" height="270" loading="lazy" decoding="async" alt="線性規劃最大值，答案一定在頂點"><span class="play"></span></div>
+        <h3>線性規劃最大值，答案一定在頂點</h3><span>統測數學C</span>
+      </a>
+      <a class="vcard" href="https://www.youtube.com/watch?v=SpUAfJ9Jn2s" target="_blank" rel="noopener">
+        <div class="vthumb"><img src="img/yt-SpUAfJ9Jn2s.jpg" width="480" height="270" loading="lazy" decoding="async" alt="判斷垂直用內積還是外積？"><span class="play"></span></div>
+        <h3>判斷垂直用內積還是外積？</h3><span>空間向量</span>
+      </a>
+      <a class="vcard" href="https://www.youtube.com/watch?v=CLIUA5G_A4w" target="_blank" rel="noopener">
+        <div class="vthumb"><img src="img/yt-CLIUA5G_A4w.jpg" width="480" height="270" loading="lazy" decoding="async" alt="把《情非得已》唱成不等式：乘除負數為什麼要變號"><span class="play"></span></div>
+        <h3>把《情非得已》唱成不等式：乘除負數為什麼要變號</h3><span>國中數學</span>
+      </a>
+      <a class="vcard" href="https://www.youtube.com/watch?v=cl6b9slv-7k" target="_blank" rel="noopener">
+        <div class="vthumb"><img src="img/yt-cl6b9slv-7k.jpg" width="480" height="270" loading="lazy" decoding="async" alt="0 分之 0 就是不存在？"><span class="play"></span></div>
+        <h3>0 分之 0 就是不存在？</h3><span>極限觀念</span>
+      </a>
+      <a class="vcard" href="https://www.youtube.com/watch?v=yyfHXEAEUdE" target="_blank" rel="noopener">
+        <div class="vthumb"><img src="img/yt-yyfHXEAEUdE.jpg" width="480" height="270" loading="lazy" decoding="async" alt="sin2θ 等於 2sinθ 嗎？"><span class="play"></span></div>
+        <h3>sin2θ 等於 2sinθ 嗎？</h3><span>三角函數</span>
+      </a>
+    </div>
+  </div>
+</section>
+
 <section class="trust">
   <div class="wrap">
     <figure><img src="img/room-b.jpg" width="1100" height="1211" loading="lazy" decoding="async" alt="正賦文理黑板教室全景"><figcaption><b>明亮的黑板教室</b>整齊桌椅、投影設備，專心上課的環境。</figcaption></figure>
     <figure><img src="img/award.jpg" width="600" height="686" loading="lazy" decoding="async" alt="115年優質補習班海報"><figcaption><b>115 年優質補習班</b>中華民國補習教育全國總會、宜蘭縣補習教育事業協會聯合推薦。</figcaption></figure>
     <div class="license"><p class="label">政府立案</p><b>府教終字第<br>0990094303 號</b><p>宜蘭縣政府立案之短期補習班。選擇立案補習班，是上課品質與消費權益的基本保障。</p></div>
+  </div>
+</section>
+
+
+<section class="cal" id="calendar">
+  <div class="wrap">
+    <p class="label">年度行事曆</p>
+    <h2>下一次大考，剩幾天。</h2>
+    <p class="sub">教室螢幕上掛的倒數，網站上也看得到。各班的複習進度，就是照這張表往回推排的。</p>
+    <div class="calwrap">
+      <table class="caltable">
+        <thead><tr><th>考試</th><th>日期</th><th>對象</th><th>狀態</th></tr></thead>
+        <tbody>
+          <tr><td>116 學年度學測</td><td class="d">2027/1/22–1/24</td><td>高三</td><td><span class="pill ok">已公告</span></td></tr>
+          <tr><td>116 學年度統測</td><td class="d">2027 年 5 月初</td><td>高職三年級</td><td><span class="pill tbd">預定</span></td></tr>
+          <tr><td>116 年國中教育會考</td><td class="d">2027 年 5 月中</td><td>國三</td><td><span class="pill tbd">預定</span></td></tr>
+          <tr><td>116 學年度分科測驗</td><td class="d">2027 年 7 月中</td><td>高三</td><td><span class="pill tbd">預定</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="note">學測日期為大考中心公告之 116 學年度考試日期；標示「預定」者為依往年慣例推估，正式日期以各主辦單位公告為準。</p>
   </div>
 </section>
 
@@ -483,6 +792,10 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:8px 28px;justify-content:space-betw
       <li><h3>留言「預約試聽」</h3><p>附上孩子的年級與目前想加強的地方，老師會回覆適合的班別與時段。</p></li>
       <li><h3>到教室試聽</h3><p>實際上一堂課，感受上課節奏，覺得合適再報名。</p></li>
     </ol>
+    <div class="sub-card">
+      <div><h3>想先收開課通知就好？</h3><p>加 LINE 之後留言「訂閱」，開課日程、模考成績公告、停課通知都會先通知你，不會打擾。</p></div>
+      <a class="btn-ghost" href="https://line.me/ti/p/~jenfoo2021" target="_blank" rel="noopener" style="border-color:rgba(255,255,255,.4)">加 LINE 訂閱通知</a>
+    </div>
     <div class="cta">
       <a class="btn-line" href="https://line.me/ti/p/~jenfoo2021" target="_blank" rel="noopener">
         <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 3C6.5 3 2 6.6 2 11c0 3.9 3.5 7.2 8.3 7.9.3.1.8.2.9.5.1.3.1.7 0 1l-.1.9c0 .3-.2 1 .9.5 1.1-.5 5.9-3.5 8.1-6C21.4 14.3 22 12.7 22 11c0-4.4-4.5-8-10-8z"/></svg>
@@ -557,6 +870,29 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:8px 28px;justify-content:space-betw
     <span>宜蘭縣羅東鎮純精路二段 262 號</span>
   </div>
 </footer>
+
+<script>
+(function(){
+  function pad(n){ return n < 10 ? '0' + n : '' + n; }
+  var boxes = [].slice.call(document.querySelectorAll('.cd'));
+  function tick(){
+    var now = Date.now();
+    boxes.forEach(function(b){
+      var t = new Date(b.dataset.exam).getTime() - now;
+      if (t < 0) t = 0;
+      var d = Math.floor(t / 86400000),
+          h = Math.floor(t / 3600000) % 24,
+          m = Math.floor(t / 60000) % 60,
+          s = Math.floor(t / 1000) % 60;
+      var n = b.querySelectorAll('.nums i');
+      n[0].textContent = d; n[1].textContent = pad(h);
+      n[2].textContent = pad(m); n[3].textContent = pad(s);
+    });
+  }
+  tick();
+  setInterval(tick, 1000);
+})();
+</script>
 
 </body>
 </html>
