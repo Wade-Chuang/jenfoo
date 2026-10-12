@@ -232,7 +232,7 @@ p{margin:0}
 
 /* free resources */
 .free{padding-block:88px}
-.free .wrap{display:grid;grid-template-columns:.9fr 1.1fr;gap:48px;align-items:center}
+.free .wrap{display:block}
 .free h2{font-size:clamp(26px,3.6vw,36px);font-weight:900;margin:14px 0 14px}
 .free p{color:var(--ink-2)}
 .comic{display:block;text-decoration:none;background:var(--brass-soft);border:1px solid var(--line);padding:30px;border-radius:4px}
@@ -240,7 +240,11 @@ p{margin:0}
 .comic span{display:block;margin-top:8px;color:var(--ink-2)}
 .comic em{display:inline-block;margin-top:18px;font-style:normal;font-weight:700;color:var(--brass)}
 .comic:hover em{text-decoration:underline}
-.free-cards{display:grid;gap:16px}
+.free-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:16px;margin-top:32px}
+.free-cards .comic{display:flex;flex-direction:column;padding:24px}
+.free-cards .comic b{font-size:21px}
+.free-cards .comic em{margin-top:auto;padding-top:14px}
+.free-head p:last-child{margin-top:4px}
 
 /* enrol */
 .enrol{background:var(--ink);color:var(--paper);padding-block:80px}
@@ -461,7 +465,7 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:8px 28px;justify-content:space-betw
       <a href="#videos">影音</a>
       <a href="#teacher">莊老師</a>
       <a href="#calendar">行事曆</a>
-      <a href="quiz/">免費出題</a>
+      <a href="#free">免費資源</a>
       <a href="#visit">交通</a>
     </nav>
     <a class="btn-line small" href="https://line.me/ti/p/~jenfoo2021" target="_blank" rel="noopener">
@@ -712,7 +716,7 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:8px 28px;justify-content:space-betw
   <div class="wrap">
     <div class="head">
       <div><p class="label">影音教學</p><h2>聽不懂的題型，回家再看一次</h2></div>
-      <a class="more" href="https://www.youtube.com/@chuanglaomath" target="_blank" rel="noopener">訂閱莊老數學教室 →</a>
+      <a class="more" href="videos/">看全部影片 →</a>
     </div>
     <div class="vgrid">
       <a class="vcard" href="https://www.youtube.com/watch?v=N1GlT7svZPs" target="_blank" rel="noopener">
@@ -772,24 +776,49 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:8px 28px;justify-content:space-betw
   </div>
 </section>
 
-<section class="free">
+<section class="free" id="free">
   <div class="wrap">
-    <div>
+    <div class="free-head">
       <p class="label">免費資源</p>
-      <h2>還沒來上課，也可以先讀讀看。</h2>
-      <p>國中數學練習卷產生器：選單元、選難度，一鍵出一份不重複的卷子，附解答可直接列印。高中數學則畫成漫畫，手機就能看。</p>
+      <h2>還沒來上課，也可以先用用看。</h2>
+      <p>出題、影片、圖卡、漫畫，全部免費、不用註冊，手機就能看。</p>
     </div>
     <div class="free-cards">
-    <a class="comic" href="quiz/">
-      <b>國中數學快速出題</b>
-      <span>七上到九下 29 個單元，含幾何附圖題，附解答可列印</span>
-      <em>開始出題 →</em>
-    </a>
-    <a class="comic" href="https://wade-chuang.github.io/math-comics-site/" target="_blank" rel="noopener">
-      <b>學測數學漫畫系列</b>
-      <span>高一數與式 ～ 高二數 A／數 B，免費線上閱讀</span>
-      <em>開始閱讀 →</em>
-    </a>
+      <a class="comic" href="quiz/">
+        <b>國中數學快速出題</b>
+        <span>七上到九下 29 個單元，含幾何附圖題。一鍵出卷附解答，可直接列印。</span>
+        <em>開始出題 →</em>
+      </a>
+      <a class="comic" href="videos/">
+        <b>影片專區</b>
+        <span>段考總複習、數學改歌 MV、一分鐘觀念，依年級整理好。</span>
+        <em>看影片 →</em>
+      </a>
+      <a class="comic" href="cards/">
+        <b>段考重點圖卡</b>
+        <span>「考前只看這 12 格」國中、高中、技高各年級段考必考重點。</span>
+        <em>看圖卡 →</em>
+      </a>
+      <a class="comic" href="https://wade-chuang.github.io/math-comics-site/" target="_blank" rel="noopener">
+        <b>學測數學漫畫</b>
+        <span>高一數與式到高二數 A／數 B，貓頭鷹教授 × 小莊的對話漫畫，附小測驗。</span>
+        <em>開始閱讀 →</em>
+      </a>
+      <a class="comic" href="https://wade-chuang.github.io/tongce-math-comics-site/" target="_blank" rel="noopener">
+        <b>統測數學漫畫</b>
+        <span>數學 A、B、C 依群科分路線，全套 21 話完整連載。</span>
+        <em>開始閱讀 →</em>
+      </a>
+      <a class="comic" href="https://wade-chuang.github.io/tongce-ee-comics-site/" target="_blank" rel="noopener">
+        <b>統測電機電子漫畫</b>
+        <span>基本電學、電子學、電工機械、數位邏輯，搭配電路圖與小測驗。</span>
+        <em>開始閱讀 →</em>
+      </a>
+      <a class="comic" href="https://wade-chuang.github.io/english-comics-site/" target="_blank" rel="noopener">
+        <b>英文闖關記（成人英文）</b>
+        <span>從機場、點餐到會議室談判，三個等級 19 話的英文漫畫。</span>
+        <em>開始閱讀 →</em>
+      </a>
     </div>
   </div>
 </section>
