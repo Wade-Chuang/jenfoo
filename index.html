@@ -285,7 +285,9 @@ p{margin:0}
 
 footer{border-top:1px solid var(--line);padding-block:30px;font-size:13px;color:var(--ink-2)}
 footer .wrap{display:flex;flex-wrap:wrap;gap:8px 28px;justify-content:space-between}
-.visits b{color:var(--brass);font-variant-numeric:tabular-nums}
+.visits{display:inline-flex;align-items:center;gap:8px;font-size:15px;font-weight:700;color:var(--ink);background:var(--brass-soft);border:1px solid var(--brass);border-radius:999px;padding:6px 16px}
+.visits b{font:700 22px/1 var(--mono);color:var(--brass);font-variant-numeric:tabular-nums}
+footer .wrap{align-items:center}
 
 @media (max-width:900px){
   .top nav{display:none}
