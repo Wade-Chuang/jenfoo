@@ -239,6 +239,7 @@ p{margin:0}
 .comic span{display:block;margin-top:8px;color:var(--ink-2)}
 .comic em{display:inline-block;margin-top:18px;font-style:normal;font-weight:700;color:var(--brass)}
 .comic:hover em{text-decoration:underline}
+.free-cards{display:grid;gap:16px}
 
 /* enrol */
 .enrol{background:var(--ink);color:var(--paper);padding-block:80px}
@@ -458,6 +459,7 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:8px 28px;justify-content:space-betw
       <a href="#videos">影音</a>
       <a href="#teacher">莊老師</a>
       <a href="#calendar">行事曆</a>
+      <a href="quiz/">免費出題</a>
       <a href="#visit">交通</a>
     </nav>
     <a class="btn-line small" href="https://line.me/ti/p/~jenfoo2021" target="_blank" rel="noopener">
@@ -524,7 +526,7 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:8px 28px;justify-content:space-betw
       <div><b>1<em>位老師</em></b><span>從國小帶到大學先修</span></div>
       <div><b>115<em>年</em></b><span>獲選優質補習班</span></div>
     </div>
-    <p class="todo"><b>（上線前待補）</b>升學榜單數字，例如歷屆考上蘭陽女中、宜蘭高中、羅東高中的人數，或會考數學 A++ 的人數。請提供真實數字，再補成大字排版。</p>
+    <p class="todo" hidden><b>（上線前待補）</b>升學榜單數字，例如歷屆考上蘭陽女中、宜蘭高中、羅東高中的人數，或會考數學 A++ 的人數。請提供真實數字，再補成大字排版。</p>
   </div>
 </section>
 
@@ -773,13 +775,20 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:8px 28px;justify-content:space-betw
     <div>
       <p class="label">免費資源</p>
       <h2>還沒來上課，也可以先讀讀看。</h2>
-      <p>莊老師把高中數學的重點畫成漫畫，從高一數與式到高二數 A／數 B，手機就能看。先感受一下我們怎麼講數學。</p>
+      <p>國中數學練習卷產生器：選單元、選難度，一鍵出一份不重複的卷子，附解答可直接列印。高中數學則畫成漫畫，手機就能看。</p>
     </div>
+    <div class="free-cards">
+    <a class="comic" href="quiz/">
+      <b>國中數學快速出題</b>
+      <span>七上到九下 29 個單元，含幾何附圖題，附解答可列印</span>
+      <em>開始出題 →</em>
+    </a>
     <a class="comic" href="https://wade-chuang.github.io/math-comics-site/" target="_blank" rel="noopener">
       <b>學測數學漫畫系列</b>
       <span>高一數與式 ～ 高二數 A／數 B，免費線上閱讀</span>
       <em>開始閱讀 →</em>
     </a>
+    </div>
   </div>
 </section>
 

@@ -1,0 +1,919 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<title>正賦數學快速出題</title>
+<meta name="description" content="正賦文理短期補習班｜國中數學練習卷產生器：選單元、選難度，一鍵出一份不重複的練習卷與解答。">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@500;700;900&display=swap">
+<style>
+/* 版面：左邊出題控制台（桌機黏住）＋右邊 A4 試卷預覽；手機上下堆疊。試卷本身永遠是白紙。 */
+:root{
+  --bg:#F6F3EB; --panel:#FFFFFF; --ink:#1B2430; --muted:#5B6573; --line:#E2DCCD;
+  --gold:#C69E46; --gold-ink:#8A6A22; --navy:#1B2430; --cream:#F6F3EB;
+  --chip:#EFE9DB; --chip-on:#1B2430; --chip-on-ink:#F6F3EB; --shadow:0 1px 2px rgba(27,36,48,.08),0 8px 28px rgba(27,36,48,.10);
+  --paper:#FFFFFF; --paper-ink:#141414; --paper-soft:#6A6A6A; --paper-line:#BDBDBD;
+  --f-display:"Noto Serif TC","Songti TC","PMingLiU",serif;
+  --f-body:"Noto Sans TC","Microsoft JhengHei","PingFang TC",system-ui,sans-serif;
+  --f-paper:"Noto Serif TC","PMingLiU","Songti TC",serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#121922; --panel:#1C2531; --ink:#ECE6D8; --muted:#9BA5B2; --line:#2D3846;
+  --gold:#E0BE6E; --gold-ink:#E0BE6E; --chip:#253041; --chip-on:#E0BE6E; --chip-on-ink:#1B2430;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 30px rgba(0,0,0,.35); color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --bg:#121922; --panel:#1C2531; --ink:#ECE6D8; --muted:#9BA5B2; --line:#2D3846;
+  --gold:#E0BE6E; --gold-ink:#E0BE6E; --chip:#253041; --chip-on:#E0BE6E; --chip-on-ink:#1B2430;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 30px rgba(0,0,0,.35); color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{margin:0}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.6}
+button,input{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+
+.topbar{background:var(--navy);color:var(--cream);padding-block:14px;padding-inline:16px}
+.topbar .wrap{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:12px;min-width:0}
+.brand svg{width:44px;height:44px;flex:none}
+.brand h1{margin:0;font-family:var(--f-display);font-weight:900;font-size:1.35rem;letter-spacing:.06em;line-height:1.2}
+.brand p{margin:0;font-size:.8rem;color:#C9C2B0;letter-spacing:.08em}
+.topbar .cta{margin-left:auto;display:flex;align-items:center;gap:8px;font-size:.85rem;color:#E9E2D0}
+.topbar .cta b{color:#E0BE6E;font-weight:700;letter-spacing:.04em}
+
+.wrap{max-width:1240px;margin:0 auto}
+.main{padding-inline:16px;padding-block:22px 40px}
+.layout{display:grid;grid-template-columns:340px minmax(0,1fr);gap:24px;align-items:start}
+@media (max-width:900px){.layout{grid-template-columns:minmax(0,1fr)}}
+
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:18px;position:sticky;top:calc(env(safe-area-inset-top,0px) + 14px);max-height:calc(100vh - 28px);overflow:auto}
+@media (max-width:900px){.panel{position:static;max-height:none}}
+.step{display:grid;gap:10px;padding-block:14px;border-top:1px solid var(--line)}
+.step:first-child{border-top:0;padding-top:0}
+.step h2{margin:0;font-size:.78rem;letter-spacing:.14em;color:var(--gold-ink);font-weight:700}
+.grade{display:grid;gap:6px}
+.grade-head{display:flex;align-items:center;justify-content:space-between;font-weight:700;font-size:.95rem;cursor:pointer;list-style:none;padding:6px 2px;border-radius:6px}
+.grade-head::-webkit-details-marker{display:none}
+.grade-head>span::before{content:'▸';display:inline-block;width:1.1em;color:var(--gold-ink);transition:transform .15s}
+details[open]>.grade-head>span::before{transform:rotate(90deg)}
+.grade-head em{font-style:normal;font-weight:500;font-size:.75rem;color:var(--gold-ink);margin-left:.6em}
+#unitList{display:grid;gap:2px}
+.grade-head button{border:0;background:none;color:var(--gold-ink);font-size:.8rem;cursor:pointer;padding:2px 4px}
+.units{display:grid;gap:4px}
+.unit{display:flex;align-items:center;gap:9px;padding:6px 8px;border-radius:6px;cursor:pointer;font-size:.92rem}
+.unit:hover{background:var(--chip)}
+.unit input{width:17px;height:17px;accent-color:var(--gold);flex:none;margin:0}
+.seg{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.seg.three{grid-template-columns:repeat(3,1fr)}
+.seg button{border:1px solid var(--line);background:var(--chip);border-radius:6px;padding:7px 4px;cursor:pointer;font-size:.9rem}
+.seg button[aria-pressed="true"]{background:var(--chip-on);color:var(--chip-on-ink);border-color:var(--chip-on);font-weight:700}
+.hint{font-size:.8rem;color:var(--muted);margin:0}
+.actions{display:grid;gap:8px;padding-top:14px;border-top:1px solid var(--line)}
+.btn{border:0;border-radius:8px;padding:11px 14px;font-weight:700;cursor:pointer;letter-spacing:.04em}
+.btn.primary{background:var(--gold);color:#1B2430}
+.btn.primary:hover{filter:brightness(1.05)}
+.btn.ghost{background:transparent;border:1px solid var(--line);color:var(--ink)}
+.seed{display:flex;gap:6px}
+.seed input{flex:1;min-width:0;border:1px solid var(--line);background:var(--bg);border-radius:6px;padding:7px 10px;font-variant-numeric:tabular-nums;letter-spacing:.1em}
+.seed button{flex:none}
+.check{display:flex;align-items:center;gap:8px;font-size:.9rem;cursor:pointer}
+.check input{accent-color:var(--gold);width:16px;height:16px;margin:0}
+.note{font-size:.78rem;color:var(--muted);background:var(--chip);border-radius:6px;padding:8px 10px;margin:0}
+
+.stage{display:grid;gap:22px;min-width:0}
+.stage-bar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;font-size:.88rem;color:var(--muted)}
+.stage-bar a{color:var(--gold-ink);text-decoration:none;font-weight:700}
+.stage-bar a:hover{text-decoration:underline}
+
+/* ---------- 試卷（白紙） ---------- */
+.paper{background:var(--paper);color:var(--paper-ink);width:100%;max-width:210mm;margin:0 auto;padding:14mm 13mm 16mm;box-shadow:var(--shadow);border-radius:2px;font-family:var(--f-paper);font-size:11.5pt;line-height:1.5;color-scheme:light}
+.paper .mhead{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;padding-bottom:8px;border-bottom:2.5px solid var(--paper-ink)}
+.paper .mhead svg.logo{width:42px;height:42px}
+.paper .mtitle{text-align:center;min-width:0}
+.paper .mtitle .school{font-family:var(--f-body);font-size:9pt;letter-spacing:.3em;color:var(--paper-soft)}
+.paper .mtitle h3{margin:2px 0 0;font-family:var(--f-display);font-weight:900;font-size:19pt;letter-spacing:.18em;text-wrap:balance}
+.paper .qr{display:flex;align-items:center;gap:6px;font-family:var(--f-body);font-size:7.5pt;line-height:1.35;color:var(--paper-soft);text-align:right}
+.paper .qr .code{width:15mm;height:15mm;flex:none}
+.paper .qr .code svg{width:100%;height:100%;display:block}
+.paper .meta{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;padding-block:6px;border-bottom:.6px solid var(--paper-ink);font-family:var(--f-body);font-size:9pt;color:#333}
+.paper .meta span{font-variant-numeric:tabular-nums}
+.paper .fields{display:flex;gap:14px;flex-wrap:wrap;padding-block:9px 4px;font-family:var(--f-body);font-size:10pt}
+.paper .fields span{display:inline-flex;align-items:flex-end;gap:4px}
+.paper .fields i{display:inline-block;border-bottom:.6px solid var(--paper-ink);height:1.1em;font-style:normal}
+.paper .sec{grid-column:1/-1;margin:5mm 0 1mm;font-size:11.5pt;font-weight:700;break-after:avoid}
+.paper .sec small{font-weight:500;font-size:10.5pt;margin-left:.5em}
+.qs{display:grid;grid-template-columns:1fr 1fr;column-gap:8mm}
+.q{display:flex;gap:2mm;align-items:baseline;padding-top:2.5mm;break-inside:avoid;min-width:0}
+.q .no{font-weight:700;flex:none;min-width:7mm;font-variant-numeric:tabular-nums}
+.q .body{min-width:0;overflow-wrap:anywhere}
+.q .figwrap{float:right;margin:0 0 2mm 3mm;line-height:0}
+.q .fig{width:38mm;height:auto;color:#111;display:block}
+.q .fig.wide{width:42mm}
+.fig text{stroke:none;fill:currentColor;font-family:"Times New Roman","Noto Serif TC",serif;font-size:10px}
+.fig text.it{font-style:italic}
+
+.q .body::after{content:"";display:block;clear:both}
+.q .tag{font-family:var(--f-body);font-size:7pt;color:var(--paper-soft);border:.5px solid var(--paper-line);border-radius:2px;padding:0 3px;margin-left:4px;vertical-align:middle;white-space:nowrap}
+.paper.ans .aq{display:grid;grid-template-columns:repeat(auto-fill,minmax(52mm,1fr));gap:2mm 6mm}
+.paper.ans .a{display:flex;gap:2mm;align-items:baseline;break-inside:avoid;min-width:0;padding-block:1mm}
+.paper.ans .a .no{font-weight:700;min-width:7mm;flex:none;font-variant-numeric:tabular-nums}
+.paper.ans .a .body{min-width:0;overflow-wrap:anywhere}
+.paper .cta-box{margin-top:8mm;border:1.2px solid var(--paper-ink);display:grid;grid-template-columns:auto 1fr;gap:5mm;align-items:center;padding:4mm 5mm;font-family:var(--f-body);break-inside:avoid}
+.paper .cta-box .code{width:24mm;height:24mm}
+.paper .cta-box .code svg{width:100%;height:100%;display:block}
+.paper .cta-box b{font-size:13pt;letter-spacing:.06em}
+.paper .cta-box p{margin:1mm 0 0;font-size:9.5pt;color:#333}
+.paper .foot{margin-top:6mm;padding-top:2mm;border-top:.6px solid var(--paper-line);font-family:var(--f-body);font-size:7.5pt;color:var(--paper-soft);display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.paper mjx-container{color:var(--paper-ink)}
+.paper mjx-container[jax="SVG"]{direction:ltr}
+.loading{font-family:var(--f-body);color:var(--paper-soft);text-align:center;padding:30mm 0}
+.raw{font-family:ui-monospace,Consolas,monospace;font-size:.9em}
+
+@media (max-width:620px){
+  .paper{padding:8mm 5mm 10mm;font-size:11pt}
+  .qs{grid-template-columns:1fr}
+  .paper .mhead{grid-template-columns:auto 1fr}
+  .paper .mhead .qr{display:none}
+  .paper .mtitle h3{font-size:16pt;letter-spacing:.1em}
+}
+
+.sitefoot{border-top:1px solid var(--line);padding-block:20px;padding-inline:16px;color:var(--muted);font-size:.85rem}
+.sitefoot .wrap{display:flex;gap:8px 20px;flex-wrap:wrap;justify-content:space-between}
+
+@media print{
+  @page{size:A4;margin:11mm 11mm 12mm}
+  :root{color-scheme:light}
+  body{background:#fff}
+  .topbar,.panel,.stage-bar,.sitefoot{display:none!important}
+  .main{padding:0}
+  .layout{display:block}
+  .paper{box-shadow:none;max-width:none;width:auto;padding:0;margin:0;border-radius:0}
+  .paper.ans{break-before:page;margin-top:0}
+  .stage{display:block}
+  body.no-ans .paper.ans{display:none}
+  .qs{grid-template-columns:1fr 1fr!important}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<script>
+window.MathJax={
+  tex:{packages:{'[+]':['ams']}},
+  svg:{fontCache:'local'},
+  options:{enableAssistiveMml:false,enableMenu:false},
+  startup:{typeset:false,ready(){MathJax.startup.defaultReady();MathJax.startup.promise.then(()=>{try{document.head.appendChild(MathJax.svgStylesheet())}catch(e){}window.__mjReady=true;document.dispatchEvent(new Event('mj-ready'))})}}
+};
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.js" async></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+
+<header class="topbar">
+  <div class="wrap">
+    <div class="brand">
+      <svg viewBox="0 0 320 320" aria-hidden="true"><rect width="320" height="320" rx="30" fill="#1B2430"/><circle cx="160" cy="157" r="112" fill="none" stroke="#C69E46" stroke-width="8"/><g stroke="#F6F3EB" stroke-width="8" stroke-linecap="square"><line x1="106" y1="103" x2="214" y2="103"/><line x1="160" y1="103" x2="160" y2="205"/><line x1="160" y1="153" x2="208" y2="153"/><line x1="123" y1="136" x2="123" y2="205"/><line x1="104" y1="206" x2="217" y2="206"/></g></svg>
+      <div>
+        <h1>正賦數學快速出題</h1>
+        <p>國中數學練習卷｜選單元・選難度・一鍵出卷</p>
+      </div>
+    </div>
+    <div class="cta"><a href="../" style="color:#E9E2D0;text-decoration:none;margin-right:14px">← 正賦文理官網</a>卡關了？加 LINE 問莊老師　<b>jenfoo2021</b></div>
+  </div>
+</header>
+
+<main class="main">
+  <div class="wrap layout">
+    <aside class="panel" aria-label="出題設定">
+      <section class="step">
+        <h2>1　選單元（可複選）</h2>
+        <div id="unitList" class="grade"></div>
+      </section>
+      <section class="step">
+        <h2>2　難易度</h2>
+        <div class="seg" id="diffSeg" role="group" aria-label="難易度">
+          <button type="button" data-v="1" id="d1">基礎</button>
+          <button type="button" data-v="2" id="d2">標準</button>
+          <button type="button" data-v="3" id="d3">挑戰</button>
+          <button type="button" data-v="mix" id="dmix">混合</button>
+        </div>
+        <p class="hint" id="diffHint"></p>
+      </section>
+      <section class="step">
+        <h2>3　題數</h2>
+        <div class="seg three" id="numSeg" role="group" aria-label="題數">
+          <button type="button" data-v="10" id="n10">10 題</button>
+          <button type="button" data-v="20" id="n20">20 題</button>
+          <button type="button" data-v="30" id="n30">30 題</button>
+        </div>
+      </section>
+      <section class="step">
+        <h2>4　列印選項</h2>
+        <label class="check"><input type="checkbox" id="withAns" checked> 附上解答頁（另起一頁）</label>
+        <label class="check"><input type="checkbox" id="showTag"> 題號旁標示難度</label>
+      </section>
+      <div class="actions">
+        <button class="btn primary" id="newBtn" type="button">出一份新卷子</button>
+        <button class="btn ghost" id="printBtn" type="button" hidden>列印／存成 PDF</button>
+        <p class="note" id="printNote" hidden>在預覽視窗裡不能列印。用電腦打開網站本身（或本機的 index.html）就能直接列印成 A4。</p>
+        <label class="hint" for="seedIn">卷號：同一個卷號＋相同設定＝同一份卷子，可以給全班出一樣的題目。</label>
+        <div class="seed"><input id="seedIn" inputmode="numeric" maxlength="6" aria-label="卷號"><button class="btn ghost" id="seedBtn" type="button">套用</button></div>
+      </div>
+    </aside>
+
+    <div class="stage">
+      <div class="stage-bar"><span id="summary"></span><a href="#answers">跳到解答 ↓</a></div>
+      <article class="paper" id="sheet"><div class="loading">正在排版數學式…</div></article>
+      <article class="paper ans" id="answers"></article>
+    </div>
+  </div>
+</main>
+
+<footer class="sitefoot">
+  <div class="wrap">
+    <span>正賦文理短期補習班｜只教數學・小五到高三｜宜蘭縣羅東鎮純精路二段262號</span>
+    <span>題目由程式隨機產生，每次都不同・歡迎老師與家長免費使用</span>
+  </div>
+</footer>
+
+<script>
+/* ================= 亂數與數學小工具 ================= */
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+let R=Math.random;
+const ri=(a,b)=>a+Math.floor(R()*(b-a+1));
+const rnz=(a,b)=>{let v;do v=ri(a,b);while(v===0);return v};
+const pick=a=>a[Math.floor(R()*a.length)];
+const sgn=()=>R()<.5?-1:1;
+const gcd=(a,b)=>{a=Math.abs(a);b=Math.abs(b);while(b){[a,b]=[b,a%b]}return a};
+const lcm=(a,b)=>a/gcd(a,b)*b;
+const P=x=>x<0?`(${x})`:`${x}`;
+const shuffle=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(R()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+
+function F(n,d=1){if(d<0){n=-n;d=-d}const g=gcd(n,d)||1;return{n:n/g,d:d/g}}
+const fadd=(a,b)=>F(a.n*b.d+b.n*a.d,a.d*b.d), fsub=(a,b)=>F(a.n*b.d-b.n*a.d,a.d*b.d),
+      fmul=(a,b)=>F(a.n*b.n,a.d*b.d), fdiv=(a,b)=>F(a.n*b.d,a.d*b.n);
+const ftex=f=>f.d===1?`${f.n}`:(f.n<0?`-\\frac{${-f.n}}{${f.d}}`:`\\frac{${f.n}}{${f.d}}`);
+const fP=f=>f.n<0?`\\left(${ftex(f)}\\right)`:ftex(f);
+function mixtex(f){const s=f.n<0?'-':'',N=Math.abs(f.n),w=Math.floor(N/f.d),r=N%f.d;return r?`${s}${w}\\frac{${r}}{${f.d}}`:`${s}${w}`}
+/* 依序印出多項式各項：[[係數,'x^2'],[係數,'x'],[係數,'']] */
+function poly(terms){let s='';for(const [c,v] of terms){if(c===0)continue;const ab=Math.abs(c);const body=v?(ab===1?v:ab+v):String(ab);s+=s===''?(c<0?'-':'')+body:(c<0?' - ':' + ')+body}return s||'0'}
+const lin=(a,b,v='x')=>poly([[a,v],[b,'']]);
+const quad=(a,b,c)=>poly([[a,'x^2'],[b,'x'],[c,'']]);
+const dec1=p=>p%10===0?String(p/10):`${Math.floor(p/10)}.${p%10}`;
+const commas=s=>s.replace(/\B(?=(\d{3})+(?!\d))/g,'{,}');
+function sqrtSimp(n){for(let i=Math.floor(Math.sqrt(n));i>=2;i--)if(n%(i*i)===0)return[i,n/(i*i)];return[1,n]}
+function rad(k,m){if(m===1)return`${k}`;if(k===1)return`\\sqrt{${m}}`;if(k===-1)return`-\\sqrt{${m}}`;return`${k}\\sqrt{${m}}`}
+const isSq=n=>Number.isInteger(Math.sqrt(n));
+const roots2=(a,b)=>a===b?`$x = ${a}$（重根）`:`$x = ${a}$ 或 $x = ${b}$`;
+
+/* ================= 題型產生器 =================
+   每個單元的 gen(難度) 回傳 {q:題目, a:答案}，字串裡 $…$ 為數學式；回傳 null 代表重抽。 */
+const U=[];
+const unit=o=>U.push(o);
+
+unit({id:'int-add',g:'七上',name:'正負數的加減',instr:'計算下列各式的值。',h:[14,18,24],gen(d){
+  const n=[0,2,3,4][d],M=[0,20,60,30][d];let tex='',val=0,neg=false;
+  for(let i=0;i<n;i++){
+    let tt,tv;
+    if(d===3&&i>0&&R()<.4){const a=rnz(-15,15),b=rnz(-15,15);tv=Math.abs(a-b);tt=`\\left|${a} - ${P(b)}\\right|`;neg=true}
+    else{tv=rnz(-M,M);tt=i===0?String(tv):P(tv);if(tv<0)neg=true}
+    if(i===0){tex=tt;val=tv}else{const op=R()<.5?'+':'-';tex+=` ${op} ${tt}`;val+=op==='+'?tv:-tv}
+  }
+  return neg?{q:`$${tex}$`,a:`$${val}$`}:null;
+}});
+
+unit({id:'int-mul',g:'七上',name:'正負數的乘除與四則運算',instr:'計算下列各式的值。',h:[14,20,28],gen(d){
+  if(d===1){
+    if(R()<.5){const a=rnz(-12,12),b=rnz(-12,12);if(a>0&&b>0||Math.abs(a)<2||Math.abs(b)<2)return null;return{q:`$${a} \\times ${P(b)}$`,a:`$${a*b}$`}}
+    const b=pick([2,3,4,5,6,7,8,9])*sgn(),q=rnz(-12,12),a=b*q;if(a>0&&b>0)return null;return{q:`$${a} \\div ${P(b)}$`,a:`$${q}$`};
+  }
+  if(d===2){
+    const f=ri(0,2);
+    if(f===0){const a=rnz(-30,30),b=rnz(-9,9),c=rnz(-9,9);return{q:`$${a} + ${P(b)} \\times ${P(c)}$`,a:`$${a+b*c}$`}}
+    if(f===1){const a=rnz(-15,15),b=rnz(-12,12),c=pick([2,3,4,5,6,8])*sgn();if((a*b)%c)return null;const v=a*b/c;if(Math.abs(v)>80)return null;return{q:`$${a} \\times ${P(b)} \\div ${P(c)}$`,a:`$${v}$`}}
+    const a=rnz(-15,15),b=rnz(-15,15),c=rnz(-9,9);return{q:`$\\left(${a} - ${P(b)}\\right) \\times ${P(c)}$`,a:`$${(a-b)*c}$`};
+  }
+  if(R()<.5){const D=pick([2,3,4,5,6,7])*sgn(),q=rnz(-9,9),B=rnz(-9,9),C=rnz(-9,9),A=q*D+B*C;if(A===0||Math.abs(A)>99)return null;
+    return{q:`$\\left[${A} - ${P(B)} \\times ${P(C)}\\right] \\div ${P(D)}$`,a:`$${q}$`}}
+  const a=rnz(-30,30),b=rnz(-9,9),c=rnz(-12,12),e=rnz(-12,12),f=pick([2,3,4,5,6])*sgn(),inner=b*(c-e);if(inner%f||c===e)return null;
+  return{q:`$${a} - ${P(b)} \\times \\left(${c} - ${P(e)}\\right) \\div ${P(f)}$`,a:`$${a-inner/f}$`};
+}});
+
+function powTerm(maxB,maxE){const b=ri(2,maxB),e=ri(2,maxE),t=ri(0,2);
+  if(t===0)return{t:`(-${b})^{${e}}`,v:(-b)**e,lead:false};
+  if(t===1)return{t:`-${b}^{${e}}`,v:-(b**e),lead:true};
+  return{t:`${b}^{${e}}`,v:b**e,lead:false}}
+unit({id:'power',g:'七上',name:'指數與科學記號',instr:'計算下列各式的值，或以科學記號表示。',h:[14,18,22],gen(d){
+  if(d===1){
+    if(R()<.25){const n=ri(10,99);return{q:`$(-1)^{${n}}$`,a:`$${n%2?-1:1}$`}}
+    const t=powTerm(5,4);if(Math.abs(t.v)>700)return null;return{q:`$${t.t}$`,a:`$${t.v}$`};
+  }
+  if(d===2){
+    if(R()<.5){const t1=powTerm(4,3),t2=powTerm(4,3),op=pick(['+','-','\\times']);
+      const t2s=t2.lead?`\\left(${t2.t}\\right)`:t2.t;
+      const v=op==='+'?t1.v+t2.v:op==='-'?t1.v-t2.v:t1.v*t2.v;if(Math.abs(v)>999)return null;
+      return{q:`$${t1.t} ${op} ${t2s}$`,a:`$${v}$`}}
+    const d1=ri(1,9);let rest='';const L=ri(1,2);for(let i=0;i<L;i++)rest+=ri(0,9);rest=rest.replace(/0+$/,'');
+    const digits=String(d1)+rest,mant=rest?`${d1}.${rest}`:`${d1}`;
+    if(R()<.5){const e=ri(4,9),num=digits+'0'.repeat(e+1-digits.length);return{q:`將 $${commas(num)}$ 以科學記號表示`,a:`$${mant} \\times 10^{${e}}$`}}
+    const e=-ri(3,6),num='0.'+'0'.repeat(-e-1)+digits;return{q:`將 $${num}$ 以科學記號表示`,a:`$${mant} \\times 10^{${e}}$`};
+  }
+  const m2=ri(2,9),e1=ri(-6,9),e2=ri(-6,9);
+  if(R()<.5){const m1=ri(2,9),p=m1*m2;let mant,e=e1+e2;if(p>=10){mant=dec1(p);e+=1}else mant=String(p);if(e===0)return null;
+    return{q:`$(${m1} \\times 10^{${e1}}) \\times (${m2} \\times 10^{${e2}})$`,a:`$${mant} \\times 10^{${e}}$`}}
+  const r=ri(2,9),M=r*m2;let m1s,e=e1-e2;if(M>=10){m1s=dec1(M);e-=1}else m1s=String(M);if(e===0)return null;
+  return{q:`$(${m1s} \\times 10^{${e1}}) \\div (${m2} \\times 10^{${e2}})$`,a:`$${r} \\times 10^{${e}}$`};
+}});
+
+function factorTex(n){const ps=[];let m=n;for(let p=2;p*p<=m;p++){let e=0;while(m%p===0){m/=p;e++}if(e)ps.push(e>1?`${p}^{${e}}`:`${p}`)}if(m>1)ps.push(`${m}`);return ps}
+unit({id:'factor-num',g:'七上',name:'質因數分解・公因數與公倍數',instr:'依題意作答。',h:[18,22,26],gen(d){
+  if(d===1){const n=2**ri(0,4)*3**ri(0,3)*5**ri(0,2)*7**ri(0,1)*(R()<.2?11:1);const ps=factorTex(n);
+    if(n<30||n>900||ps.length<2)return null;return{q:`求 $${n}$ 的標準分解式`,a:`$${n} = ${ps.join(' \\times ')}$`}}
+  if(d===2){const g=ri(2,15),x=ri(2,12),y=ri(2,12);if(x===y||gcd(x,y)!==1)return null;const a=g*Math.min(x,y),b=g*Math.max(x,y);if(b>240)return null;
+    return{q:`求 $${a}$ 與 $${b}$ 的最大公因數與最小公倍數`,a:`最大公因數 $${g}$，最小公倍數 $${g*x*y}$`}}
+  const g=ri(2,8),xs=[ri(2,10),ri(2,10),ri(2,10)].sort((p,q)=>p-q);if(xs[0]===xs[1]||xs[1]===xs[2]||gcd(xs[0],gcd(xs[1],xs[2]))!==1)return null;
+  const ns=xs.map(x=>g*x);if(ns[2]>360)return null;const L=lcm(lcm(ns[0],ns[1]),ns[2]);
+  return{q:`求 $${ns[0]}$、$${ns[1]}$、$${ns[2]}$ 的最大公因數與最小公倍數`,a:`最大公因數 $${g}$，最小公倍數 $${L}$`};
+}});
+
+function rf(){const d=pick([2,3,4,5,6,8,9,10,12]);let n;do n=rnz(-2*d+1,2*d-1);while(n%d===0);return F(n,d)}
+unit({id:'fraction',g:'七上',name:'分數的四則運算',instr:'計算下列各式，答案化為最簡分數。',h:[18,22,28],gen(d){
+  let q,v;
+  if(d===1){const a=rf(),b=rf(),op=R()<.5?'+':'-';q=`${ftex(a)} ${op} ${fP(b)}`;v=op==='+'?fadd(a,b):fsub(a,b)}
+  else if(d===2){const a=rf(),b=rf(),c=rf();q=`${ftex(a)} \\times ${fP(b)} \\div ${fP(c)}`;v=fdiv(fmul(a,b),c)}
+  else{const f=ri(0,2),a=rf(),b=rf(),c=rf();
+    if(f===0){q=`${ftex(a)} - ${fP(b)} \\times ${fP(c)}`;v=fsub(a,fmul(b,c))}
+    else if(f===1){q=`\\left(${ftex(a)} + ${fP(b)}\\right) \\div ${fP(c)}`;v=fdiv(fadd(a,b),c)}
+    else{const dd=ri(2,6),w=ri(1,3),r=ri(1,dd-1);if(gcd(r,dd)!==1)return null;const m=F(sgn()*(w*dd+r),dd);q=`${mixtex(m)} \\times ${fP(b)} - ${fP(c)}`;v=fsub(fmul(m,b),c)}}
+  if(v.d>72||Math.abs(v.n)>150)return null;
+  return{q:`$${q}$`,a:`$${ftex(v)}$`};
+}});
+
+unit({id:'algebra',g:'七上',name:'代數式的化簡',instr:'化簡下列各式。',h:[16,20,26],gen(d){
+  if(d===1){const a=rnz(-9,9),b=rnz(-12,12),c=rnz(-9,9),e=rnz(-12,12);if(a+c===0)return null;
+    return{q:`$${poly(shuffle([[a,'x'],[b,''],[c,'x'],[e,'']]))}$`,a:`$${lin(a+c,b+e)}$`}}
+  if(d===2){const p=pick([2,3,4,5,6])*sgn(),q=pick([2,3,4,5,6])*sgn(),a=rnz(-6,6),b=rnz(-9,9),c=rnz(-6,6),e=rnz(-9,9);
+    const A=p*a+q*c,B=p*b+q*e;if(A===0)return null;
+    return{q:`$${p}(${lin(a,b)}) ${q<0?'-':'+'} ${Math.abs(q)}(${lin(c,e)})$`,a:`$${lin(A,B)}$`}}
+  const ms=shuffle([2,3,4,5,6]),m=ms[0],n=ms[1],a=ri(1,6),c=ri(1,6),b=rnz(-9,9),e=rnz(-9,9),s=sgn();
+  const L=lcm(m,n);let A=a*L/m+s*c*L/n,B=b*L/m+s*e*L/n;if(A===0)return null;
+  const g=gcd(gcd(A,B),L);A/=g;B/=g;const L2=L/g;
+  return{q:`$\\frac{${lin(a,b)}}{${m}} ${s>0?'+':'-'} \\frac{${lin(c,e)}}{${n}}$`,a:`$${L2===1?lin(A,B):`\\frac{${lin(A,B)}}{${L2}}`}$`};
+}});
+
+unit({id:'lin-eq',g:'七上',name:'一元一次方程式',instr:'解下列一元一次方程式。',h:[22,26,34],gen(d){
+  const x0=rnz(-10,10);
+  if(d===1){const a=rnz(-9,9),b=rnz(-20,20);if(Math.abs(a)===1&&R()<.7)return null;return{q:`$${lin(a,b)} = ${a*x0+b}$`,a:`$x = ${x0}$`}}
+  if(d===2){const a=rnz(-9,9),c=rnz(-9,9),b=rnz(-20,20);if(a===c)return null;const e=(a-c)*x0+b;return{q:`$${lin(a,b)} = ${lin(c,e)}$`,a:`$x = ${x0}$`}}
+  if(R()<.5){const p=ri(2,5),q=ri(2,5),a=ri(1,4),c=ri(1,4),b=rnz(-9,9),e=rnz(-9,9);if(p*a-q*c===0)return null;
+    const E=p*(a*x0+b)-q*(c*x0+e);return{q:`$${p}(${lin(a,b)}) - ${q}(${lin(c,e)}) = ${E}$`,a:`$x = ${x0}$`}}
+  const ms=shuffle([2,3,4,5,6]),m=ms[0],n=ms[1],a1=ri(1,3),a2=ri(1,3),b1=rnz(-9,9),b2=rnz(-9,9);
+  if(a1*n-a2*m===0)return null;const k=fsub(F(a1*x0+b1,m),F(a2*x0+b2,n));if(k.d!==1)return null;
+  return{q:`$\\frac{${lin(a1,b1)}}{${m}} - \\frac{${lin(a2,b2)}}{${n}} = ${k.n}$`,a:`$x = ${x0}$`};
+}});
+
+const sys=(e1,e2)=>`\\begin{cases} ${e1} \\\\ ${e2} \\end{cases}`;
+const eqxy=(a,b,c)=>`${poly([[a,'x'],[b,'y']])} = ${c}`;
+unit({id:'sys-eq',g:'七下',name:'二元一次聯立方程式',instr:'解下列二元一次聯立方程式。',h:[28,32,38],gen(d){
+  if(d===1){const x0=ri(-6,6),y0=ri(-6,6),s=sgn(),a2=ri(2,5)*sgn(),b2=rnz(-5,5);if(b2-s*a2===0)return null;
+    return{q:`$${sys(eqxy(1,s,x0+s*y0),eqxy(a2,b2,a2*x0+b2*y0))}$`,a:`$x = ${x0},\\ y = ${y0}$`}}
+  if(d===2){const x0=ri(-6,6),y0=ri(-6,6),a1=rnz(-7,7),b1=rnz(-7,7),a2=rnz(-7,7),b2=rnz(-7,7);
+    if(a1*b2-a2*b1===0||Math.max(Math.abs(a1),Math.abs(b1))<2||Math.max(Math.abs(a2),Math.abs(b2))<2)return null;
+    return{q:`$${sys(eqxy(a1,b1,a1*x0+b1*y0),eqxy(a2,b2,a2*x0+b2*y0))}$`,a:`$x = ${x0},\\ y = ${y0}$`}}
+  const ms=shuffle([2,3,4,6]),m=ms[0],n=ms[1],t=rnz(-3,3),u=rnz(-3,3),x0=m*t,y0=n*u,s=sgn(),a=ri(2,4),b=ri(2,4),p=rnz(-5,5),q=rnz(-5,5);
+  if(-b*n-s*a*m===0)return null;const c=a*(x0-p)-b*(y0+q);
+  const e1=`\\frac{x}{${m}} ${s>0?'+':'-'} \\frac{y}{${n}} = ${t+s*u}`,e2=`${a}(${lin(1,-p)}) - ${b}(${lin(1,q,'y')}) = ${c}`;
+  return{q:`$${sys(e1,e2)}$`,a:`$x = ${x0},\\ y = ${y0}$`};
+}});
+
+unit({id:'ratio',g:'七下',name:'比與比例式',instr:'依題意作答。',h:[18,22,28],gen(d){
+  if(d===1){const a=ri(2,9),b=ri(2,12),k=ri(2,6);if(a===b)return null;const f=ri(0,2);
+    if(f===0)return{q:`求 $x$：$${a} : ${b} = ${a*k} : x$`,a:`$x = ${b*k}$`};
+    if(f===1)return{q:`求 $x$：$${a} : x = ${a*k} : ${b*k}$`,a:`$x = ${b}$`};
+    return{q:`求 $x$：$x : ${b} = ${a*k} : ${b*k}$`,a:`$x = ${a}$`}}
+  if(d===2){
+    if(R()<.5){const f=ri(0,2);let qt,p,q;
+      if(f===0){const g=ri(3,12);p=ri(1,9);q=ri(1,9);if(p===q||gcd(p,q)!==1)return null;qt=`${g*p} : ${g*q}`}
+      else if(f===1){const d1=ri(2,9),d2=ri(2,9),f1=F(ri(1,d1-1),d1),f2=F(ri(1,d2-1),d2);const A=f1.n*f2.d,B=f2.n*f1.d,g=gcd(A,B);p=A/g;q=B/g;if(p===q)return null;qt=`${ftex(f1)} : ${ftex(f2)}`}
+      else{p=ri(1,9);q=ri(1,9);const g=ri(1,9);if(p===q||gcd(p,q)!==1||p*g>99||q*g>99)return null;qt=`${dec1(p*g)} : ${dec1(q*g)}`}
+      return{q:`化為最簡整數比：$${qt}$`,a:`$${p} : ${q}$`}}
+    const r=ri(1,9),s=ri(2,9),t=ri(1,5),p=rnz(-9,9);if(gcd(r,s)!==1||r===s)return null;
+    return{q:`求 $x$：$(${lin(1,p)}) : ${s*t} = ${r} : ${s}$`,a:`$x = ${r*t-p}$`};
+  }
+  const a=ri(1,4),c=ri(1,4),b=rnz(-9,9),dd=rnz(-9,9),x0=ri(-5,8),A=a*x0+b,C=c*x0+dd;if(A<=0||C<=0)return null;
+  const g=gcd(A,C),p=A/g,q=C/g;if(p===q||p>15||q>15||q*a-p*c===0)return null;
+  return{q:`求 $x$：$(${lin(a,b)}) : (${lin(c,dd)}) = ${p} : ${q}$`,a:`$x = ${x0}$`};
+}});
+
+const OPS=['>','<','\\geqq','\\leqq'],FLIP={'>':'<','<':'>','\\geqq':'\\leqq','\\leqq':'\\geqq'};
+unit({id:'ineq',g:'七下',name:'一元一次不等式',instr:'解下列一元一次不等式。',h:[20,24,30],gen(d){
+  const x0=ri(-9,9),op=pick(OPS);
+  if(d<=2){const a=d===1?ri(2,9):-ri(2,9),b=rnz(-15,15),c=a*x0+b;const left=R()<.5?lin(a,b):poly([[b,''],[a,'x']]);
+    return{q:`$${left} ${op} ${c}$`,a:`$x ${a>0?op:FLIP[op]} ${x0}$`}}
+  const p=ri(2,5),b=rnz(-6,6),Q=rnz(-9,9),r=ri(-6,6);if(r===p)return null;const s=(p-r)*x0+p*b+Q;
+  return{q:`$${p}(${lin(1,b)}) ${Q<0?'-':'+'} ${Math.abs(Q)} ${op} ${lin(r,s)}$`,a:`$x ${p-r>0?op:FLIP[op]} ${x0}$`};
+}});
+
+unit({id:'expand',g:'八上',name:'乘法公式',instr:'利用乘法公式展開或計算下列各式。',h:[16,20,24],gen(d){
+  if(d===1){const a=rnz(-9,9);if(R()<.6)return{q:`$(${lin(1,a)})^2$`,a:`$${quad(1,2*a,a*a)}$`};const b=Math.abs(a);return{q:`$(${lin(1,b)})(${lin(1,-b)})$`,a:`$${quad(1,0,-b*b)}$`}}
+  if(d===2){const f=ri(0,2),a=ri(2,5),b=rnz(-7,7);
+    if(f===0)return{q:`$(${lin(a,b)})^2$`,a:`$${quad(a*a,2*a*b,b*b)}$`};
+    if(f===1){const B=Math.abs(b);return{q:`$(${lin(a,B)})(${lin(a,-B)})$`,a:`$${quad(a*a,0,-B*B)}$`}}
+    const c=ri(1,4),dd=rnz(-7,7);if(a===c&&b===dd)return null;return{q:`$(${lin(a,b)})(${lin(c,dd)})$`,a:`$${quad(a*c,a*dd+b*c,b*dd)}$`}}
+  const f=ri(0,3);
+  if(f===3){const a=ri(1,4),b=rnz(-5,5),c=ri(1,4),dd=rnz(-5,5);if(a===1&&c===1)return null;
+    return{q:`$(${poly([[a,'x'],[b,'y']])})(${poly([[c,'x'],[dd,'y']])})$`,a:`$${poly([[a*c,'x^2'],[a*dd+b*c,'xy'],[b*dd,'y^2']])}$`}}
+  const N=pick([20,30,40,50,60,70,80,90,100,200,1000]),k=rnz(-4,4);
+  if(f===0)return{q:`$${N+k}^2$`,a:`$${commas(String((N+k)**2))}$`};
+  const K=Math.abs(k);if(f===1)return{q:`$${N+K} \\times ${N-K}$`,a:`$${commas(String(N*N-K*K))}$`};
+  return{q:`$${N+K}^2 - ${N-K}^2$`,a:`$${commas(String(4*N*K))}$`};
+}});
+
+unit({id:'sqrt',g:'八上',name:'平方根與根式運算',instr:'化簡下列各式（分母須有理化）。',h:[16,20,26],gen(d){
+  if(d===1){if(R()<.3){const k=ri(11,25);return{q:`$\\sqrt{${k*k}}$`,a:`$${k}$`}}
+    const m=pick([2,3,5,6,7,10,11]),k=ri(2,7),n=k*k*m;if(n>300)return null;return{q:`$\\sqrt{${n}}$`,a:`$${rad(k,m)}$`}}
+  if(d===2){
+    if(R()<.5){const m=pick([2,3,5,6,7]),ks=[ri(1,5),ri(1,5),ri(1,5)];if(Math.max(...ks)<2||ks[0]===ks[1]&&ks[1]===ks[2])return null;
+      const ss=[1,sgn(),sgn()];let c=0,q='';ks.forEach((k,i)=>{c+=ss[i]*k;const t=`\\sqrt{${k*k*m}}`;q+=i===0?t:` ${ss[i]>0?'+':'-'} ${t}`});
+      return{q:`$${q}$`,a:`$${c===0?'0':rad(c,m)}$`}}
+    const a=ri(2,30),b=ri(2,30);if(isSq(a)||isSq(b)||a===b)return null;const [k,m]=sqrtSimp(a*b);if(k===1)return null;
+    return{q:`$\\sqrt{${a}} \\times \\sqrt{${b}}$`,a:`$${rad(k,m)}$`};
+  }
+  if(R()<.5){const m=pick([2,3,5,6,7,10]),k=ri(1,4),c=ri(1,12),f=F(c,k*m);
+    const ans=f.d===1?rad(f.n,m):`\\frac{${f.n===1?'':f.n}\\sqrt{${m}}}{${f.d}}`;return{q:`$\\frac{${c}}{\\sqrt{${k*k*m}}}$`,a:`$${ans}$`}}
+  const a=ri(2,15),b=ri(2,15),s=sgn();if(isSq(a)||isSq(b)||a===b)return null;const [k,m]=sqrtSimp(a*b);
+  const mid=m===1?null:rad(2*k,m),ans=m===1?`${a+b+s*2*k}`:`${a+b} ${s>0?'+':'-'} ${mid}`;
+  return{q:`$(\\sqrt{${a}} ${s>0?'+':'-'} \\sqrt{${b}})^2$`,a:`$${ans}$`};
+}});
+
+const fac=(a,b)=>`(${lin(a,b)})`;
+function facPair(a,b,c,dd){const f1=fac(a,b),f2=fac(c,dd);return f1===f2?`${f1}^2`:f1+f2}
+unit({id:'factorize',g:'八上',name:'因式分解',instr:'因式分解下列各式。',h:[16,20,26],gen(d){
+  if(d===1){
+    if(R()<.5){const g=ri(1,6),a=ri(1,5),b=rnz(-9,9);if(gcd(a,b)!==1||(g===1&&a===1))return null;return{q:`$${quad(g*a,g*b,0)}$`,a:`$${g===1?'':g}x${fac(a,b)}$`}}
+    const a=ri(1,12);return{q:`$${quad(1,0,-a*a)}$`,a:`$${fac(1,a)}${fac(1,-a)}$`};
+  }
+  if(d===2){
+    if(R()<.4){const a=rnz(-9,9);return{q:`$${quad(1,2*a,a*a)}$`,a:`$${fac(1,a)}^2$`}}
+    const p=rnz(-9,9),q=rnz(-9,9);if(p===q||p+q===0)return null;const [h,l]=p>q?[p,q]:[q,p];
+    return{q:`$${quad(1,p+q,p*q)}$`,a:`$${fac(1,h)}${fac(1,l)}$`};
+  }
+  const f=ri(0,2);
+  if(f===0){const a=ri(1,4),c=ri(1,4),b=rnz(-9,9),dd=rnz(-9,9);if(a*c===1||gcd(a,b)!==1||gcd(c,dd)!==1)return null;
+    return{q:`$${quad(a*c,a*dd+b*c,b*dd)}$`,a:`$${facPair(a,b,c,dd)}$`}}
+  if(f===1){const g=ri(2,5),p=rnz(-6,6),q=rnz(-6,6);if(p===q)return null;const [h,l]=p>q?[p,q]:[q,p];
+    return{q:`$${quad(g,g*(p+q),g*p*q)}$`,a:`$${g}${fac(1,h)}${fac(1,l)}$`}}
+  const a=ri(2,6),b=ri(1,9);if(gcd(a,b)!==1)return null;return{q:`$${quad(a*a,0,-b*b)}$`,a:`$${fac(a,b)}${fac(a,-b)}$`};
+}});
+
+unit({id:'quad-eq',g:'八上',name:'一元二次方程式',instr:'解下列一元二次方程式。',h:[22,28,36],gen(d){
+  if(d===1){const f=ri(0,2);
+    if(f===0){const k=ri(1,12);return{q:R()<.5?`$x^2 = ${k*k}$`:`$x^2 - ${k*k} = 0$`,a:roots2(k,-k)}}
+    if(f===1){const p=rnz(-9,9),q=rnz(-9,9);if(p===q)return null;return{q:`$${fac(1,p)}${fac(1,q)} = 0$`,a:roots2(-p,-q)}}
+    const a=rnz(-9,9);return{q:`$${quad(1,-a,0)} = 0$`,a:roots2(0,a)};
+  }
+  if(d===2){
+    if(R()<.7){const r1=rnz(-9,9),r2=rnz(-9,9),[h,l]=r1>r2?[r1,r2]:[r2,r1];return{q:`$${quad(1,-(r1+r2),r1*r2)} = 0$`,a:roots2(h,l)}}
+    const a=rnz(-6,6),k=ri(1,7);return{q:`$(${lin(1,a)})^2 = ${k*k}$`,a:roots2(-a+k,-a-k)};
+  }
+  if(R()<.5){const a=ri(1,4),c=ri(1,4),b=rnz(-9,9),dd=rnz(-9,9);if(a*c===1||gcd(a,b)!==1||gcd(c,dd)!==1)return null;
+    const r1=F(-b,a),r2=F(-dd,c);return{q:`$${quad(a*c,a*dd+b*c,b*dd)} = 0$`,a:ftex(r1)===ftex(r2)?`$x = ${ftex(r1)}$（重根）`:`$x = ${ftex(r1)}$ 或 $x = ${ftex(r2)}$`}}
+  const a=ri(1,2),b=rnz(-7,7),c=rnz(-7,7),D=b*b-4*a*c;if(D<=0||isSq(D))return null;
+  const [k,m]=sqrtSimp(D),g=gcd(gcd(Math.abs(b),k),2*a),nb=-b/g,nk=k/g,den=2*a/g;
+  const num=`${nb===0?'':nb+' '}\\pm ${nk===1?'':nk}\\sqrt{${m}}`;
+  return{q:`$${quad(a,b,c)} = 0$`,a:`$x = ${den===1?num:`\\frac{${num}}{${den}}`}$`};
+}});
+
+/* ---------- 八下・九上・九下 ---------- */
+const deg=x=>`${x}^{\\circ}`, seg=s=>`\\overline{${s}}`;
+const TRI=[[3,4,5],[5,12,13],[8,15,17],[7,24,25]];
+const triple=(maxK=3)=>{const [a,b,c]=pick(TRI),k=ri(1,maxK);return[a*k,b*k,c*k]};
+const half=x2=>x2%2?(x2/2).toFixed(1):String(x2/2);
+const pt=(x,y)=>`(${x}, ${y})`;
+
+unit({id:'arith',g:'八下',name:'等差數列與等差級數',instr:'依題意作答。',h:[18,24,30],gen(d){
+  const a1=rnz(-20,30),dd=rnz(-9,9);
+  if(d===1){const n=ri(8,40);
+    if(R()<.5)return{q:`等差數列首項 $a_1 = ${a1}$，公差 $d = ${dd}$，求第 $${n}$ 項 $a_{${n}}$`,a:`$a_{${n}} = ${a1+(n-1)*dd}$`};
+    return{q:`等差數列 $${[0,1,2,3].map(i=>a1+i*dd).join(',\\ ')},\\ \\cdots$，求第 $${n}$ 項`,a:`$${a1+(n-1)*dd}$`}}
+  if(d===2){
+    if(R()<.5){const m=ri(2,6),k=m+ri(2,8);return{q:`等差數列中 $a_{${m}} = ${a1+(m-1)*dd}$，$a_{${k}} = ${a1+(k-1)*dd}$，求公差 $d$ 與首項 $a_1$`,a:`$d = ${dd}$，$a_1 = ${a1}$`}}
+    const D=ri(2,9),A=ri(1,20),n=ri(8,30),L=A+(n-1)*D;
+    return{q:`求等差級數 $${A} + ${A+D} + ${A+2*D} + \\cdots + ${L}$ 的和`,a:`$${commas(String(n*(A+L)/2))}$`}}
+  if(R()<.5){const k=ri(3,13),N=pick([100,150,200,300,500]),c=Math.floor(N/k);return{q:`求 $1$ 到 $${N}$ 之間所有 $${k}$ 的倍數的總和`,a:`$${commas(String(k*c*(c+1)/2))}$`}}
+  const A=ri(1,15),D=ri(2,6),n=ri(6,20),S=n*(2*A+(n-1)*D)/2;
+  return{q:`等差級數首項為 $${A}$，公差為 $${D}$，前 $n$ 項的和為 $${commas(String(S))}$，求 $n$`,a:`$n = ${n}$`};
+}});
+
+unit({id:'geom-seq',g:'八下',name:'等比數列',instr:'依題意作答。',h:[18,22,28],gen(d){
+  if(d===1){const a=rnz(-5,5),r=pick([2,3,-2,-3,4]),n=ri(4,8),v=a*r**(n-1);if(Math.abs(v)>20000)return null;
+    if(R()<.5)return{q:`等比數列首項為 $${a}$，公比為 $${r}$，求第 $${n}$ 項`,a:`$${commas(String(v))}$`};
+    if(n<5)return null;return{q:`等比數列 $${[0,1,2].map(i=>a*r**i).join(',\\ ')},\\ \\cdots$，求第 $${n}$ 項`,a:`$${commas(String(v))}$`}}
+  if(d===2){
+    if(R()<.5){const c=ri(1,5),u=ri(1,6),v=ri(1,6);if(u===v)return null;const x=c*u*u,y=c*v*v;return{q:`求 $${Math.min(x,y)}$ 與 $${Math.max(x,y)}$ 的等比中項`,a:`$\\pm ${c*u*v}$`}}
+    const a1=rnz(-4,4),r=pick([2,3,-2,-3]);return{q:`等比數列中 $a_2 = ${a1*r}$，$a_5 = ${a1*r**4}$，求公比 $r$ 與首項 $a_1$`,a:`$r = ${r}$，$a_1 = ${a1}$`};
+  }
+  if(R()<.5){const base=pick([2,3]),a=(base===2?pick([64,128,256]):pick([81,243,729]))*sgn(),rs=sgn(),n=ri(4,8);
+    const r=F(rs,base),v=F(a*rs**(n-1),base**(n-1));
+    return{q:`等比數列首項為 $${a}$，公比為 $${ftex(r)}$，求第 $${n}$ 項`,a:`$${ftex(v)}$`}}
+  const a1=rnz(-3,3),r=pick([-2,-3,2,3]);return{q:`等比數列中 $a_3 = ${a1*r*r}$，$a_6 = ${a1*r**5}$，求第 $8$ 項`,a:`$${commas(String(a1*r**7))}$`};
+}});
+
+unit({id:'lin-func',g:'八下',name:'線型函數及其圖形',instr:'依題意作答。',h:[18,24,30],gen(d){
+  const a=rnz(-6,6),b=rnz(-12,12);
+  if(d===1){const k=rnz(-8,8);
+    if(R()<.7)return{q:`已知 $f(x) = ${lin(a,b)}$，求 $f(${k})$`,a:`$${a*k+b}$`};
+    const k2=rnz(-8,8);if(k===k2)return null;return{q:`已知 $f(x) = ${lin(a,b)}$，求 $f(${k}) + f(${k2})$`,a:`$${a*(k+k2)+2*b}$`}}
+  if(d===2){const x1=ri(-6,6),x2=ri(-6,6);if(x1===x2)return null;
+    if(R()<.5)return{q:`線型函數 $y = f(x)$ 的圖形通過 $${pt(x1,a*x1+b)}$ 與 $${pt(x2,a*x2+b)}$ 兩點，求 $f(x)$`,a:`$f(x) = ${lin(a,b)}$`};
+    return{q:`線型函數 $f(x)$ 滿足 $f(${x1}) = ${a*x1+b}$，$f(${x2}) = ${a*x2+b}$，求 $f(x)$`,a:`$f(x) = ${lin(a,b)}$`}}
+  const A=rnz(-5,5),B=rnz(-12,12),xi=F(-B,A),area=F(B*B,2*Math.abs(A));
+  return{q:`求 $y = ${lin(A,B)}$ 的圖形與 $x$ 軸、$y$ 軸的交點，以及它與兩軸所圍成的三角形面積`,a:`$x$ 軸 $${pt(ftex(xi),0)}$，$y$ 軸 $${pt(0,B)}$，面積 $${ftex(area)}$`};
+}});
+
+unit({id:'angles',g:'八下',name:'三角形與多邊形的角',instr:'依題意作答。',h:[18,22,28],gen(d){
+  if(d===1){const f=ri(0,2);
+    if(f===0){const n=ri(5,14);return{q:`求 $${n}$ 邊形的內角和`,a:`$${deg(commas(String((n-2)*180)))}$`}}
+    const n=pick([5,6,8,9,10,12,15,18]);
+    return f===1?{q:`求正 $${n}$ 邊形每一個內角的度數`,a:`$${deg(180-360/n)}$`}:{q:`求正 $${n}$ 邊形每一個外角的度數`,a:`$${deg(360/n)}$`};
+  }
+  if(d===2){const f=ri(0,2);
+    if(f===0){const A=ri(30,80),B=ri(30,80);return{q:`$\\angle ACD$ 是 $\\triangle ABC$ 的外角，若 $\\angle ACD = ${deg(A+B)}$，$\\angle A = ${deg(A)}$，求 $\\angle B$`,a:`$${deg(B)}$`}}
+    if(f===1){const p=ri(1,7),q=ri(1,7),r=ri(1,7),s=p+q+r;if(180%s||p===q&&q===r)return null;
+      return{q:`$\\triangle ABC$ 中，$\\angle A : \\angle B : \\angle C = ${p} : ${q} : ${r}$，求最大角的度數`,a:`$${deg(180/s*Math.max(p,q,r))}$`}}
+    const B=ri(20,85),k=pick([2,3]),A=180-B,c=A-k*B;if(c===0||Math.abs(c)>60)return null;
+    return{q:`平行四邊形 $ABCD$ 中，$\\angle A = ${k}\\angle B ${c>0?'+':'-'} ${deg(Math.abs(c))}$，求 $\\angle A$ 與 $\\angle B$`,a:`$\\angle A = ${deg(A)}$，$\\angle B = ${deg(B)}$`};
+  }
+  if(R()<.5){const n=pick([8,9,10,12,15,18,20,24,30,36]);return{q:`正 $n$ 邊形的每一個內角都是 $${deg(180-360/n)}$，求 $n$`,a:`$n = ${n}$`}}
+  const n=ri(7,16);return{q:`某多邊形的內角和為 $${deg(commas(String((n-2)*180)))}$，求它的邊數與對角線條數`,a:`$${n}$ 邊形，對角線 $${n*(n-3)/2}$ 條`};
+}});
+
+unit({id:'similar',g:'九上',name:'比例線段與相似形',instr:'依題意作答。',h:[20,26,32],gen(d){
+  const p=ri(1,5),q=ri(2,7);if(p>=q||gcd(p,q)!==1)return null;
+  if(d===1){const s=ri(1,4),t=ri(1,4);
+    return{q:`已知 $\\triangle ABC \\sim \\triangle DEF$，$${seg('AB')} = ${p*s}$，$${seg('DE')} = ${q*s}$，$${seg('BC')} = ${p*t}$，求 $${seg('EF')}$`,a:`$${seg('EF')} = ${q*t}$`}}
+  if(d===2){
+    if(R()<.5){const m=ri(1,6);return{q:`兩相似三角形的對應邊長比為 $${p} : ${q}$，若小三角形的面積為 $${p*p*m}$，求大三角形的面積`,a:`$${q*q*m}$`}}
+    const s=ri(1,4),t=ri(1,4);
+    return{q:`$\\triangle ABC$ 中，$D$、$E$ 分別在 $${seg('AB')}$、$${seg('AC')}$ 上，且 $${seg('DE')} \\parallel ${seg('BC')}$。若 $${seg('AD')} = ${p*s}$，$${seg('DB')} = ${q*s}$，$${seg('AE')} = ${p*t}$，求 $${seg('EC')}$`,a:`$${seg('EC')} = ${q*t}$`};
+  }
+  if(R()<.5){const m=ri(1,4),n=ri(1,4),t=ri(1,5);if(gcd(m,n)!==1)return null;
+    return{q:`$\\triangle ABC$ 中，$${seg('DE')} \\parallel ${seg('BC')}$，$D$、$E$ 分別在 $${seg('AB')}$、$${seg('AC')}$ 上，$${seg('AD')} : ${seg('DB')} = ${m} : ${n}$。若 $\\triangle ADE$ 的面積為 $${m*m*t}$，求梯形 $DBCE$ 的面積`,a:`$${((m+n)**2-m*m)*t}$`}}
+  const s=ri(1,3),u=ri(1,4),v=ri(1,4);if(u===v)return null;
+  return{q:`直角 $\\triangle ABC$ 中，$\\angle C = 90^{\\circ}$，$${seg('CD')} \\perp ${seg('AB')}$ 於 $D$。若 $${seg('AD')} = ${s*u*u}$，$${seg('DB')} = ${s*v*v}$，求 $${seg('CD')}$`,a:`$${seg('CD')} = ${s*u*v}$`};
+}});
+
+unit({id:'circle',g:'九上',name:'圓的性質',instr:'依題意作答。',h:[20,24,30],gen(d){
+  if(d===1){const f=ri(0,2);
+    if(f===0){const x=ri(15,85);return{q:`圓 $O$ 中，弧 $AB$（劣弧）所對的圓心角 $\\angle AOB = ${deg(2*x)}$，$C$ 為優弧上一點，求圓周角 $\\angle ACB$`,a:`$${deg(x)}$`}}
+    if(f===1){const x=ri(15,85);return{q:`圓 $O$ 中，$C$ 在優弧 $AB$ 上，圓周角 $\\angle ACB = ${deg(x)}$，求圓心角 $\\angle AOB$`,a:`$${deg(2*x)}$`}}
+    const [a,b,c]=triple(3);return{q:`圓 $O$ 的半徑為 $${c}$，弦 $${seg('AB')}$ 長為 $${2*b}$，求圓心 $O$ 到 $${seg('AB')}$ 的距離`,a:`$${a}$`};
+  }
+  if(d===2){const [a,b,c]=triple(3),f=ri(0,1);
+    if(f===0)return{q:`由圓外一點 $P$ 作圓 $O$ 的切線，切點為 $A$。若圓的半徑為 $${a}$，$${seg('OP')} = ${c}$，求切線段 $${seg('PA')}$ 的長`,a:`$${b}$`};
+    return{q:`圓 $O$ 的半徑為 $${c}$，圓心 $O$ 到弦 $${seg('AB')}$ 的距離為 $${a}$，求弦 $${seg('AB')}$ 的長`,a:`$${2*b}$`};
+  }
+  const f=ri(0,2);
+  if(f===0){const x=ri(10,40),p=ri(1,4),q=ri(1,4),A=ri(40,140),c1=A-p*x,c2=180-A-q*x;if(c1===0||c2===0)return null;
+    return{q:`四邊形 $ABCD$ 內接於圓，$\\angle A = (${lin(p,c1)})^{\\circ}$，$\\angle C = (${lin(q,c2)})^{\\circ}$，求 $x$ 與 $\\angle A$`,a:`$x = ${x}$，$\\angle A = ${deg(A)}$`}}
+  if(f===1){const AB=ri(5,15),BC=ri(5,15),CD=ri(5,15),DA=AB+CD-BC;if(DA<3)return null;
+    return{q:`四邊形 $ABCD$ 的四邊都與圓 $O$ 相切。若 $${seg('AB')} = ${AB}$，$${seg('BC')} = ${BC}$，$${seg('CD')} = ${CD}$，求 $${seg('DA')}$`,a:`$${DA}$`}}
+  const y=2*ri(15,70);return{q:`由圓外一點 $P$ 作圓 $O$ 的兩條切線，切點為 $A$、$B$。若 $\\angle APB = ${deg(y)}$，求 $\\angle AOB$`,a:`$${deg(180-y)}$`};
+}});
+
+unit({id:'centers',g:'九上',name:'三角形的外心、內心與重心',instr:'依題意作答。',h:[18,22,28],gen(d){
+  if(d===1){
+    if(R()<.5){const k=ri(2,9);return{q:`$G$ 為 $\\triangle ABC$ 的重心，$${seg('AD')}$ 為 $${seg('BC')}$ 邊上的中線。若 $${seg('AD')} = ${3*k}$，求 $${seg('AG')}$ 與 $${seg('GD')}$`,a:`$${seg('AG')} = ${2*k}$，$${seg('GD')} = ${k}$`}}
+    const [a,b,c]=triple(3);return{q:`直角三角形的兩股長為 $${a}$ 與 $${b}$，求它的外接圓半徑`,a:`$${ftex(F(c,2))}$`};
+  }
+  if(d===2){const f=ri(0,2);
+    if(f===0){const y=ri(15,60);return{q:`$I$ 為 $\\triangle ABC$ 的內心，若 $\\angle A = ${deg(2*y)}$，求 $\\angle BIC$`,a:`$${deg(90+y)}$`}}
+    if(f===1){const x=ri(30,85);return{q:`$O$ 為銳角 $\\triangle ABC$ 的外心，若 $\\angle A = ${deg(x)}$，求 $\\angle BOC$`,a:`$${deg(2*x)}$`}}
+    const k=ri(2,12);return{q:`$G$ 為 $\\triangle ABC$ 的重心，若 $\\triangle ABC$ 的面積為 $${6*k}$，求 $\\triangle GBC$ 的面積`,a:`$${2*k}$`};
+  }
+  const f=ri(0,2);
+  if(f===0){const [a,b,c]=triple(2);return{q:`直角三角形的三邊長為 $${a}$、$${b}$、$${c}$，求它的內切圓半徑與外接圓半徑`,a:`內切圓半徑 $${(a+b-c)/2}$，外接圓半徑 $${ftex(F(c,2))}$`}}
+  if(f===1){const m=ri(1,5);return{q:`正三角形的邊長為 $${6*m}$，求它的外接圓半徑與內切圓半徑`,a:`外接圓半徑 $${rad(2*m,3)}$，內切圓半徑 $${rad(m,3)}$`}}
+  const y=ri(15,60);return{q:`$I$ 為 $\\triangle ABC$ 的內心，若 $\\angle BIC = ${deg(90+y)}$，求 $\\angle A$`,a:`$${deg(2*y)}$`};
+}});
+
+function vform(a,h,k){const base=h===0?'x^2':`(${lin(1,-h)})^2`,pre=a===1?'':a===-1?'-':String(a);return`y = ${pre}${base}${k===0?'':k>0?` + ${k}`:` - ${-k}`}`}
+unit({id:'quad-func',g:'九下',name:'二次函數',instr:'依題意作答。',h:[20,26,32],gen(d){
+  if(d===1){const a=rnz(-3,3),h=ri(-6,6),k=ri(-9,9);
+    return{q:`寫出二次函數 $${vform(a,h,k)}$ 圖形的頂點、對稱軸與開口方向`,a:`頂點 $${pt(h,k)}$，對稱軸 $x = ${h}$，開口向${a>0?'上':'下'}`}}
+  if(d===2){const a=pick([1,-1,2,-2]),h=rnz(-5,5),k=ri(-9,9);
+    return{q:`求二次函數 $y = ${quad(a,-2*a*h,a*h*h+k)}$ 圖形的頂點，並求 $y$ 的最大值或最小值`,a:`頂點 $${pt(h,k)}$，${a>0?'最小':'最大'}值為 $${k}$`}}
+  if(R()<.5){const a=pick([1,-1,2]),r1=rnz(-6,6),r2=rnz(-6,6);if(r1===r2)return null;const [hi,lo]=r1>r2?[r1,r2]:[r2,r1];
+    return{q:`求二次函數 $y = ${quad(a,-a*(r1+r2),a*r1*r2)}$ 的圖形與 $x$ 軸、$y$ 軸的交點`,a:`$x$ 軸：$${pt(lo,0)}$、$${pt(hi,0)}$；$y$ 軸：$${pt(0,a*r1*r2)}$`}}
+  const a=rnz(-3,3),h=ri(-5,5),k=ri(-9,9),p=h+rnz(-3,3);
+  return{q:`二次函數圖形的頂點為 $${pt(h,k)}$，且通過點 $${pt(p,a*(p-h)**2+k)}$，求此二次函數`,a:`$${vform(a,h,k)}$`};
+}});
+
+function twoDice(test){let c=0;for(let i=1;i<=6;i++)for(let j=1;j<=6;j++)if(test(i,j))c++;return F(c,36)}
+unit({id:'stats',g:'九下',name:'統計與機率',instr:'依題意作答。',h:[22,26,30],gen(d){
+  if(d===1){const n=pick([5,7,9]),vals=new Set();while(vals.size<n-1)vals.add(ri(40,99));const arr=[...vals];const mode=pick(arr);arr.push(mode);
+    const sum=arr.reduce((s,x)=>s+x,0);if(sum%n)return null;const s=[...arr].sort((x,y)=>x-y);shuffle(arr);
+    return{q:`下列 $${n}$ 筆資料：$${arr.join(',\\ ')}$，求平均數、中位數與眾數`,a:`平均數 $${sum/n}$，中位數 $${s[(n-1)/2]}$，眾數 $${mode}$`}}
+  if(d===2){const f=ri(0,2);
+    if(f===0){const n=pick([8,12]),arr=Array.from({length:n},()=>ri(10,99)),s=[...arr].sort((x,y)=>x-y);
+      const q1=s[n/4-1]+s[n/4],q3=s[3*n/4-1]+s[3*n/4];
+      return{q:`下列 $${n}$ 筆資料：$${arr.join(',\\ ')}$，求第 1 四分位數 $Q_1$、第 3 四分位數 $Q_3$ 與四分位距`,a:`$Q_1 = ${half(q1)}$，$Q_3 = ${half(q3)}$，四分位距 $${half(q3-q1)}$`}}
+    if(f===1){const ev=pick([['偶數',3],['質數',3],['3 的倍數',2],['6 的因數',4],['大於 4 的點數',2],['小於 3 的點數',2]]);
+      return{q:`擲一顆公正的骰子一次，求出現${ev[0]}的機率`,a:`$${ftex(F(ev[1],6))}$`}}
+    const r=ri(2,9),w=ri(2,9),b=ri(1,6),t=r+w+b,ev=pick([['紅球',r],['白球',w],['紅球或藍球',r+b],['不是白球',r+b]]);
+    return{q:`袋中有紅球 $${r}$ 顆、白球 $${w}$ 顆、藍球 $${b}$ 顆，任取一球，求取到${ev[0]}的機率`,a:`$${ftex(F(ev[1],t))}$`};
+  }
+  if(R()<.75){const k=ri(3,11),m=ri(1,4),evs=[
+      [`點數和為 $${k}$`,(i,j)=>i+j===k],[`點數和大於 $${k}$`,(i,j)=>i+j>k],['兩顆點數相同',(i,j)=>i===j],
+      ['點數乘積為偶數',(i,j)=>i*j%2===0],[`兩顆點數相差 $${m}$`,(i,j)=>Math.abs(i-j)===m]];
+    const [t,fn]=pick(evs);return{q:`同時擲兩顆公正的骰子，求${t}的機率`,a:`$${ftex(twoDice(fn))}$`}}
+  const ev=pick([['恰好出現兩個正面',3],['至少出現一個正面',7],['三枚都同一面',2],['恰好出現一個正面',3]]);
+  return{q:`同時擲三枚公正的硬幣，求${ev[0]}的機率`,a:`$${ftex(F(ev[1],8))}$`};
+}});
+
+unit({id:'solid',g:'九下',name:'柱體的體積與表面積',instr:'依題意作答（答案保留 π）。',h:[20,26,30],gen(d){
+  if(d===1){
+    if(R()<.3){const a=ri(2,12);return{q:`正方體的邊長為 $${a}$ 公分，求它的體積與表面積`,a:`體積 $${a**3}$ 立方公分，表面積 $${6*a*a}$ 平方公分`}}
+    const a=ri(2,12),b=ri(2,12),c=ri(2,12);if(a===b&&b===c)return null;
+    return{q:`長方體的長、寬、高分別為 $${a}$、$${b}$、$${c}$ 公分，求它的體積與表面積`,a:`體積 $${a*b*c}$ 立方公分，表面積 $${2*(a*b+b*c+c*a)}$ 平方公分`}}
+  if(d===2){
+    if(R()<.5){const [a,b,c]=triple(2),h=ri(2,15);return{q:`直角柱的底面是兩股長 $${a}$、$${b}$ 公分的直角三角形，柱高 $${h}$ 公分，求它的體積與表面積`,a:`體積 $${a*b/2*h}$ 立方公分，表面積 $${a*b+(a+b+c)*h}$ 平方公分`}}
+    const r=ri(1,9),h=ri(2,15);return{q:`圓柱的底面半徑為 $${r}$ 公分，高為 $${h}$ 公分，求它的體積與表面積`,a:`體積 $${r*r*h}\\pi$ 立方公分，表面積 $${2*r*r+2*r*h}\\pi$ 平方公分`};
+  }
+  if(R()<.5){const r=ri(1,8),h=ri(2,15);return{q:`圓柱的底面半徑為 $${r}$ 公分，表面積為 $${2*r*r+2*r*h}\\pi$ 平方公分，求它的高與體積`,a:`高 $${h}$ 公分，體積 $${r*r*h}\\pi$ 立方公分`}}
+  const a=ri(1,5),b=ri(1,5),c=ri(1,5),t=ri(1,4);if(a===b&&b===c)return null;
+  return{q:`長方體的長、寬、高比為 $${a} : ${b} : ${c}$，所有稜長的總和為 $${4*(a+b+c)*t}$ 公分，求它的體積`,a:`$${a*b*c*t**3}$ 立方公分`};
+}});
+
+/* ---------- 幾何附圖題：依題目的真實角度與長度畫 SVG ---------- */
+const V=(x,y)=>({x,y});
+const vadd=(p,q)=>V(p.x+q.x,p.y+q.y), vsub=(p,q)=>V(p.x-q.x,p.y-q.y), vmul=(p,k)=>V(p.x*k,p.y*k);
+const vlen=p=>Math.hypot(p.x,p.y), vunit=p=>vmul(p,1/vlen(p)), vlerp=(p,q,t)=>V(p.x+(q.x-p.x)*t,p.y+(q.y-p.y)*t);
+const f1=n=>Math.round(n*10)/10, RAD=Math.PI/180;
+const polar=(c,r,a)=>V(c.x+r*Math.cos(a*RAD),c.y-r*Math.sin(a*RAD));       // 數學角度，螢幕 y 向下
+const centroid=ps=>vmul(ps.reduce((s,p)=>vadd(s,p),V(0,0)),1/ps.length);
+/* 把以數學座標（y 向上）建好的點等比縮放進 w×h 的畫框 */
+function fitPts(ps,w,h,pad=16){const xs=ps.map(p=>p.x),ys=ps.map(p=>p.y),x0=Math.min(...xs),y0=Math.min(...ys),dx=Math.max(...xs)-x0||1,dy=Math.max(...ys)-y0||1;
+  const s=Math.min((w-2*pad)/dx,(h-2*pad)/dy),ox=(w-dx*s)/2,oy=(h-dy*s)/2;return ps.map(p=>V(ox+(p.x-x0)*s,h-oy-(p.y-y0)*s))}
+function Fig(w,h,cls=''){const parts=[];const api={
+  line(p,q,o=''){parts.push(`<line x1="${f1(p.x)}" y1="${f1(p.y)}" x2="${f1(q.x)}" y2="${f1(q.y)}" ${o}/>`);return api},
+  poly(ps,o=''){parts.push(`<polygon points="${ps.map(p=>f1(p.x)+','+f1(p.y)).join(' ')}" fill="none" ${o}/>`);return api},
+  circle(c,r,o=''){parts.push(`<circle cx="${f1(c.x)}" cy="${f1(c.y)}" r="${f1(r)}" fill="none" ${o}/>`);return api},
+  dot(p,r=1.6){parts.push(`<circle cx="${f1(p.x)}" cy="${f1(p.y)}" r="${r}" fill="currentColor" stroke="none"/>`);return api},
+  text(p,s,it=false,size){parts.push(`<text x="${f1(p.x)}" y="${f1(p.y)}" text-anchor="middle" dominant-baseline="central"${it?' class="it"':''}${size?` font-size="${size}"`:''}>${s}</text>`);return api},
+  label(p,from,s,d=8){return api.text(vadd(p,vmul(vunit(vsub(p,from)),d)),s,true)},
+  angle(X,A,B,s,r=11,gap=9){const u1=vunit(vsub(A,X)),u2=vunit(vsub(B,X)),cr=u1.x*u2.y-u1.y*u2.x,p1=vadd(X,vmul(u1,r)),p2=vadd(X,vmul(u2,r));
+    parts.push(`<path d="M${f1(p1.x)} ${f1(p1.y)} A${r} ${r} 0 0 ${cr>0?1:0} ${f1(p2.x)} ${f1(p2.y)}" fill="none" stroke-width=".8"/>`);
+    if(s!=null)api.text(vadd(X,vmul(vunit(vadd(u1,u2)),r+gap)),s,s==='x');return api},
+  right(X,A,B,s=6){const u1=vmul(vunit(vsub(A,X)),s),u2=vmul(vunit(vsub(B,X)),s),ps=[vadd(X,u1),vadd(vadd(X,u1),u2),vadd(X,u2)];
+    parts.push(`<polyline points="${ps.map(p=>f1(p.x)+','+f1(p.y)).join(' ')}" fill="none" stroke-width=".8"/>`);return api},
+  tick(p,q,n=1){const m=vlerp(p,q,.5),u=vunit(vsub(q,p)),nv=V(-u.y,u.x);for(let i=0;i<n;i++){const c=vadd(m,vmul(u,(i-(n-1)/2)*3));api.line(vadd(c,vmul(nv,3.5)),vadd(c,vmul(nv,-3.5)),'stroke-width=".9"')}return api},
+  seg(p,q,s,center,d=8){const m=vlerp(p,q,.5),u=vunit(vsub(q,p));let nv=V(-u.y,u.x);if((m.x-center.x)*nv.x+(m.y-center.y)*nv.y<0)nv=vmul(nv,-1);return api.text(vadd(m,vmul(nv,d)),s,s==='x')},
+  sub(p,base,idx){parts.push(`<text x="${f1(p.x)}" y="${f1(p.y)}" text-anchor="middle" dominant-baseline="central" class="it">${base}<tspan font-size="7" dy="2.5" font-style="normal">${idx}</tspan></text>`);return api},
+  raw(s){parts.push(s);return api},
+  svg(){return`<svg class="fig ${cls}" viewBox="0 0 ${w} ${h}" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round">${parts.join('')}</svg>`}
+};return api}
+const radOf=n=>rad(...sqrtSimp(n));
+const ang=v=>`${v}°`;
+
+/* 七下：坐標平面上的面積 */
+function shoelace2(P){let s=0;for(let i=0;i<P.length;i++){const [x1,y1]=P[i],[x2,y2]=P[(i+1)%P.length];s+=x1*y2-x2*y1}return Math.abs(s)}
+unit({id:'coord-fig',g:'七下',name:'直角坐標與圖形面積（附圖）',instr:'依圖作答（每一小格為 1 單位）。',h:[46,48,52],gen(d){
+  let P;
+  if(d===1){const y0=ri(-4,0),x1=ri(-5,0),x2=x1+ri(3,6),x3=ri(-5,5),y3=y0+ri(3,8);if(x2>5||y3>5)return null;P=[[x1,y0],[x2,y0],[x3,y3]];if(R()<.5)P=P.map(([x,y])=>[y,x]);if(R()<.5)P=P.map(([x,y])=>[x,-y])}
+  else if(d===2){P=[0,1,2].map(()=>[ri(-5,5),ri(-5,5)]);const a=shoelace2(P);if(a<8||a>60)return null;if(P.some(([x,y],i)=>P.some(([u,v],j)=>j>i&&(x===u||y===v))))return null}
+  else{P=[0,1,2,3].map(()=>[ri(-5,5),ri(-5,5)]);const c=[P.reduce((s,p)=>s+p[0],0)/4,P.reduce((s,p)=>s+p[1],0)/4];P.sort((p,q)=>Math.atan2(p[1]-c[1],p[0]-c[0])-Math.atan2(q[1]-c[1],q[0]-c[0]));
+    for(let i=0;i<4;i++){const [a,b,e]=[P[i],P[(i+1)%4],P[(i+2)%4]];if((b[0]-a[0])*(e[1]-b[1])-(b[1]-a[1])*(e[0]-b[0])<=0)return null}
+    const a=shoelace2(P);if(a<16||a>80)return null}
+  const names='ABCD'.slice(0,P.length).split(''),cell=11,O=V(80,80),f=Fig(160,160,'wide');
+  for(let i=-6;i<=6;i++){f.line(V(O.x+i*cell,O.y-6*cell),V(O.x+i*cell,O.y+6*cell),'stroke-width=".35" stroke-opacity=".45"');f.line(V(O.x-6*cell,O.y+i*cell),V(O.x+6*cell,O.y+i*cell),'stroke-width=".35" stroke-opacity=".45"')}
+  f.line(V(O.x-6.4*cell,O.y),V(O.x+6.6*cell,O.y),'stroke-width=".9"').line(V(O.x,O.y+6.4*cell),V(O.x,O.y-6.6*cell),'stroke-width=".9"');
+  f.text(V(O.x+6.6*cell,O.y+7),'x',true,9).text(V(O.x+7,O.y-6.6*cell),'y',true,9).text(V(O.x-6,O.y+7),'O',true,8);
+  [-4,-2,2,4].forEach(i=>{f.text(V(O.x+i*cell,O.y+6),String(i),false,6.5);f.text(V(O.x-7,O.y-i*cell),String(i),false,6.5)});
+  const S=P.map(([x,y])=>V(O.x+x*cell,O.y-y*cell)),c=centroid(S);f.poly(S,'stroke-width="1.4"');S.forEach((p,i)=>{f.dot(p,2);f.label(p,c,names[i],8)});
+  const coords=P.map(([x,y],i)=>`$${names[i]}(${x}, ${y})$`).join('、'),fig=d===3?'四邊形 $ABCD$':'$\\triangle ABC$';
+  return{q:`如圖，${coords}，求${fig}的面積`,a:`$${half(shoelace2(P))}$`,fig:f.svg(),k:JSON.stringify(P)};
+}});
+
+/* 八上：畢氏定理 */
+unit({id:'pythag-fig',g:'八上',name:'畢氏定理（附圖）',instr:'依圖作答。',h:[40,42,48],gen(d){
+  const f=Fig(150,120);
+  if(d<=2){let a,b,c,unk;
+    if(d===1){[a,b,c]=triple(3);unk=pick(['a','b','c'])}else{unk=R()<.5?'c':pick(['a','b']);
+      if(unk==='c'){a=ri(2,12);b=ri(2,12);if(isSq(a*a+b*b))return null;c=Math.sqrt(a*a+b*b)}
+      else{const k=ri(2,12);c=k+ri(1,6);if(isSq(c*c-k*k))return null;if(unk==='a'){b=k;a=Math.sqrt(c*c-k*k)}else{a=k;b=Math.sqrt(c*c-k*k)}}}
+    const L=unk==='a'?Math.sqrt(c*c-b*b):a,H=unk==='b'?Math.sqrt(c*c-a*a):b;
+    const [C,B,A]=fitPts([V(0,0),V(L,0),V(0,H)],150,120,22),ctr=centroid([A,B,C]);
+    f.poly([A,B,C]).right(C,A,B).label(A,ctr,'A').label(B,ctr,'B').label(C,ctr,'C');
+    f.seg(C,B,unk==='a'?'x':String(a),ctr).seg(C,A,unk==='b'?'x':String(b),ctr).seg(A,B,unk==='c'?'x':(Number.isInteger(c)?String(c):''),ctr);
+    const val=unk==='c'?radOf(a*a+b*b):unk==='a'?radOf(c*c-b*b):radOf(c*c-a*a);
+    return{q:`如圖，$\\triangle ABC$ 中 $\\angle C = 90^{\\circ}$，求 $x$`,a:`$x = ${val}$`,fig:f.svg(),k:`${a},${b},${c},${unk}`}}
+  const a=ri(3,12),b=ri(2,9),c=ri(2,9);
+  const [B,A,D,C]=fitPts([V(0,0),V(0,a),V(b,0),V(b+c,0)],150,120,20),ctr=centroid([A,B,C]);
+  f.poly([A,B,C]).line(A,D).right(B,A,C).label(A,ctr,'A').label(B,ctr,'B').label(C,ctr,'C').text(vadd(D,V(0,10)),'D',true);
+  f.seg(B,A,String(a),ctr).text(vadd(vlerp(B,D,.5),V(0,10)),String(b)).text(vadd(vlerp(D,C,.5),V(0,10)),String(c));
+  return{q:`如圖，$${seg('AB')} \\perp ${seg('BC')}$，$D$ 在 $${seg('BC')}$ 上，求 $${seg('AD')}$ 與 $${seg('AC')}$`,a:`$${seg('AD')} = ${radOf(a*a+b*b)}$，$${seg('AC')} = ${radOf(a*a+(b+c)**2)}$`,fig:f.svg(),k:`${a},${b},${c}`};
+}});
+
+/* 八下：平行線與三角形的角 */
+unit({id:'angle-fig',g:'八下',name:'平行線與三角形的角（附圖）',instr:'依圖作答。',h:[40,44,48],gen(d){
+  if(d===1){const phi=R()<.5?ri(40,80):180-ri(40,80),f=Fig(150,110),t=Math.tan(phi*RAD);
+    const P=V(75+25/t,32),Q=V(75-25/t,82),u=V(Math.cos(phi*RAD),-Math.sin(phi*RAD));
+    f.line(V(8,32),V(142,32)).line(V(8,82),V(142,82)).line(vadd(P,vmul(u,24)),vsub(Q,vmul(u,24)));
+    f.sub(V(14,24),'L',1).sub(V(14,74),'L',2);
+    const rays=[V(1,0),u,V(-1,0),vmul(u,-1)],val=i=>i%2?180-phi:phi;
+    const i=ri(0,3),j=ri(0,3),[G,X]=R()<.5?[P,Q]:[Q,P];
+    f.angle(G,vadd(G,rays[i]),vadd(G,rays[(i+1)%4]),ang(val(i)),10,9).angle(X,vadd(X,rays[j]),vadd(X,rays[(j+1)%4]),'x',10,8);
+    return{q:`如圖，$L_1 \\parallel L_2$，求 $x$`,a:`$x = ${deg(val(j))}$`,fig:f.svg(),k:`${phi},${i},${j},${G===P}`}}
+  if(d===2){
+    if(R()<.5){const a=ri(20,60),b=ri(20,60),f=Fig(150,110),Dd=70/(Math.tan(a*RAD)+Math.tan(b*RAD)),A=V(28,22),B=V(28,92),E=V(28+Dd,22+Dd*Math.tan(a*RAD));
+      f.line(V(8,22),V(145,22)).line(V(8,92),V(145,92)).line(A,E).line(E,B).sub(V(140,14),'L',1).sub(V(140,84),'L',2);
+      f.angle(A,V(60,22),E,ang(a),14,9).angle(B,V(60,92),E,ang(b),14,9).angle(E,A,B,'x',10,8).text(vadd(A,V(-6,-6)),'A',true).text(vadd(B,V(-6,6)),'B',true).text(vadd(E,V(8,0)),'E',true);
+      return{q:`如圖，$L_1 \\parallel L_2$，求 $x$（即 $\\angle AEB$）`,a:`$x = ${deg(a+b)}$`,fig:f.svg(),k:`z${a},${b}`}}
+    const a=ri(30,80),b=ri(30,70),c=180-a-b;if(c<25)return null;const AB=10*Math.sin(c*RAD)/Math.sin(a*RAD),f=Fig(160,110);
+    const [B,C,A,D]=fitPts([V(0,0),V(10,0),polar(V(0,0),AB,b),V(14.5,0)].map(p=>V(p.x,p.y<0?-p.y:p.y)),160,110,18),ctr=centroid([A,B,C]);
+    f.poly([A,B,C]).line(C,D).label(A,ctr,'A').label(B,ctr,'B').text(vadd(C,V(0,10)),'C',true).text(vadd(D,V(0,10)),'D',true);
+    const askB=R()<.4;f.angle(A,B,C,ang(a),11).angle(B,A,C,askB?'x':ang(b),12).angle(C,A,D,askB?ang(a+b):'x',10);
+    return{q:askB?`如圖，$D$ 在 $${seg('BC')}$ 的延長線上，求 $x$`:`如圖，$D$ 在 $${seg('BC')}$ 的延長線上，求 $x$（即 $\\angle ACD$）`,a:`$x = ${deg(askB?b:a+b)}$`,fig:f.svg(),k:`e${a},${b},${askB}`};
+  }
+  if(R()<.5){const beta=ri(40,75),f=Fig(150,115),ext=R()<.5;
+    const pts=[V(-5,0),V(5,0),V(0,5*Math.tan(beta*RAD)),V(9,0)],[B,C,A,D]=fitPts(ext?pts:pts.slice(0,3),150,115,18).concat(ext?[]:[null]),ctr=centroid([A,B,C]);
+    f.poly([A,B,C]).tick(A,B).tick(A,C).label(A,ctr,'A').label(B,ctr,'B').label(C,ctr,'C');
+    if(ext){f.line(C,D).text(vadd(D,V(0,10)),'D',true).angle(C,A,D,ang(180-beta),10).angle(A,B,C,'x',11);
+      return{q:`如圖，$${seg('AB')} = ${seg('AC')}$，$D$ 在 $${seg('BC')}$ 的延長線上，求 $x$（即 $\\angle A$）`,a:`$x = ${deg(180-2*beta)}$`,fig:f.svg(),k:`ie${beta}`}}
+    f.angle(A,B,C,ang(180-2*beta),11).angle(B,A,C,'x',11);
+    return{q:`如圖，$${seg('AB')} = ${seg('AC')}$，求 $x$（即 $\\angle B$）`,a:`$x = ${deg(beta)}$`,fig:f.svg(),k:`i${beta}`}}
+  const a=ri(40,85),c=ri(35,70),Bv=180-a-c;if(Bv<30||Bv%2)return null;const AB=10*Math.sin(c*RAD)/Math.sin(a*RAD),f=Fig(160,115);
+  const [B,C,A]=fitPts([V(0,0),V(10,0),polar(V(0,0),AB,Bv)].map(p=>V(p.x,Math.abs(p.y))),160,115,18),ctr=centroid([A,B,C]);
+  const D=vlerp(A,C,vlen(vsub(A,B))/(vlen(vsub(A,B))+vlen(vsub(B,C))));
+  f.poly([A,B,C]).line(B,D).label(A,ctr,'A').label(B,ctr,'B').label(C,ctr,'C').label(D,B,'D',8);
+  f.angle(A,B,C,ang(a),11).angle(C,A,B,ang(c),11).angle(B,A,D,null,13).angle(B,D,C,null,16).angle(D,A,B,'x',8,6);
+  return{q:`如圖，$${seg('BD')}$ 平分 $\\angle ABC$，求 $x$（即 $\\angle ADB$）`,a:`$x = ${deg(180-a-Bv/2)}$`,fig:f.svg(),k:`b${a},${c}`};
+}});
+
+/* 九上：相似形 */
+unit({id:'similar-fig',g:'九上',name:'相似形（附圖）',instr:'依圖作答。',h:[40,42,46],gen(d){
+  const p=ri(1,4),q=ri(1,4);if(gcd(p,q)!==1)return null;
+  if(d<=2){const ax=ri(2,7),f=Fig(150,120),[B,C,A]=fitPts([V(0,0),V(10,0),V(ax,8)],150,120,20),t=p/(p+q),Dp=vlerp(A,B,t),E=vlerp(A,C,t),ctr=centroid([A,B,C]);
+    f.poly([A,B,C]).line(Dp,E).label(A,ctr,'A').label(B,ctr,'B').label(C,ctr,'C').label(Dp,vlerp(Dp,E,.5),'D',8).label(E,vlerp(Dp,E,.5),'E',8);
+    if(d===1){const s=ri(1,4),u=ri(1,4);f.seg(A,Dp,String(p*s),ctr).seg(Dp,B,String(q*s),ctr).seg(A,E,String(p*u),ctr).seg(E,C,'x',ctr);
+      return{q:`如圖，$${seg('DE')} \\parallel ${seg('BC')}$，求 $x$`,a:`$x = ${q*u}$`,fig:f.svg(),k:`a${p},${q},${s},${u}`}}
+    const s=ri(1,4),k=ri(1,4);f.seg(A,Dp,String(p*s),ctr).seg(Dp,B,String(q*s),ctr).text(vadd(vlerp(Dp,E,.5),V(0,-7)),String(p*k)).seg(B,C,'x',ctr);
+    return{q:`如圖，$${seg('DE')} \\parallel ${seg('BC')}$，求 $x$（即 $${seg('BC')}$）`,a:`$x = ${(p+q)*k}$`,fig:f.svg(),k:`b${p},${q},${s},${k}`}}
+  if(R()<.5){if(p===q)return null;const k=p/q,w1=ri(2,4),w2=ri(2,4),f=Fig(150,120);
+    const [A,B,C,D,O]=fitPts([V(-k*w1,k*3),V(k*w2,k*3),V(-w2,-3),V(w1,-3),V(0,0)],150,120,18),s=ri(1,3),t=ri(1,3);
+    f.line(A,B).line(C,D).line(A,D).line(B,C).label(A,O,'A').label(B,O,'B').label(C,O,'C').label(D,O,'D').text(vadd(O,V(9,0)),'O',true);
+    f.text(vadd(vlerp(A,O,.5),V(-8,0)),String(p*s)).text(vadd(vlerp(O,D,.5),V(8,0)),String(q*s)).text(vadd(vlerp(A,B,.5),V(0,-8)),String(p*t)).text(vadd(vlerp(C,D,.5),V(0,9)),'x',true);
+    return{q:`如圖，$${seg('AB')} \\parallel ${seg('CD')}$，$${seg('AD')}$ 與 $${seg('BC')}$ 交於 $O$，求 $x$`,a:`$x = ${q*t}$`,fig:f.svg(),k:`h${p},${q},${s},${t}`}}
+  const s=ri(1,3),u=ri(1,4),v=ri(1,4);if(u===v)return null;const P1=s*u*u,Q1=s*v*v,f=Fig(150,110);
+  const [A,B,Dp,C]=fitPts([V(0,0),V(P1+Q1,0),V(P1,0),V(P1,s*u*v)],150,110,18).map(p=>V(p.x,p.y-6));
+  f.poly([A,B,C]).line(C,Dp).right(Dp,C,B,5).right(C,A,B,5).text(vadd(A,V(-7,4)),'A',true).text(vadd(B,V(7,4)),'B',true).text(vadd(C,V(0,-8)),'C',true).text(vadd(Dp,V(0,9)),'D',true);
+  f.text(vadd(vlerp(A,Dp,.5),V(0,20)),String(P1)).text(vadd(vlerp(Dp,B,.5),V(0,20)),String(Q1)).text(vadd(vlerp(C,Dp,.5),V(6,0)),'x',true);
+  return{q:`如圖，$\\angle ACB = 90^{\\circ}$，$${seg('CD')} \\perp ${seg('AB')}$，求 $x$`,a:`$x = ${s*u*v}$`,fig:f.svg(),k:`m${s},${u},${v}`};
+}});
+
+/* 九上：圓 */
+unit({id:'circle-fig',g:'九上',name:'圓的性質（附圖）',instr:'依圖作答。',h:[42,44,48],gen(d){
+  if(d===1){const x=ri(20,80),f=Fig(140,140),O=V(70,72),r=52,A=polar(O,r,270-x),B=polar(O,r,270+x),C=polar(O,r,90+ri(-40,40)),ask=R()<.5?'C':'O';
+    f.circle(O,r).line(O,A).line(O,B).line(C,A).line(C,B).dot(O).text(vadd(O,V(0,-8)),'O',true).label(A,O,'A').label(B,O,'B').label(C,O,'C');
+    f.angle(O,A,B,ask==='O'?'x':ang(2*x),9,8).angle(C,A,B,ask==='C'?'x':ang(x),14,9);
+    return{q:`如圖，$A$、$B$、$C$ 在圓 $O$ 上，求 $x$`,a:`$x = ${deg(ask==='C'?x:2*x)}$`,fig:f.svg(),k:`${x},${ask}`}}
+  if(d===2){
+    if(R()<.5){const al=ri(15,75),f=Fig(140,130),O=V(70,80),r=52,A=polar(O,r,180),B=polar(O,r,0),C=polar(O,r,180-2*al);
+      f.circle(O,r).line(A,B).line(A,C).line(C,B).dot(O).text(vadd(O,V(0,8)),'O',true).label(A,O,'A').label(B,O,'B').label(C,O,'C');
+      f.angle(B,A,C,ang(al),14,10).angle(A,B,C,'x',12,8);
+      return{q:`如圖，$${seg('AB')}$ 為圓 $O$ 的直徑，$C$ 在圓上，求 $x$`,a:`$x = ${deg(90-al)}$`,fig:f.svg(),k:`d${al}`}}
+    const y=2*ri(25,50),f=Fig(180,124),O=V(50,62),r=42,P=V(O.x+r/Math.sin(y/2*RAD),60),A=polar(O,r,90-y/2),B=polar(O,r,-(90-y/2));
+    f.circle(O,r).line(O,A).line(O,B).line(P,A).line(P,B).right(A,O,P,5).right(B,O,P,5).dot(O).text(vadd(O,V(-8,0)),'O',true).label(A,O,'A').label(B,O,'B').text(vadd(P,V(7,0)),'P',true);
+    f.angle(P,A,B,ang(y),16,10).angle(O,A,B,'x',9,8);
+    return{q:`如圖，$${seg('PA')}$、$${seg('PB')}$ 切圓 $O$ 於 $A$、$B$，求 $x$（即 $\\angle AOB$）`,a:`$x = ${deg(180-y)}$`,fig:f.svg(),k:`t${y}`};
+  }
+  const a=ri(55,115),g1=ri(55,90),tA=90+ri(-20,20),tB=tA+g1,tD=tB+2*a;if(360-g1-2*a<45)return null;
+  const tC=tB+2*a*ri(35,65)/100,ext=R()<.5,f=Fig(150,140),O=V(72,70),r=50,[A,B,C,Dp]=[tA,tB,tC,tD].map(t=>polar(O,r,t));
+  f.circle(O,r).poly([A,B,C,Dp]).label(A,O,'A').label(B,O,'B').label(C,O,'C').label(Dp,O,'D').angle(A,B,Dp,ang(a),12,9);
+  if(ext){const E=vadd(C,vmul(vunit(vsub(C,B)),26));f.line(C,E).text(vadd(E,vmul(vunit(vsub(C,B)),8)),'E',true).angle(C,Dp,E,'x',10,8);
+    return{q:`如圖，四邊形 $ABCD$ 內接於圓，$E$ 在 $${seg('BC')}$ 的延長線上，求 $x$（即 $\\angle DCE$）`,a:`$x = ${deg(a)}$`,fig:f.svg(),k:`qe${a}`}}
+  f.angle(C,B,Dp,'x',12,8);
+  return{q:`如圖，四邊形 $ABCD$ 內接於圓，求 $x$（即 $\\angle C$）`,a:`$x = ${deg(180-a)}$`,fig:f.svg(),k:`q${a}`};
+}});
+
+/* ================= 出卷 ================= */
+const GRADES=['七上','七下','八上','八下','九上','九下'];
+const CN=Array.from({length:30},(_,i)=>{const d='一二三四五六七八九';const n=i+1;return n<10?d[n-1]:n===10?'十':n<20?'十'+d[n-11]:d[Math.floor(n/10)-1]+'十'+(n%10?d[n%10-1]:'')});
+const DIFF_NAME={1:'基礎',2:'標準',3:'挑戰',mix:'混合'};
+const DIFF_HINT={1:'課本例題程度，適合剛學完或補救。',2:'段考基本題程度。',3:'段考進階題，含括號、分數與綜合運算。',mix:'每個單元由易到難：基礎約四成、標準約四成、挑戰約兩成。'};
+const LINE_URL='https://line.me/ti/p/~jenfoo2021';
+
+const state={sel:new Set(['int-add','lin-eq']),diff:'mix',n:20,seed:newSeed(),withAns:true,showTag:false};
+try{const s=JSON.parse(localStorage.getItem('jf-quiz')||'null');if(s){state.sel=new Set(s.sel.filter(id=>U.some(u=>u.id===id)));if(!state.sel.size)state.sel.add('int-add');state.diff=s.diff;state.n=s.n;state.withAns=s.withAns;state.showTag=s.showTag}}catch(e){}
+function save(){try{localStorage.setItem('jf-quiz',JSON.stringify({sel:[...state.sel],diff:state.diff,n:state.n,withAns:state.withAns,showTag:state.showTag}))}catch(e){}}
+function newSeed(){return 100000+Math.floor(Math.random()*900000)}
+
+function diffList(cnt){
+  if(state.diff!=='mix')return Array(cnt).fill(+state.diff);
+  const h=cnt>=3?Math.max(1,Math.round(cnt*.2)):0,e=Math.max(cnt>=2?1:0,Math.round(cnt*.4)),m=Math.max(0,cnt-e-h);
+  return [...Array(e).fill(1),...Array(m).fill(2),...Array(cnt-e-m).fill(3)];
+}
+function build(){
+  R=mulberry32(state.seed);
+  const units=U.filter(u=>state.sel.has(u.id)),N=state.n,K=units.length,seen=new Set(),sections=[];let no=1;
+  units.forEach((u,i)=>{
+    const cnt=Math.floor(N/K)+(i<N%K?1:0);if(!cnt)return;const items=[];
+    for(const d of diffList(cnt)){
+      let it=null,fallback=null;
+      for(let t=0;t<400&&!it;t++){const r=u.gen(d);if(!r)continue;fallback=fallback||r;if(!seen.has(r.q+(r.k||'')))it=r}
+      it=it||fallback;seen.add(it.q+(it.k||''));items.push({...it,d,no:no++});
+    }
+    sections.push({u,items});
+  });
+  return sections;
+}
+
+/* ================= 畫面 ================= */
+const $=id=>document.getElementById(id);
+function texNode(tex){
+  if(window.__mjReady&&window.MathJax&&MathJax.tex2svg){try{return MathJax.tex2svg(tex,{display:false})}catch(e){}}
+  const s=document.createElement('span');s.className='raw';s.textContent=tex;return s;
+}
+function mixInto(el,str){str.split('$').forEach((seg,i)=>{if(!seg)return;el.appendChild(i%2?texNode(seg):document.createTextNode(seg))})}
+function qrSvg(){try{const q=qrcode(0,'M');q.addData(LINE_URL);q.make();return q.createSvgTag({cellSize:2,margin:0,scalable:true})}catch(e){return''}}
+const LOGO=`<svg class="logo" viewBox="0 0 320 320" aria-hidden="true"><rect width="320" height="320" rx="30" fill="#1B2430"/><circle cx="160" cy="157" r="112" fill="none" stroke="#C69E46" stroke-width="8"/><g stroke="#F6F3EB" stroke-width="8" stroke-linecap="square"><line x1="106" y1="103" x2="214" y2="103"/><line x1="160" y1="103" x2="160" y2="205"/><line x1="160" y1="153" x2="208" y2="153"/><line x1="123" y1="136" x2="123" y2="205"/><line x1="104" y1="206" x2="217" y2="206"/></g></svg>`;
+const esc=s=>s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+const OPEN=new Set();
+function renderControls(){
+  if(!OPEN.size)U.forEach(u=>{if(state.sel.has(u.id))OPEN.add(u.g)});
+  const box=$('unitList');box.innerHTML='';
+  GRADES.forEach(g=>{
+    const wrap=document.createElement('details');wrap.className='grade';wrap.dataset.grade=g;
+    const us=U.filter(u=>u.g===g),all=us.every(u=>state.sel.has(u.id)),cnt=us.filter(u=>state.sel.has(u.id)).length;
+    if(OPEN.has(g))wrap.open=true;
+    wrap.addEventListener('toggle',()=>{wrap.open?OPEN.add(g):OPEN.delete(g)});
+    wrap.innerHTML=`<summary class="grade-head"><span>${g}<em>${cnt?`已選 ${cnt}`:''}</em></span><button type="button" data-g="${g}">${all?'取消本冊':'全選本冊'}</button></summary><div class="units">${us.map(u=>`<label class="unit"><input type="checkbox" id="u-${u.id}" value="${u.id}" ${state.sel.has(u.id)?'checked':''}> ${esc(u.name)}</label>`).join('')}</div>`;
+    box.appendChild(wrap);
+  });
+  document.querySelectorAll('#diffSeg button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.v===String(state.diff))));
+  document.querySelectorAll('#numSeg button').forEach(b=>b.setAttribute('aria-pressed',String(+b.dataset.v===state.n)));
+  $('diffHint').textContent=DIFF_HINT[state.diff];
+  $('seedIn').value=state.seed;$('withAns').checked=state.withAns;$('showTag').checked=state.showTag;
+  document.body.classList.toggle('no-ans',!state.withAns);
+}
+
+function render(){
+  const sections=build(),units=sections.map(s=>s.u),grades=[...new Set(units.map(u=>u.g))].join('・');
+  const total=sections.reduce((n,s)=>n+s.items.length,0),qr=qrSvg();
+  const scope=units.length<=3?units.map(u=>u.name).join('、'):`${units.length} 個單元綜合`;
+  $('summary').textContent=`卷號 ${state.seed}｜${grades}｜${DIFF_NAME[state.diff]}｜共 ${total} 題`;
+
+  const sheet=$('sheet');sheet.innerHTML=`
+    <div class="mhead">${LOGO}<div class="mtitle"><div class="school">正賦文理短期補習班</div><h3>數學練習卷</h3></div>
+      <div class="qr"><span>卡關加 LINE<br>問莊老師<br>jenfoo2021</span><span class="code">${qr}</span></div></div>
+    <div class="meta"><span>${grades}｜${esc(scope)}</span><span>難度：${DIFF_NAME[state.diff]}　共 ${total} 題　卷號 ${state.seed}</span></div>
+    <div class="fields"><span>班級<i style="width:18mm"></i></span><span>座號<i style="width:12mm"></i></span><span>姓名<i style="width:30mm"></i></span><span>得分<i style="width:16mm"></i></span></div>
+    <div class="qs" id="qs"></div>
+    <div class="foot"><span>正賦文理短期補習班・只教數學｜宜蘭縣羅東鎮純精路二段262號</span><span>卷號 ${state.seed}</span></div>`;
+  const qs=$('qs');
+  sections.forEach((s,i)=>{
+    const h=document.createElement('div');h.className='sec';h.innerHTML=`${CN[i]}、${esc(s.u.name)}<small>${esc(s.u.instr)}</small>`;qs.appendChild(h);
+    s.items.forEach(it=>{
+      const q=document.createElement('div');q.className='q';q.style.minHeight=s.u.h[it.d-1]+'mm';
+      q.innerHTML=`<span class="no">${it.no}.</span><span class="body"></span>`;
+      const b=q.querySelector('.body');if(it.fig){const fw=document.createElement('span');fw.className='figwrap';fw.innerHTML=it.fig;b.appendChild(fw)}mixInto(b,it.q);
+      if(state.showTag){const t=document.createElement('span');t.className='tag';t.textContent=DIFF_NAME[it.d];b.appendChild(t)}
+      qs.appendChild(q);
+    });
+  });
+
+  const ans=$('answers');ans.innerHTML=`
+    <div class="mhead">${LOGO}<div class="mtitle"><div class="school">正賦文理短期補習班</div><h3>解答</h3></div><div></div></div>
+    <div class="meta"><span>${grades}｜${esc(scope)}</span><span>難度：${DIFF_NAME[state.diff]}　共 ${total} 題　卷號 ${state.seed}</span></div>
+    <div id="aqs"></div>
+    <div class="cta-box"><span class="code">${qr}</span><div><b>哪一題卡住了？</b><p>拍照傳 LINE 給莊老師（ID：jenfoo2021），告訴我們卷號與題號，幫你看哪一步出錯。</p><p>正賦文理短期補習班｜只教數學・小五到高三・在地 16 年</p></div></div>`;
+  const aqs=$('aqs');
+  sections.forEach((s,i)=>{
+    const h=document.createElement('div');h.className='sec';h.textContent=`${CN[i]}、${s.u.name}`;aqs.appendChild(h);
+    const grid=document.createElement('div');grid.className='aq';
+    s.items.forEach(it=>{const a=document.createElement('div');a.className='a';a.innerHTML=`<span class="no">${it.no}.</span><span class="body"></span>`;mixInto(a.querySelector('.body'),it.a);grid.appendChild(a)});
+    aqs.appendChild(grid);
+  });
+}
+
+function refresh(){save();renderControls();render()}
+$('unitList').addEventListener('change',e=>{const id=e.target.value;if(!id)return;if(e.target.checked)state.sel.add(id);else{state.sel.delete(id);if(!state.sel.size){state.sel.add(id);e.target.checked=true;return}}refresh()});
+$('unitList').addEventListener('click',e=>{const g=e.target.dataset&&e.target.dataset.g;if(!g)return;e.preventDefault();OPEN.add(g);const us=U.filter(u=>u.g===g);const all=us.every(u=>state.sel.has(u.id));us.forEach(u=>all?state.sel.delete(u.id):state.sel.add(u.id));if(!state.sel.size)state.sel.add(us[0].id);refresh()});
+$('diffSeg').addEventListener('click',e=>{const v=e.target.dataset.v;if(!v)return;state.diff=v==='mix'?'mix':+v;refresh()});
+$('numSeg').addEventListener('click',e=>{const v=e.target.dataset.v;if(!v)return;state.n=+v;refresh()});
+$('newBtn').addEventListener('click',()=>{state.seed=newSeed();refresh()});
+$('seedBtn').addEventListener('click',()=>{const v=parseInt($('seedIn').value,10);if(v>=100000&&v<=999999){state.seed=v;refresh()}else{$('seedIn').value=state.seed}});
+$('seedIn').addEventListener('keydown',e=>{if(e.key==='Enter')$('seedBtn').click()});
+$('withAns').addEventListener('change',e=>{state.withAns=e.target.checked;save();document.body.classList.toggle('no-ans',!state.withAns)});
+$('showTag').addEventListener('change',e=>{state.showTag=e.target.checked;refresh()});
+
+const topLevel=(()=>{try{return window.self===window.top}catch(e){return false}})();
+if(topLevel){$('printBtn').hidden=false;$('printBtn').addEventListener('click',()=>window.print())}else{$('printNote').hidden=false}
+
+renderControls();
+if(window.__mjReady)render();else{document.addEventListener('mj-ready',render,{once:true});setTimeout(()=>{if(!window.__mjReady)render()},9000)}
+</script>
