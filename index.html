@@ -2,6 +2,7 @@
 <html lang="zh-Hant-TW">
 <head>
 <meta charset="utf-8">
+<meta name="referrer" content="no-referrer-when-downgrade">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>正賦文理短期補習班｜宜蘭羅東數學補習班（國小高年級～大一先修）</title>
 <meta name="description" content="宜蘭羅東在地經營16年的數學補習班。國小高年級、國中、高中到大一先修，莊老師親自授課。加 LINE 預約試聽。">
@@ -280,6 +281,7 @@ p{margin:0}
 
 footer{border-top:1px solid var(--line);padding-block:30px;font-size:13px;color:var(--ink-2)}
 footer .wrap{display:flex;flex-wrap:wrap;gap:8px 28px;justify-content:space-between}
+.visits b{color:var(--brass);font-variant-numeric:tabular-nums}
 
 @media (max-width:900px){
   .top nav{display:none}
@@ -873,8 +875,16 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:8px 28px;justify-content:space-betw
   <div class="wrap">
     <span>© 2026 私立正賦文理短期補習班　府教終字第 0990094303 號</span>
     <span>宜蘭縣羅東鎮純精路二段 262 號</span>
+    <span class="visits" id="visits" hidden>官網累計瀏覽 <b id="busuanzi_value_page_pv"></b> 人次</span>
   </div>
 </footer>
+
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<script>
+/* 瀏覽人次（不蒜子）：數字回來才顯示，服務沒回應就整行不出現。換網域時把舊網址的累計人次填進 OFFSET 接續 */
+(function(){var OFFSET=0,n=0,t=setInterval(function(){var el=document.getElementById('busuanzi_value_page_pv'),v=parseInt(el&&el.textContent,10);
+  if(v>0){clearInterval(t);el.textContent=(v+OFFSET).toLocaleString('en-US');document.getElementById('visits').hidden=false}else if(++n>40)clearInterval(t)},500)})();
+</script>
 
 <script>
 (function(){

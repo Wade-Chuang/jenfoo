@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <title>正賦數學快速出題</title>
+<meta name="referrer" content="no-referrer-when-downgrade">
 <meta name="description" content="正賦文理短期補習班｜國中數學練習卷產生器：選單元、選難度，一鍵出一份不重複的練習卷與解答。">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -143,6 +144,7 @@ details[open]>.grade-head>span::before{transform:rotate(90deg)}
 
 .sitefoot{border-top:1px solid var(--line);padding-block:20px;padding-inline:16px;color:var(--muted);font-size:.85rem}
 .sitefoot .wrap{display:flex;gap:8px 20px;flex-wrap:wrap;justify-content:space-between}
+.visits b{color:var(--gold-ink);font-variant-numeric:tabular-nums}
 
 @media print{
   @page{size:A4;margin:11mm 11mm 12mm}
@@ -235,9 +237,16 @@ window.MathJax={
   <div class="wrap">
     <span>正賦文理短期補習班｜只教數學・小五到高三｜宜蘭縣羅東鎮純精路二段262號</span>
     <span>題目由程式隨機產生，每次都不同・歡迎老師與家長免費使用</span>
+    <span class="visits" id="visits" hidden>出題網站累計使用 <b id="busuanzi_value_page_pv"></b> 人次</span>
   </div>
 </footer>
 
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<script>
+/* 瀏覽人次（不蒜子）：數字回來才顯示，服務沒回應就整行不出現。換網域時把舊網址的累計人次填進 OFFSET 接續 */
+(function(){var OFFSET=0,n=0,t=setInterval(function(){var el=document.getElementById('busuanzi_value_page_pv'),v=parseInt(el&&el.textContent,10);
+  if(v>0){clearInterval(t);el.textContent=(v+OFFSET).toLocaleString('en-US');document.getElementById('visits').hidden=false}else if(++n>40)clearInterval(t)},500)})();
+</script>
 <script>
 /* ================= 亂數與數學小工具 ================= */
 function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
