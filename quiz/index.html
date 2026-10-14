@@ -66,6 +66,10 @@ button,input{font:inherit;color:inherit}
 .step{display:grid;gap:10px;padding-block:14px;border-top:1px solid var(--line)}
 .step:first-child{border-top:0;padding-top:0}
 .step h2{margin:0;font-size:.78rem;letter-spacing:.14em;color:var(--gold-ink);font-weight:700}
+.step-head{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.clear-all{border:1px solid var(--line);background:transparent;color:var(--muted);border-radius:999px;padding:3px 12px;font-size:.8rem;cursor:pointer}
+.clear-all:hover{border-color:var(--gold);color:var(--gold-ink)}
+.empty-sheet{font-family:var(--f-body);color:var(--paper-soft);text-align:center;padding:30mm 0;line-height:2}
 .grade{display:grid;gap:6px}
 .grade-head{display:flex;align-items:center;justify-content:space-between;font-weight:700;font-size:.95rem;cursor:pointer;list-style:none;padding:6px 2px;border-radius:6px}
 .grade-head::-webkit-details-marker{display:none}
@@ -202,7 +206,7 @@ window.MathJax={
   <div class="wrap layout">
     <aside class="panel" aria-label="出題設定">
       <section class="step">
-        <h2>1　選學段與單元（可複選）</h2>
+        <div class="step-head"><h2>1　選學段與單元（可複選）</h2><button type="button" class="clear-all" id="clearAll">取消全部</button></div>
         <div class="seg" id="stageSeg" role="group" aria-label="學段">
           <button type="button" data-v="國小" id="s-e">國小</button>
           <button type="button" data-v="國中" id="s-j">國中</button>
@@ -2554,6 +2558,8 @@ function renderControls(){
 }
 
 function render(){
+  if(!state.sel.size){$('summary').textContent='還沒有選單元';$('sheet').innerHTML='<div class="empty-sheet">請先在左邊選學段，再勾選要練習的單元<br>勾好之後，卷子會自動出現在這裡</div>';$('answers').innerHTML='';$('answers').hidden=true;return}
+  $('answers').hidden=false;
   const sections=build(),units=sections.map(s=>s.u),grades=[...new Set(units.map(u=>u.g))].map(g=>{const st=stageOf(g);return st==='國中'?g:(st==='國小'?'國小'+glabel(g):st==='技高'?'技高'+glabel(g):g)}).join('・');
   const total=sections.reduce((n,s)=>n+s.items.length,0),qr=qrSvg();
   const scope=units.length<=3?units.map(u=>u.name).join('、'):`${units.length} 個單元綜合`;
@@ -2593,8 +2599,9 @@ function render(){
 }
 
 function refresh(){save();renderControls();render()}
-$('unitList').addEventListener('change',e=>{const id=e.target.value;if(!id)return;if(e.target.checked)state.sel.add(id);else{state.sel.delete(id);if(!state.sel.size){state.sel.add(id);e.target.checked=true;return}}refresh()});
-$('unitList').addEventListener('click',e=>{const g=e.target.dataset&&e.target.dataset.g;if(!g)return;e.preventDefault();OPEN.add(g);const us=U.filter(u=>u.g===g);const all=us.every(u=>state.sel.has(u.id));us.forEach(u=>all?state.sel.delete(u.id):state.sel.add(u.id));if(!state.sel.size)state.sel.add(us[0].id);refresh()});
+$('unitList').addEventListener('change',e=>{const id=e.target.value;if(!id)return;if(e.target.checked)state.sel.add(id);else state.sel.delete(id);refresh()});
+$('unitList').addEventListener('click',e=>{const g=e.target.dataset&&e.target.dataset.g;if(!g)return;e.preventDefault();OPEN.add(g);const us=U.filter(u=>u.g===g);const all=us.every(u=>state.sel.has(u.id));us.forEach(u=>all?state.sel.delete(u.id):state.sel.add(u.id));refresh()});
+$('clearAll').addEventListener('click',()=>{state.sel.clear();refresh()});
 $('stageSeg').addEventListener('click',e=>{const v=e.target.dataset.v;if(!v)return;state.stage=v;OPEN.clear();const st=STAGES.find(s=>s.k===v);U.forEach(u=>{if(state.sel.has(u.id)&&st.g.includes(u.g))OPEN.add(u.g)});if(!OPEN.size)OPEN.add(st.g[0]);save();renderControls()});
 $('diffSeg').addEventListener('click',e=>{const v=e.target.dataset.v;if(!v)return;state.diff=v==='mix'?'mix':+v;refresh()});
 $('numSeg').addEventListener('click',e=>{const v=e.target.dataset.v;if(!v)return;state.n=+v;refresh()});
