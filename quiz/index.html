@@ -7,7 +7,7 @@
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="正賦文理短期補習班">
 <meta property="og:title" content="數學練習卷｜國小到高中職，一鍵出題附解答（免費）">
-<meta property="og:description" content="國小、國中、高中、技高數學C 共 79 個單元，含幾何附圖題。選單元、選難度，每次都是不重複的新卷子，附解答可直接列印。正賦文理短期補習班提供。">
+<meta property="og:description" content="國小、國中、高中、技高數學C 共 86 個單元，含幾何附圖題。選單元、選難度，每次都是不重複的新卷子，附解答可直接列印。正賦文理短期補習班提供。">
 <meta property="og:image" content="https://wade-chuang.github.io/jenfoo/quiz/og.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -824,6 +824,92 @@ unit({id:'circle-fig',g:'九上',name:'圓的性質（附圖）',instr:'依圖�
     return{q:`如圖，四邊形 $ABCD$ 內接於圓，$E$ 在 $${seg('BC')}$ 的延長線上，求 $x$（即 $\\angle DCE$）`,a:`$x = ${deg(a)}$`,fig:f.svg(),k:`qe${a}`}}
   f.angle(C,B,Dp,'x',12,8);
   return{q:`如圖，四邊形 $ABCD$ 內接於圓，求 $x$（即 $\\angle C$）`,a:`$x = ${deg(180-a)}$`,fig:f.svg(),k:`q${a}`};
+}});
+
+/* ---------- 國小三年級 ---------- */
+const e3_t=t=>t%10===0?String(t/10):`${Math.floor(t/10)}.${t%10}`;            // 以「十分位整數」表示的一位小數
+function e3_clock(min){const h=Math.floor(min/60)%24,m=min%60;const pre=h<12?'上午':(h===12?'中午':'下午'),hh=h>12?h-12:h;return`${pre} ${hh} 點${m?` ${m} 分`:''}`}
+function e3_hm(min){const h=Math.floor(min/60),m=min%60;return h&&m?`$${h}$ 小時 $${m}$ 分`:h?`$${h}$ 小時`:`$${m}$ 分`}
+function e3_two(v,base,big,small){const a=Math.floor(v/base),b=v%base;return a&&b?`$${a}$ ${big} $${b}$ ${small}`:a?`$${a}$ ${big}`:`$${b}$ ${small}`}
+
+unit({id:'e3-addsub',g:'小三',name:'四位數的加減',instr:'計算下列各題。',h:[16,18,24],gen(d){
+  if(d===1){const a=ri(100,999),b=ri(100,999);if(R()<.5)return{q:`$${a} + ${b}$`,a:`$${a+b}$`};const x=Math.max(a,b),y=Math.min(a,b);if(x===y)return null;return{q:`$${x} - ${y}$`,a:`$${x-y}$`}}
+  if(d===2){const a=ri(1000,9999),b=ri(100,9999);
+    if(R()<.5){if(a+b>9999)return null;return{q:`$${a} + ${b}$`,a:`$${a+b}$`}}
+    const x=Math.max(a,b),y=Math.min(a,b);if(x===y)return null;return{q:`$${x} - ${y}$`,a:`$${x-y}$`}}
+  const f=ri(0,2);
+  if(f===0){const a=ri(1200,4800),b=ri(300,a-200);return{q:`圖書館原有 $${a}$ 本書，借出 $${b}$ 本，還剩幾本？`,a:`$${a-b}$ 本`}}
+  if(f===1){const a=ri(1500,4500),b=ri(800,4000);if(a+b>9999)return null;return{q:`遊樂園上午有 $${a}$ 人入園，下午有 $${b}$ 人入園，這一天共有幾人入園？`,a:`$${a+b}$ 人`}}
+  const a=ri(20,90)*100,b=ri(300,1500),c=ri(300,1500);if(b+c>=a)return null;
+  return{q:`小華有 $${a}$ 元，買書花了 $${b}$ 元，買文具花了 $${c}$ 元，還剩多少元？`,a:`$${a-b-c}$ 元`};
+}});
+
+unit({id:'e3-mul',g:'小三',name:'乘法',instr:'計算下列各題。',h:[16,18,24],gen(d){
+  if(d===1){const a=ri(11,99),b=ri(2,9);return{q:`$${a} \\times ${b}$`,a:`$${a*b}$`}}
+  if(d===2){const a=ri(100,999),b=ri(2,9);return{q:`$${a} \\times ${b}$`,a:`$${a*b}$`}}
+  if(R()<.5){const p=ri(15,95),n=ri(3,9);return{q:`一枝筆 $${p}$ 元，買 $${n}$ 枝要付多少元？`,a:`$${p*n}$ 元`}}
+  const box=ri(12,48),k=ri(4,9),extra=ri(2,box-1);
+  return{q:`一盒餅乾有 $${box}$ 片，媽媽買了 $${k}$ 盒，又多買了 $${extra}$ 片，一共有幾片？`,a:`$${box*k+extra}$ 片`};
+}});
+
+unit({id:'e3-div',g:'小三',name:'除法',instr:'計算下列各題，有餘數的要寫出餘數。',h:[18,20,26],gen(d){
+  const ans=(q,r)=>r?`商 $${q}$，餘 $${r}$`:`$${q}$`;
+  if(d===1){const b=ri(2,9),q=ri(2,9),r=R()<.5?0:ri(1,b-1);return{q:`$${b*q+r} \\div ${b}$`,a:ans(q,r)}}
+  if(d===2){const b=ri(2,9),q=ri(11,99),r=R()<.4?0:ri(1,b-1),a=b*q+r;if(a>999)return null;return{q:`$${a} \\div ${b}$`,a:ans(q,r)}}
+  const b=ri(3,9),q=ri(6,40),r=ri(1,b-1),a=b*q+r;
+  if(R()<.5)return{q:`有 $${a}$ 顆糖果，每 $${b}$ 顆裝一袋，可以裝滿幾袋？還剩幾顆？`,a:`$${q}$ 袋，剩 $${r}$ 顆`};
+  return{q:`有 $${a}$ 位小朋友要搭車，每輛車最多坐 $${b}$ 人，至少要幾輛車？`,a:`$${q+1}$ 輛`};
+}});
+
+unit({id:'e3-frac',g:'小三',name:'認識分數與一位小數',instr:'依題意作答。',h:[16,18,22],gen(d){
+  if(d===1){const f=ri(0,2);
+    if(f===0){const n=ri(3,12),a=ri(1,n-1),b=ri(1,n-1);if(a===b)return null;return{q:`$\\frac{${a}}{${n}}$ 和 $\\frac{${b}}{${n}}$，哪一個比較大？`,a:`$\\frac{${Math.max(a,b)}}{${n}}$`}}
+    if(f===1){const n=ri(3,12),a=ri(1,n-2),b=ri(1,n-1-a);return{q:`$\\frac{${a}}{${n}} + \\frac{${b}}{${n}}$`,a:`$\\frac{${a+b}}{${n}}$`}}
+    const a=ri(1,9),b=ri(1,9);if(a+b>9)return null;return{q:`$0.${a} + 0.${b}$`,a:`$0.${a+b}$`}}
+  if(d===2){const f=ri(0,2);
+    if(f===0){const n=ri(3,12),a=ri(1,n-1);return{q:`$1 - \\frac{${a}}{${n}}$`,a:`$\\frac{${n-a}}{${n}}$`}}
+    const x=ri(11,99),y=ri(11,99);if(x%10===0||y%10===0)return null;
+    if(f===1)return{q:`$${e3_t(x)} + ${e3_t(y)}$`,a:`$${e3_t(x+y)}$`};
+    const p=Math.max(x,y),q=Math.min(x,y);if(p===q)return null;return{q:`$${e3_t(p)} - ${e3_t(q)}$`,a:`$${e3_t(p-q)}$`}}
+  const f=ri(0,2);
+  if(f===0){const n=pick([6,8,10,12]),a=ri(2,n-2);return{q:`一個披薩平分成 $${n}$ 片，哥哥吃了 $${a}$ 片，哥哥吃了這個披薩的幾分之幾？`,a:`$\\frac{${a}}{${n}}$`}}
+  if(f===1){const L=ri(25,60),u=ri(11,L-5);if(u%10===0||L%10===0)return null;return{q:`一條緞帶長 $${e3_t(L)}$ 公尺，用掉 $${e3_t(u)}$ 公尺，還剩幾公尺？`,a:`$${e3_t(L-u)}$ 公尺`}}
+  const n=ri(5,10),a=ri(1,n-3),b=ri(1,n-1-a);return{q:`一條繩子平分成 $${n}$ 段，弟弟拿走 $${a}$ 段，妹妹拿走 $${b}$ 段，兩人共拿走全部的幾分之幾？`,a:`$\\frac{${a+b}}{${n}}$`};
+}});
+
+unit({id:'e3-time',g:'小三',name:'時間的計算',instr:'依題意作答。',h:[16,20,24],gen(d){
+  if(d===1){const f=ri(0,2);
+    if(f===0){const h=ri(1,5),m=ri(1,59);return{q:`$${h}$ 小時 $${m}$ 分 = 幾分？`,a:`$${h*60+m}$ 分`}}
+    if(f===1){const t=ri(61,299);if(t%60===0)return null;return{q:`$${t}$ 分 = 幾小時幾分？`,a:e3_hm(t)}}
+    const m=ri(1,9),s=ri(1,59);return{q:`$${m}$ 分 $${s}$ 秒 = 幾秒？`,a:`$${m*60+s}$ 秒`}}
+  if(d===2){const st=ri(7,16)*60+ri(0,11)*5,dur=ri(5,34)*5;
+    if(R()<.5)return{q:`從${e3_clock(st)}到${e3_clock(st+dur)}，經過了多久？`,a:e3_hm(dur)};
+    const a=ri(1,3)*60+ri(1,11)*5,b=ri(1,3)*60+ri(1,11)*5;return{q:`${e3_hm(a)} + ${e3_hm(b)} = 幾小時幾分？`,a:e3_hm(a+b)}}
+  const st=ri(8,19)*60+ri(0,11)*5,dur=ri(70,150);
+  if(R()<.5)return{q:`一部電影長 ${e3_hm(dur)}，從${e3_clock(st)}開始播放，幾點幾分結束？`,a:e3_clock(st+dur)};
+  return{q:`哥哥寫作業從${e3_clock(st)}寫到${e3_clock(st+dur)}，一共寫了多久？`,a:e3_hm(dur)};
+}});
+
+const E3_UNITS=[[100,'公尺','公分'],[10,'公分','毫米'],[1000,'公斤','公克'],[1000,'公升','毫升']];
+unit({id:'e3-units',g:'小三',name:'長度、重量與容量的換算',instr:'依題意作答。',h:[16,18,24],gen(d){
+  const [base,big,small]=pick(E3_UNITS),mk=()=>ri(1,9)*base+ri(1,base-1);
+  if(d===1){const v=mk();return R()<.5?{q:`${e3_two(v,base,big,small)} = 幾${small}？`,a:`$${v}$ ${small}`}:{q:`$${v}$ ${small} = 幾${big}幾${small}？`,a:e3_two(v,base,big,small)}}
+  if(d===2){const a=mk(),b=mk();
+    if(R()<.5)return{q:`${e3_two(a,base,big,small)} + ${e3_two(b,base,big,small)}`,a:e3_two(a+b,base,big,small)};
+    const x=Math.max(a,b),y=Math.min(a,b);if(x===y)return null;return{q:`${e3_two(x,base,big,small)} - ${e3_two(y,base,big,small)}`,a:e3_two(x-y,base,big,small)}}
+  if(R()<.5){const L=ri(2,3)*1000,cup=ri(2,5)*50,n=ri(2,5);if(cup*n>=L)return null;
+    return{q:`一壺水有 $${L/1000}$ 公升，倒出 $${n}$ 杯，每杯 $${cup}$ 毫升，壺裡還剩幾毫升？`,a:`$${L-cup*n}$ 毫升`}}
+  const w=ri(2,9)*100+ri(1,9)*10,n=ri(3,6),box=ri(200,600);
+  return{q:`一顆蘋果重 $${w}$ 公克，$${n}$ 顆蘋果裝在重 $${box}$ 公克的盒子裡，全部重幾公斤幾公克？`,a:e3_two(w*n+box,1000,'公斤','公克')};
+}});
+
+unit({id:'e3-perim',g:'小三',name:'正方形和長方形的周長',instr:'依題意作答。',h:[16,18,22],gen(d){
+  if(d===1){if(R()<.5){const s=ri(3,25);return{q:`正方形的邊長是 $${s}$ 公分，周長是幾公分？`,a:`$${4*s}$ 公分`}}
+    const L=ri(5,30),W=ri(2,L-1);return{q:`長方形的長是 $${L}$ 公分、寬是 $${W}$ 公分，周長是幾公分？`,a:`$${2*(L+W)}$ 公分`}}
+  if(d===2){if(R()<.5){const s=ri(3,30);return{q:`正方形的周長是 $${4*s}$ 公分，邊長是幾公分？`,a:`$${s}$ 公分`}}
+    const L=ri(6,30),W=ri(2,L-1);return{q:`長方形的周長是 $${2*(L+W)}$ 公分，長是 $${L}$ 公分，寬是幾公分？`,a:`$${W}$ 公分`}}
+  if(R()<.5){const L=ri(8,40),W=ri(3,L-1),n=ri(2,4);return{q:`一塊長方形花圃長 $${L}$ 公尺、寬 $${W}$ 公尺，沿著外圍繞 $${n}$ 圈籬笆，一共要幾公尺的籬笆？`,a:`$${2*(L+W)*n}$ 公尺`}}
+  const s=ri(4,20);return{q:`用一條鐵絲圍成邊長 $${s}$ 公分的正方形，剛好用完。如果改圍成寬 $${s-2}$ 公分的長方形，長是幾公分？`,a:`$${s+2}$ 公分`};
 }});
 
 /* ---------- 國小 ---------- */
@@ -2287,8 +2373,8 @@ unit({id:'c-integral',g:'數C四',name:'多項式的定積分與面積',instr:'�
 }});
 
 /* ================= 出卷 ================= */
-const STAGES=[{k:'國小',g:['小四','小五','小六']},{k:'國中',g:['七上','七下','八上','八下','九上','九下']},{k:'高中',g:['高一上','高一下','高二上','高二下']},{k:'技高',g:['數C一','數C二','數C三','數C四']}];
-const GLABEL={'小四':'四年級','小五':'五年級','小六':'六年級','數C一':'數學C 第一冊','數C二':'數學C 第二冊','數C三':'數學C 第三冊','數C四':'數學C 第四冊'};
+const STAGES=[{k:'國小',g:['小三','小四','小五','小六']},{k:'國中',g:['七上','七下','八上','八下','九上','九下']},{k:'高中',g:['高一上','高一下','高二上','高二下']},{k:'技高',g:['數C一','數C二','數C三','數C四']}];
+const GLABEL={'小三':'三年級','小四':'四年級','小五':'五年級','小六':'六年級','數C一':'數學C 第一冊','數C二':'數學C 第二冊','數C三':'數學C 第三冊','數C四':'數學C 第四冊'};
 const glabel=g=>GLABEL[g]||g;
 const stageOf=g=>(STAGES.find(s=>s.g.includes(g))||STAGES[1]).k;
 const GRADES=STAGES.flatMap(s=>s.g);
