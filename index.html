@@ -336,6 +336,16 @@ footer .wrap{align-items:center}
 .util .tel{margin-left:auto;font:700 13px var(--mono);letter-spacing:.04em}
 
 /* ===== countdown strip ===== */
+.quiz-hero{background:var(--brass-soft);border-bottom:1px solid var(--line);padding-block:26px}
+.quiz-hero .wrap{display:flex;align-items:center;justify-content:space-between;gap:20px 32px;flex-wrap:wrap}
+.qh-text{min-width:0;flex:1 1 420px}
+.quiz-hero h2{font-size:clamp(22px,3vw,30px);font-weight:900;margin:8px 0 6px}
+.quiz-hero p{color:var(--ink-2)}
+.qh-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;align-items:center}
+.qh-chips span{background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:3px 12px;font-size:14px;font-weight:700}
+.qh-chips em{font-style:normal;color:var(--brass);font-weight:700;font-size:14px;margin-left:4px}
+.qh-btn{display:inline-flex;align-items:center;background:var(--ink);color:var(--paper);text-decoration:none;font-weight:700;font-size:18px;border-radius:999px;padding:14px 28px;white-space:nowrap}
+.qh-btn:hover{background:var(--brass);color:#fff}
 .count{background:var(--board);color:var(--chalk);border-bottom:1px solid rgba(238,241,232,.14)}
 .count .wrap{display:grid;grid-template-columns:repeat(3,1fr)}
 .cd{display:flex;align-items:center;gap:14px;padding:16px 20px;border-right:1px solid rgba(238,241,232,.14)}
@@ -478,6 +488,18 @@ footer .wrap{align-items:center}
 </header>
 
 <main id="main">
+
+<section class="quiz-hero" aria-label="免費出題">
+  <div class="wrap">
+    <div class="qh-text">
+      <p class="label">免費使用・不用註冊</p>
+      <h2>數學練習卷，一鍵出題附解答</h2>
+      <p>選年級、單元和難度，按一下就出一份新卷子，可以直接列印。幾何題自動附圖。</p>
+      <div class="qh-chips"><span>國小</span><span>國中</span><span>高中</span><span>技高數學C</span><em>共 96 個單元</em></div>
+    </div>
+    <a class="qh-btn" href="quiz/">開始免費出題 →</a>
+  </div>
+</section>
 
 <section class="count" aria-label="大考倒數">
   <div class="wrap">
