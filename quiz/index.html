@@ -7,7 +7,7 @@
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="正賦文理短期補習班">
 <meta property="og:title" content="數學練習卷｜國小到高中職，一鍵出題附解答（免費）">
-<meta property="og:description" content="國小、國中、高中、技高數學C 共 86 個單元，含幾何附圖題。選單元、選難度，每次都是不重複的新卷子，附解答可直接列印。正賦文理短期補習班提供。">
+<meta property="og:description" content="國小、國中、高中、技高數學C 共 96 個單元，含幾何附圖題。選單元、選難度，每次都是不重複的新卷子，附解答可直接列印。正賦文理短期補習班提供。">
 <meta property="og:image" content="https://wade-chuang.github.io/jenfoo/quiz/og.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -824,6 +824,120 @@ unit({id:'circle-fig',g:'九上',name:'圓的性質（附圖）',instr:'依圖�
     return{q:`如圖，四邊形 $ABCD$ 內接於圓，$E$ 在 $${seg('BC')}$ 的延長線上，求 $x$（即 $\\angle DCE$）`,a:`$x = ${deg(a)}$`,fig:f.svg(),k:`qe${a}`}}
   f.angle(C,B,Dp,'x',12,8);
   return{q:`如圖，四邊形 $ABCD$ 內接於圓，求 $x$（即 $\\angle C$）`,a:`$x = ${deg(180-a)}$`,fig:f.svg(),k:`q${a}`};
+}});
+
+/* ---------- 國小一、二年級 ---------- */
+// 畫時鐘：h 點 m 分（時針會依分鐘偏移）
+function e12_clock(h,m){const f=Fig(130,130),O=V(65,65),r=56;f.circle(O,r,'stroke-width="2"');
+  for(let i=0;i<60;i++){const a=90-i*6;f.line(polar(O,r,a),polar(O,r-(i%5?3:6),a),i%5?'stroke-width=".6"':'stroke-width="1.4"')}
+  for(let n=1;n<=12;n++)f.text(polar(O,r-14,90-n*30),String(n),false,11);
+  f.line(O,polar(O,29,90-((h%12)+m/60)*30),'stroke-width="4"').line(O,polar(O,44,90-m*6),'stroke-width="2.2"').dot(O,3);
+  return f.svg()}
+const e12_hm=(h,m)=>m?`${h} 點 ${m} 分`:`${h} 點`;
+const e12_h12=h=>((h-1)%12+12)%12+1;
+function e12_two(v){const a=Math.floor(v/100),b=v%100;return a&&b?`$${a}$ 公尺 $${b}$ 公分`:a?`$${a}$ 公尺`:`$${b}$ 公分`}
+
+/* ===== 一年級 ===== */
+unit({id:'e1-add',g:'小一',name:'20 以內的加法',instr:'算算看。',h:[12,14,20],gen(d){
+  if(d===1){const a=ri(1,9),b=ri(1,10-a);if(b<1)return null;return{q:`$${a} + ${b} =$`,a:`$${a+b}$`}}
+  if(d===2){if(R()<.6){const a=ri(2,9),b=ri(11-a,9);if(b<2)return null;return{q:`$${a} + ${b} =$`,a:`$${a+b}$`}}
+    const a=ri(11,18),b=ri(1,19-a);if(a%10+b>9)return null;return{q:`$${a} + ${b} =$`,a:`$${a+b}$`}}
+  const a=ri(3,12),b=ri(2,20-a);if(a+b>20||b<2)return null;
+  return pick([{q:`小明有 $${a}$ 顆彈珠，哥哥又給他 $${b}$ 顆，小明現在有幾顆？`,a:`$${a+b}$ 顆`},
+               {q:`樹上有 $${a}$ 隻小鳥，又飛來 $${b}$ 隻，樹上現在有幾隻？`,a:`$${a+b}$ 隻`},
+               {q:`妹妹摺了 $${a}$ 隻紙鶴，姐姐摺了 $${b}$ 隻，兩人一共摺了幾隻？`,a:`$${a+b}$ 隻`}]);
+}});
+
+unit({id:'e1-sub',g:'小一',name:'20 以內的減法',instr:'算算看。',h:[12,14,20],gen(d){
+  if(d===1){const a=ri(2,10),b=ri(1,a-1);return{q:`$${a} - ${b} =$`,a:`$${a-b}$`}}
+  if(d===2){const a=ri(11,18),b=ri(a%10+1,9);if(a-b>9||a-b<1)return null;return{q:`$${a} - ${b} =$`,a:`$${a-b}$`}}
+  const a=ri(8,20),b=ri(2,a-1);
+  return pick([{q:`盤子裡有 $${a}$ 個蘋果，吃掉 $${b}$ 個，還剩幾個？`,a:`$${a-b}$ 個`},
+               {q:`哥哥有 $${a}$ 張貼紙，弟弟有 $${b}$ 張，哥哥比弟弟多幾張？`,a:`$${a-b}$ 張`},
+               {q:`公車上有 $${a}$ 個人，到站下車 $${b}$ 個人，車上還有幾個人？`,a:`$${a-b}$ 人`}]);
+}});
+
+unit({id:'e1-num',g:'小一',name:'100 以內的數',instr:'依題意作答。',h:[12,14,18],gen(d){
+  if(d===1){const t=ri(1,9),o=ri(0,9);
+    return R()<.5?{q:`$${t}$ 個十和 $${o}$ 個一是多少？`,a:`$${10*t+o}$`}:{q:`$${10*t+o}$ 是幾個十和幾個一？`,a:`$${t}$ 個十和 $${o}$ 個一`}}
+  if(d===2){const f=ri(0,2);
+    if(f===0){const a=ri(10,99),b=ri(10,99);if(a===b)return null;return{q:`在 ○ 裡填入 $>$ 或 $<$：$${a}$ ○ $${b}$`,a:`$${a} ${a>b?'>':'<'} ${b}$`}}
+    if(f===1){const a=ri(11,98);return R()<.5?{q:`比 $${a}$ 多 $1$ 的數是多少？`,a:`$${a+1}$`}:{q:`比 $${a}$ 少 $1$ 的數是多少？`,a:`$${a-1}$`}}
+    const a=ri(10,97);return{q:`$${a}$ 和 $${a+2}$ 中間的數是多少？`,a:`$${a+1}$`}}
+  const f=ri(0,1);
+  if(f===0){const x=ri(1,9),y=ri(1,9);if(x===y)return null;const hi=Math.max(x,y),lo=Math.min(x,y);
+    return{q:`用 $${x}$、$${y}$ 兩張數字卡排成二位數，最大是多少？最小是多少？`,a:`最大 $${hi}${lo}$，最小 $${lo}${hi}$`}}
+  const s=new Set();while(s.size<4)s.add(ri(10,99));const arr=[...s];
+  return{q:`由小到大排排看：$${arr.join('、')}$`,a:`$${[...arr].sort((p,q)=>p-q).join(' < ')}$`};
+}});
+
+unit({id:'e1-clock',g:'小一',name:'認識時鐘（整點、半點）（附圖）',instr:'看時鐘回答。',h:[40,40,42],gen(d){
+  const h=ri(1,12),half=d===1?false:(d===2?true:R()<.5),m=half?30:0;
+  const say=(hh)=>half?`${hh} 點半`:`${hh} 點`;
+  if(d<=2)return{q:'如圖，現在是幾點？',a:say(h),fig:e12_clock(h,m),k:`${h}:${m}`};
+  const n=ri(1,5);return{q:`如圖，再過 $${n}$ 小時是幾點？`,a:say(e12_h12(h+n)),fig:e12_clock(h,m),k:`${h}:${m}+${n}`};
+}});
+
+unit({id:'e1-money',g:'小一',name:'認識錢幣',instr:'依題意作答。',h:[14,16,22],gen(d){
+  if(d===1){const c=[[50,ri(0,1)],[10,ri(0,4)],[5,ri(0,1)],[1,ri(0,4)]].filter(x=>x[1]>0);if(c.length<2)return null;
+    return{q:`${c.map(([v,n])=>`$${n}$ 個 $${v}$ 元`).join('、')}，一共是多少元？`,a:`$${c.reduce((s,[v,n])=>s+v*n,0)}$ 元`}}
+  if(d===2){const pay=pick([10,50,100]),p=ri(Math.ceil(pay*0.2),pay-1);
+    const it=pick([['個','橡皮擦'],['枝','鉛筆'],['張','貼紙'],['個','麵包']]);return{q:`一${it[0]}${it[1]} $${p}$ 元，付了 $${pay}$ 元，要找回多少元？`,a:`$${pay-p}$ 元`}}
+  const x=ri(12,99);let r=x;const parts=[];let cnt=0;
+  for(const v of [50,10,5,1]){const n=Math.floor(r/v);r-=n*v;if(n){parts.push(`$${n}$ 個 $${v}$ 元`);cnt+=n}}
+  return{q:`要付 $${x}$ 元，最少要用幾個錢幣？（有 $1$ 元、$5$ 元、$10$ 元、$50$ 元）`,a:`${parts.join('、')}，共 $${cnt}$ 個`};
+}});
+
+/* ===== 二年級 ===== */
+unit({id:'e2-addsub2',g:'小二',name:'二位數的加減',instr:'算算看。',h:[14,16,22],gen(d){
+  if(d===1){if(R()<.5){const a=ri(10,88),b=ri(10,99-a);if(a%10+b%10>9)return null;return{q:`$${a} + ${b}$`,a:`$${a+b}$`}}
+    const a=ri(20,99),b=ri(10,a-1);if(a%10<b%10)return null;return{q:`$${a} - ${b}$`,a:`$${a-b}$`}}
+  if(d===2){if(R()<.5){const a=ri(15,89),b=ri(15,89);if(a%10+b%10<10)return null;return{q:`$${a} + ${b}$`,a:`$${a+b}$`}}
+    const a=ri(30,99),b=ri(11,a-5);if(a%10>=b%10)return null;return{q:`$${a} - ${b}$`,a:`$${a-b}$`}}
+  const a=ri(20,60),b=ri(5,a-3),c=ri(5,30);
+  return pick([{q:`公車上有 $${a}$ 人，到站下車 $${b}$ 人，又上車 $${c}$ 人，車上現在有幾人？`,a:`$${a-b+c}$ 人`},
+               {q:`$${a} - ${b} + ${c}$`,a:`$${a-b+c}$`},
+               {q:`小美有 $${a}$ 元，買文具花了 $${b}$ 元，媽媽又給她 $${c}$ 元，小美現在有多少元？`,a:`$${a-b+c}$ 元`}]);
+}});
+
+unit({id:'e2-table',g:'小二',name:'九九乘法',instr:'算算看。',h:[12,14,20],gen(d){
+  const a=ri(2,9),b=ri(2,9);
+  if(d===1)return{q:`$${a} \\times ${b} =$`,a:`$${a*b}$`};
+  if(d===2)return R()<.5?{q:`$${a} \\times (\\quad) = ${a*b}$`,a:`$${b}$`}:{q:`$(\\quad) \\times ${b} = ${a*b}$`,a:`$${a}$`};
+  if(R()<.5)return pick([{q:`一盒雞蛋有 $${a}$ 顆，$${b}$ 盒一共有幾顆？`,a:`$${a*b}$ 顆`},{q:`一輛車有 $${a}$ 個座位，$${b}$ 輛車一共有幾個座位？`,a:`$${a*b}$ 個`}]);
+  const c=ri(1,a-1)||1;return{q:`每排坐 $${a}$ 人，坐滿了 $${b}$ 排，還有 $${c}$ 人沒有位子，一共有幾人？`,a:`$${a*b+c}$ 人`};
+}});
+
+unit({id:'e2-addsub3',g:'小二',name:'三位數的加減',instr:'算算看。',h:[14,16,22],gen(d){
+  if(d===1){if(R()<.5){const a=ri(100,888),b=ri(100,999-a);if(b<100||a%10+b%10>9||Math.floor(a/10)%10+Math.floor(b/10)%10>9)return null;return{q:`$${a} + ${b}$`,a:`$${a+b}$`}}
+    const a=ri(300,999),b=ri(100,a-100);if(a%10<b%10||Math.floor(a/10)%10<Math.floor(b/10)%10)return null;return{q:`$${a} - ${b}$`,a:`$${a-b}$`}}
+  if(d===2){if(R()<.5){const a=ri(150,800),b=ri(150,999-a);if(b<150||a%10+b%10<10)return null;return{q:`$${a} + ${b}$`,a:`$${a+b}$`}}
+    const a=ri(300,999),b=ri(120,a-50);if(a%10>=b%10)return null;return{q:`$${a} - ${b}$`,a:`$${a-b}$`}}
+  const a=ri(250,600),b=ri(150,450);if(a===b)return null;
+  return pick([{q:`學校有男生 $${a}$ 人、女生 $${b}$ 人，全校一共有幾人？`,a:`$${a+b}$ 人`},
+               {q:`紅色珠子有 $${a}$ 顆，藍色珠子有 $${b}$ 顆，${a>b?'紅色':'藍色'}珠子比較多，多幾顆？`,a:`$${Math.abs(a-b)}$ 顆`},
+               {q:`一本故事書有 $${a+b}$ 頁，小華已經看了 $${a}$ 頁，還有幾頁沒看？`,a:`$${b}$ 頁`}]);
+}});
+
+unit({id:'e2-length',g:'小二',name:'長度（公分、公尺）',instr:'依題意作答（$1$ 公尺 $= 100$ 公分）。',h:[14,16,22],gen(d){
+  if(d===1){const f=ri(0,2);
+    if(f===0){const m=ri(1,9);return{q:`$${m}$ 公尺 = 幾公分？`,a:`$${100*m}$ 公分`}}
+    const v=ri(1,9)*100+ri(1,99);return f===1?{q:`${e12_two(v)} = 幾公分？`,a:`$${v}$ 公分`}:{q:`$${v}$ 公分 = 幾公尺幾公分？`,a:e12_two(v)}}
+  if(d===2){if(R()<.5){const a=ri(15,85),b=ri(10,95-a);if(b<10)return null;return{q:`$${a}$ 公分 $+$ $${b}$ 公分 = 幾公分？`,a:`$${a+b}$ 公分`}}
+    const b=ri(15,85);return{q:`$1$ 公尺 $-$ $${b}$ 公分 = 幾公分？`,a:`$${100-b}$ 公分`}}
+  if(R()<.5){const L=ri(2,5),c=ri(25,95);return{q:`一條繩子長 $${L}$ 公尺，剪下 $${c}$ 公分，還剩幾公尺幾公分？`,a:e12_two(L*100-c)}}
+  const a=ri(105,180),b=ri(95,170);if(a===b)return null;
+  return{q:`哥哥身高 $${a}$ 公分，弟弟身高 $${b}$ 公分，${a>b?'哥哥':'弟弟'}比較高，高幾公分？`,a:`$${Math.abs(a-b)}$ 公分`};
+}});
+
+unit({id:'e2-time',g:'小二',name:'時間（幾點幾分）（附圖）',instr:'依題意作答。',h:[40,18,22],gen(d){
+  if(d===1){const h=ri(1,12),m=ri(0,11)*5;return{q:'如圖，現在是幾點幾分？',a:e12_hm(h,m),fig:e12_clock(h,m),k:`${h}:${m}`}}
+  if(d===2){const h=ri(1,11),m1=ri(0,8)*5,m2=ri(m1/5+2,11)*5;
+    if(R()<.6)return{q:`從 ${e12_hm(h,m1)} 到 ${e12_hm(h,m2)}，經過了幾分鐘？`,a:`$${m2-m1}$ 分鐘`};
+    const s0=ri(1,8),n=ri(2,4);return{q:`從 ${s0} 點到 ${s0+n} 點，經過了幾小時？`,a:`$${n}$ 小時`}}
+  const h=ri(1,11),m1=ri(6,11)*5,dur=ri(4,9)*5,end=m1+dur;if(end<60)return null;
+  return R()<.5?{q:`電視節目 ${e12_hm(h,m1)} 開始，演了 $${dur}$ 分鐘，幾點幾分結束？`,a:e12_hm(h+1,end-60)}
+               :{q:`從 ${e12_hm(h,m1)} 到 ${e12_hm(h+1,end-60)}，經過了幾分鐘？`,a:`$${dur}$ 分鐘`};
 }});
 
 /* ---------- 國小三年級 ---------- */
@@ -2373,8 +2487,8 @@ unit({id:'c-integral',g:'數C四',name:'多項式的定積分與面積',instr:'�
 }});
 
 /* ================= 出卷 ================= */
-const STAGES=[{k:'國小',g:['小三','小四','小五','小六']},{k:'國中',g:['七上','七下','八上','八下','九上','九下']},{k:'高中',g:['高一上','高一下','高二上','高二下']},{k:'技高',g:['數C一','數C二','數C三','數C四']}];
-const GLABEL={'小三':'三年級','小四':'四年級','小五':'五年級','小六':'六年級','數C一':'數學C 第一冊','數C二':'數學C 第二冊','數C三':'數學C 第三冊','數C四':'數學C 第四冊'};
+const STAGES=[{k:'國小',g:['小一','小二','小三','小四','小五','小六']},{k:'國中',g:['七上','七下','八上','八下','九上','九下']},{k:'高中',g:['高一上','高一下','高二上','高二下']},{k:'技高',g:['數C一','數C二','數C三','數C四']}];
+const GLABEL={'小一':'一年級','小二':'二年級','小三':'三年級','小四':'四年級','小五':'五年級','小六':'六年級','數C一':'數學C 第一冊','數C二':'數學C 第二冊','數C三':'數學C 第三冊','數C四':'數學C 第四冊'};
 const glabel=g=>GLABEL[g]||g;
 const stageOf=g=>(STAGES.find(s=>s.g.includes(g))||STAGES[1]).k;
 const GRADES=STAGES.flatMap(s=>s.g);
