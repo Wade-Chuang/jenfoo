@@ -100,6 +100,13 @@ details[open]>.grade-head>span::before{transform:rotate(90deg)}
 .note{font-size:.78rem;color:var(--muted);background:var(--chip);border-radius:6px;padding:8px 10px;margin:0}
 
 .stage{display:grid;gap:22px;min-width:0}
+.tips{margin-top:14px;padding:14px 14px 10px;border-radius:8px;background:var(--chip);border:1px solid var(--line)}
+.tips h2{margin:0 0 8px;font-size:.85rem;letter-spacing:.1em;color:var(--gold-ink);font-weight:700}
+.tips h2 em{font-style:normal;color:var(--ink);margin-left:6px;letter-spacing:0}
+.tips ul{margin:0;padding:0;list-style:none;display:grid;gap:8px}
+.tips li{font-size:.86rem;line-height:1.55;padding-left:1.3em;position:relative}
+.tips li::before{content:"📌";position:absolute;left:0;top:0;font-size:.8em}
+.tips li b{color:var(--ink)}
 .stage-bar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;font-size:.88rem;color:var(--muted)}
 .stage-bar a{color:var(--gold-ink);text-decoration:none;font-weight:700}
 .stage-bar a:hover{text-decoration:underline}
@@ -245,6 +252,10 @@ window.MathJax={
         <label class="hint" for="seedIn">卷號：同一個卷號＋相同設定＝同一份卷子，可以給全班出一樣的題目。</label>
         <div class="seed"><input id="seedIn" inputmode="numeric" maxlength="6" aria-label="卷號"><button class="btn ghost" id="seedBtn" type="button">套用</button></div>
       </div>
+      <section class="tips" aria-labelledby="tipsTitle">
+        <h2 id="tipsTitle">建議這樣用</h2>
+        <ul id="tipsList"></ul>
+      </section>
     </aside>
 
     <div class="stage">
@@ -2828,7 +2839,15 @@ const LOGO=`<svg class="logo" viewBox="0 0 320 320" aria-hidden="true"><rect wid
 const esc=s=>s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 
 const OPEN=new Set();
+const TIPS={
+  '國小':[['每天 10 分鐘','上課教到哪個單元，回家就勾那個單元，寫幾題當額外練習'],['週末加強','把這週學過的單元一起勾，寫一份當小測驗'],['考前複習','勾考試範圍，難度選「混合」，題目會由易到難排好']],
+  '國中':[['每天 10 分鐘','上課教到哪個單元，回家就勾那個單元，寫幾題當額外練習'],['週末加強','把這週學過的單元一起勾，寫一份當小測驗'],['考後訂正','把段考錯的單元挑出來，再出一份練到會'],['國三會考','每週挑一冊（例如七上）寫一份，把前兩年慢慢補起來']],
+  '高中':[['每天 15 分鐘','教到哪個單元就勾哪個單元，寫完馬上對解答'],['週末小測驗','把這週的單元一起勾，計時 30 分鐘寫一份'],['考後訂正','段考錯的單元各出一份，練到全對再往下'],['學測複習','每天一個高一或高二單元；週末勾一整冊、難度選「混合」當小模考']],
+  '技高':[['每天 15 分鐘','教到哪個單元就勾哪個單元，寫完馬上對解答'],['週末小測驗','把這週的單元一起勾，計時 30 分鐘寫一份'],['考後訂正','段考錯的單元各出一份，練到全對再往下'],['統測複習','第一到第四冊輪流練；模擬考前依範圍每天寫一份']]};
+const TIP_COMMON=[['難度循序漸進','先「基礎」→「標準」→「挑戰」，挑戰題全對就很穩了'],['老師出卷','記下卷號，全班輸入同一個卷號、勾一樣的單元，就是同一份卷子']];
+function renderTips(){const t=TIPS[state.stage]||TIPS['國中'];$('tipsTitle').innerHTML=`建議這樣用<em>${state.stage}</em>`;$('tipsList').innerHTML=[...t,...TIP_COMMON].map(([a,b])=>`<li><b>${a}</b>：${b}</li>`).join('')}
 function renderControls(){
+  renderTips();
   if(!OPEN.size)U.forEach(u=>{if(state.sel.has(u.id))OPEN.add(u.g)});
   document.querySelectorAll('#stageSeg button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.v===state.stage)));
   const box=$('unitList');box.innerHTML='';
