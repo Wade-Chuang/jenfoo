@@ -56,6 +56,28 @@ body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--font-bo
 a:focus-visible,button:focus-visible{outline:3px solid var(--amber-dark);outline-offset:2px;}
 @media (max-width:480px){ .wrap{padding:0 12px;} .sitebar-inner{padding:8px 12px;} }
 
+.cta{display:flex;gap:16px;align-items:flex-start;background:color-mix(in srgb, var(--amber) 14%, var(--surface));border:3px solid var(--ink);border-radius:16px;padding:20px 22px;box-shadow:5px 5px 0 var(--shadow-ink);margin:26px 0;}
+.cta .char{width:76px;height:76px;flex:0 0 auto;}
+.cta-body{min-width:0;flex:1 1 auto;}
+.cta h2{font-family:var(--font-head);font-weight:900;font-size:1.2rem;margin:0 0 6px;}
+.cta p{margin:0 0 12px;color:var(--ink);font-weight:500;}
+.cta-btns{display:flex;flex-wrap:wrap;gap:10px;}
+.cta-btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;font-family:var(--font-body);font-weight:700;font-size:.92rem;line-height:1.2;text-decoration:none;cursor:pointer;border:2.5px solid var(--ink);border-radius:999px;padding:9px 16px;box-shadow:3px 3px 0 var(--ink);background:var(--surface);color:var(--ink);}
+.cta-btn:hover{transform:translate(-1px,-1px);box-shadow:4px 4px 0 var(--ink);}
+.cta-btn.yt{background:var(--coral-dark);color:#fff;}
+.cta-btn.share{background:var(--amber);color:#1f1a10;}
+.cta-btn.line{background:var(--teal-dark);color:#fff;}
+.quiz-share{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:-6px 0 16px;font-weight:700;color:var(--teal-dark);}
+.quiz-share[hidden]{display:none;}
+.share-toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);max-width:calc(100% - 32px);background:var(--ink);color:var(--paper);font-weight:700;font-size:.92rem;padding:10px 18px;border-radius:999px;box-shadow:3px 3px 0 var(--amber-dark);z-index:200;opacity:0;pointer-events:none;transition:opacity .2s;text-align:center;}
+.share-toast.show{opacity:1;}
+@media (max-width:480px){
+  .cta{flex-direction:column;align-items:center;text-align:center;padding:16px 14px;box-shadow:4px 4px 0 var(--shadow-ink);}
+  .cta .char{width:60px;height:60px;}
+  .cta-btns{justify-content:center;}
+  .cta-btn{flex:1 1 100%;}
+}
+
 .progress{position:fixed;top:0;left:0;height:4px;background:linear-gradient(90deg,var(--amber-dark),var(--amber));width:0%;z-index:100;}
 .nav{position:sticky;top:0;z-index:50;background:var(--paper);border-bottom:3px solid var(--ink);padding:8px 0;}
 .nav-inner{max-width:860px;margin:0 auto;padding:0 20px;display:flex;align-items:center;gap:12px;overflow-x:auto;scrollbar-width:none;}
@@ -743,6 +765,7 @@ a.roadmap-item:hover{border-color:var(--amber-dark);color:var(--ink);}
   <span class="eyebrow">隨堂測驗</span>
   <h2 class="head">換你上場！挑戰 7 題</h2>
   <p class="quiz-score" id="quiz-score"></p>
+  <div class="quiz-share" id="quiz-share" hidden><span>答對了嗎？分享給同學比比看！</span><button class="cta-btn share js-share" type="button">分享給同學</button></div>
   <div class="quiz-card" data-answer="3" data-explain="「冬季常常」是長期的平均情形，屬於氣候；其他都是短時間的天氣。">
     <div class="quiz-q"><svg class="char" viewBox="0 0 200 200" aria-hidden="true"><use href="#owl-teach"/></svg><div class="qtext"><span class="qnum">Q1.</span> 下列哪一句描述的是「氣候」？</div></div>
     <div class="quiz-opts">
@@ -822,6 +845,20 @@ a.roadmap-item:hover{border-color:var(--amber-dark);color:var(--ink);}
   <button class="quiz-reset" id="quiz-reset" type="button">全部重做</button>
 </div>
 </section>
+<section class="cta-wrap" aria-label="訂閱與分享">
+<div class="cta">
+  <svg class="char" viewBox="0 0 200 200" aria-hidden="true"><use href="#owl-cheer"/></svg>
+  <div class="cta-body">
+    <h2>看完有幫助嗎？</h2>
+    <p>幫老師一個忙：訂閱 YouTube「莊老數學教室」、到影片按個讚，再把這一話分享給同學！</p>
+    <div class="cta-btns">
+      <a class="cta-btn yt" href="https://www.youtube.com/@chuanglaomath?sub_confirmation=1" target="_blank" rel="noopener">▶ 訂閱 YouTube</a>
+      <button class="cta-btn share js-share" type="button">分享給同學</button>
+      <a class="cta-btn line js-line" href="https://social-plugins.line.me/lineit/share?url=" target="_blank" rel="noopener">LINE 分享</a>
+    </div>
+  </div>
+</div>
+</section>
 
 <section id="next">
 <div class="panel">
@@ -867,6 +904,8 @@ a.roadmap-item:hover{border-color:var(--amber-dark);color:var(--ink);}
     if(!score) return;
     score.textContent = done === 0 ? ('共 ' + cards.length + ' 題，點選答案就會看到對錯與解析。')
       : ('已作答 ' + done + ' / ' + cards.length + ' 題，答對 ' + right + ' 題' + (done === cards.length ? (right === cards.length ? '，全對！太強了！' : '，把錯的解析再看一次吧！') : '。'));
+    var qs = document.getElementById('quiz-share');
+    if(qs) qs.hidden = !(cards.length && done === cards.length);
   }
   cards.forEach(function(card){
     var answer = parseInt(card.getAttribute('data-answer'), 10);
@@ -901,6 +940,40 @@ a.roadmap-item:hover{border-color:var(--amber-dark);color:var(--ink);}
     done = 0; right = 0; updateScore();
   });
   updateScore();
+})();
+</script>
+<script>
+(function(){
+  var url = location.href.split('#')[0];
+  document.querySelectorAll('.js-line').forEach(function(a){
+    a.href = 'https://social-plugins.line.me/lineit/share?url=' + encodeURIComponent(url);
+  });
+  var toast;
+  function say(msg){
+    if(!toast){ toast = document.createElement('div'); toast.className = 'share-toast'; toast.setAttribute('role', 'status'); document.body.appendChild(toast); }
+    toast.textContent = msg; toast.classList.add('show');
+    clearTimeout(toast._t); toast._t = setTimeout(function(){ toast.classList.remove('show'); }, 2600);
+  }
+  function fallbackCopy(){
+    var ta = document.createElement('textarea');
+    ta.value = url; ta.setAttribute('readonly', ''); ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select();
+    var ok = false; try { ok = document.execCommand('copy'); } catch(e) {}
+    document.body.removeChild(ta);
+    say(ok ? '已複製網址，貼到 LINE 群組吧！' : '請複製網址列的網址，貼到 LINE 群組吧！');
+  }
+  function copy(){
+    if(navigator.clipboard && window.isSecureContext){
+      navigator.clipboard.writeText(url).then(function(){ say('已複製網址，貼到 LINE 群組吧！'); }, fallbackCopy);
+    } else { fallbackCopy(); }
+  }
+  document.querySelectorAll('.js-share').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      if(navigator.share){
+        navigator.share({title: document.title, url: url}).catch(function(){});
+      } else { copy(); }
+    });
+  });
 })();
 </script>
 </body>

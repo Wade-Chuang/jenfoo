@@ -56,6 +56,28 @@ body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--font-bo
 a:focus-visible,button:focus-visible{outline:3px solid var(--amber-dark);outline-offset:2px;}
 @media (max-width:480px){ .wrap{padding:0 12px;} .sitebar-inner{padding:8px 12px;} }
 
+.cta{display:flex;gap:16px;align-items:flex-start;background:color-mix(in srgb, var(--amber) 14%, var(--surface));border:3px solid var(--ink);border-radius:16px;padding:20px 22px;box-shadow:5px 5px 0 var(--shadow-ink);margin:26px 0;}
+.cta .char{width:76px;height:76px;flex:0 0 auto;}
+.cta-body{min-width:0;flex:1 1 auto;}
+.cta h2{font-family:var(--font-head);font-weight:900;font-size:1.2rem;margin:0 0 6px;}
+.cta p{margin:0 0 12px;color:var(--ink);font-weight:500;}
+.cta-btns{display:flex;flex-wrap:wrap;gap:10px;}
+.cta-btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;font-family:var(--font-body);font-weight:700;font-size:.92rem;line-height:1.2;text-decoration:none;cursor:pointer;border:2.5px solid var(--ink);border-radius:999px;padding:9px 16px;box-shadow:3px 3px 0 var(--ink);background:var(--surface);color:var(--ink);}
+.cta-btn:hover{transform:translate(-1px,-1px);box-shadow:4px 4px 0 var(--ink);}
+.cta-btn.yt{background:var(--coral-dark);color:#fff;}
+.cta-btn.share{background:var(--amber);color:#1f1a10;}
+.cta-btn.line{background:var(--teal-dark);color:#fff;}
+.quiz-share{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:-6px 0 16px;font-weight:700;color:var(--teal-dark);}
+.quiz-share[hidden]{display:none;}
+.share-toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);max-width:calc(100% - 32px);background:var(--ink);color:var(--paper);font-weight:700;font-size:.92rem;padding:10px 18px;border-radius:999px;box-shadow:3px 3px 0 var(--amber-dark);z-index:200;opacity:0;pointer-events:none;transition:opacity .2s;text-align:center;}
+.share-toast.show{opacity:1;}
+@media (max-width:480px){
+  .cta{flex-direction:column;align-items:center;text-align:center;padding:16px 14px;box-shadow:4px 4px 0 var(--shadow-ink);}
+  .cta .char{width:60px;height:60px;}
+  .cta-btns{justify-content:center;}
+  .cta-btn{flex:1 1 100%;}
+}
+
 .hero{padding:48px 20px 30px;text-align:center;
   background:radial-gradient(circle at 15% 20%, var(--paper-alt) 0%, transparent 45%),radial-gradient(circle at 85% 75%, var(--paper-alt) 0%, transparent 40%),var(--paper);}
 .hero-badge{display:inline-block;font-weight:700;font-size:.85rem;letter-spacing:.06em;background:var(--ink);color:var(--paper);padding:7px 18px;border-radius:999px;transform:rotate(-3deg);box-shadow:3px 3px 0 var(--amber-dark);margin-bottom:20px;}
@@ -307,6 +329,20 @@ a:focus-visible,button:focus-visible{outline:3px solid var(--amber-dark);outline
       <li>讀完「重點整理」和「小心別搞混」，再做隨堂測驗（全 6 話共 42 題），錯的看解析。</li>
     </ol>
   </section>
+<section class="cta-wrap" aria-label="訂閱與分享">
+<div class="cta">
+  <svg class="char" viewBox="0 0 200 200" aria-hidden="true"><use href="#owl-cheer"/></svg>
+  <div class="cta-body">
+    <h2>看完有幫助嗎？</h2>
+    <p>幫老師一個忙：訂閱 YouTube「莊老數學教室」、到影片按個讚，再把這本漫畫分享給同學！</p>
+    <div class="cta-btns">
+      <a class="cta-btn yt" href="https://www.youtube.com/@chuanglaomath?sub_confirmation=1" target="_blank" rel="noopener">▶ 訂閱 YouTube</a>
+      <button class="cta-btn share js-share" type="button">分享給同學</button>
+      <a class="cta-btn line js-line" href="https://social-plugins.line.me/lineit/share?url=" target="_blank" rel="noopener">LINE 分享</a>
+    </div>
+  </div>
+</div>
+</section>
 </main>
 
 <footer class="site-footer">
@@ -317,5 +353,39 @@ a:focus-visible,button:focus-visible{outline:3px solid var(--amber-dark);outline
   <p class="links"><a href="../../">官網首頁</a> ・ <a href="https://www.facebook.com/profile.php?id=100054212841294" target="_blank" rel="noopener">Facebook</a> ・ <a href="https://www.instagram.com/jf_chuang/" target="_blank" rel="noopener">Instagram</a> ・ <a href="https://www.youtube.com/@chuanglaomath" target="_blank" rel="noopener">YouTube</a></p>
 </footer>
 
+<script>
+(function(){
+  var url = location.href.split('#')[0];
+  document.querySelectorAll('.js-line').forEach(function(a){
+    a.href = 'https://social-plugins.line.me/lineit/share?url=' + encodeURIComponent(url);
+  });
+  var toast;
+  function say(msg){
+    if(!toast){ toast = document.createElement('div'); toast.className = 'share-toast'; toast.setAttribute('role', 'status'); document.body.appendChild(toast); }
+    toast.textContent = msg; toast.classList.add('show');
+    clearTimeout(toast._t); toast._t = setTimeout(function(){ toast.classList.remove('show'); }, 2600);
+  }
+  function fallbackCopy(){
+    var ta = document.createElement('textarea');
+    ta.value = url; ta.setAttribute('readonly', ''); ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select();
+    var ok = false; try { ok = document.execCommand('copy'); } catch(e) {}
+    document.body.removeChild(ta);
+    say(ok ? '已複製網址，貼到 LINE 群組吧！' : '請複製網址列的網址，貼到 LINE 群組吧！');
+  }
+  function copy(){
+    if(navigator.clipboard && window.isSecureContext){
+      navigator.clipboard.writeText(url).then(function(){ say('已複製網址，貼到 LINE 群組吧！'); }, fallbackCopy);
+    } else { fallbackCopy(); }
+  }
+  document.querySelectorAll('.js-share').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      if(navigator.share){
+        navigator.share({title: document.title, url: url}).catch(function(){});
+      } else { copy(); }
+    });
+  });
+})();
+</script>
 </body>
 </html>
