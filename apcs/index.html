@@ -52,6 +52,9 @@ h3.grp{font:700 15px var(--sans);margin:26px 0 12px;display:flex;align-items:cen
 .ulist{columns:2 260px;column-gap:32px;margin:18px 0 0;padding-left:1.4em;font-weight:500}.ulist li{break-inside:avoid;padding:3px 0}
 .note{margin-top:22px;background:var(--brass-soft);border:1px solid var(--brass);border-radius:6px;padding:16px 18px}.note b{font:900 17px var(--serif)}.note p{margin-top:4px;color:var(--ink-2);font-size:15px}
 section.block .sub a{color:var(--brass);font-weight:700}
+.dlgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-top:18px}
+.dlbtn{display:flex;flex-direction:column;gap:4px;text-decoration:none;color:inherit;background:var(--surface);border:1px solid var(--line);border-left:5px solid var(--brass);border-radius:6px;padding:14px 16px}
+.dlbtn:hover{border-color:var(--brass)}.dlbtn b{font:900 19px var(--serif)}.dlbtn span{color:var(--ink-2);font-size:14px}.dlbtn em{font-style:normal;color:var(--brass);font-weight:700;font-size:14px}
 .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:18px;margin-top:18px}
 .cards button{border:1px solid var(--line);background:var(--surface);padding:0;border-radius:6px;overflow:hidden;cursor:zoom-in;text-align:left;font:inherit;color:inherit}
 .cards button img{aspect-ratio:4/5;width:100%;object-fit:cover}
@@ -84,7 +87,7 @@ table.dl td a:hover{border-color:var(--brass);color:var(--brass)}
 <body>
 <header class="top"><div class="wrap">
   <a class="brand" href="../"><img src="../img/logo.png" width="34" height="34" alt="">正賦文理<small>短期補習班</small></a>
-  <nav aria-label="主選單"><a href="../">首頁</a><a href="../quiz/">免費出題</a><a href="../videos/">影片專區</a><a href="../cards/">段考圖卡</a><a href="../apcs/" aria-current="page">APCS</a></nav>
+  <nav aria-label="主選單"><a href="../">首頁</a><a href="../quiz/">免費出題</a><a href="../videos/">影片專區</a><a href="../cards/">段考圖卡</a><a href="../apcs/" aria-current="page">APCS</a><a href="../science/">國中自然</a></nav>
   <a class="btn-line" href="https://line.me/ti/p/~jenfoo2021" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 3C6.5 3 2 6.6 2 11c0 3.9 3.5 7.2 8.3 7.9.3.1.8.2.9.5.1.3.1.7 0 1l-.1.9c0 .3-.2 1 .9.5 1.1-.5 5.9-3.5 8.1-6C21.4 14.3 22 12.7 22 11c0-4.4-4.5-8-10-8z"/></svg>預約試聽</a>
 </div></header>
 <main class="wrap">
