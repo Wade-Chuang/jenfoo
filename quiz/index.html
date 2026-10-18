@@ -169,11 +169,27 @@ details[open]>.grade-head>span::before{transform:rotate(90deg)}
 .visits b{font-size:1.35rem;line-height:1;color:var(--gold-ink);font-variant-numeric:tabular-nums}
 .sitefoot .wrap{align-items:center}
 
+.vids{background:var(--card,#fff);border:1px solid var(--gold);border-radius:14px;padding:16px;margin-bottom:16px}
+.vids h2{font-size:1.05rem;margin:0 0 4px}
+.vids .vsub{margin:0 0 12px;color:var(--muted);font-size:.9rem}
+.vgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px}
+.vcard{display:block;text-decoration:none;color:inherit;border-radius:10px;overflow:hidden;border:1px solid var(--line);background:var(--chip)}
+.vcard img{display:block;width:100%;aspect-ratio:16/9;object-fit:cover;background:#1B2430}
+.vcard span{display:block;padding:8px 10px;font-size:.88rem;line-height:1.4}
+.vcard em{font-style:normal;font-size:.75rem;font-weight:700;color:var(--gold-ink);margin-right:4px}
+.vcta{margin-top:14px;padding-top:12px;border-top:1px dashed var(--line)}
+.vcta p{margin:0 0 10px;font-size:.92rem}
+.vbtns{display:flex;flex-wrap:wrap;gap:10px}
+.vbtn{display:inline-block;padding:9px 16px;border-radius:999px;font:inherit;font-weight:700;font-size:.9rem;text-decoration:none;border:0;cursor:pointer;color:#fff}
+.vbtn.sub{background:#c4302b}.vbtn.share{background:#1B2430}.vbtn.line{background:#06c755}
+#vmsg{margin:8px 0 0;font-size:.85rem;color:var(--gold-ink)}
+.cta-box .code.yt{margin-left:6px}
+
 @media print{
   @page{size:A4;margin:11mm 11mm 12mm}
   :root{color-scheme:light}
   body{background:#fff}
-  .topbar,.panel,.stage-bar,.sitefoot{display:none!important}
+  .topbar,.panel,.stage-bar,.sitefoot,.vids{display:none!important}
   .main{padding:0}
   .layout{display:block}
   .paper{box-shadow:none;max-width:none;width:auto;padding:0;margin:0;border-radius:0}
@@ -260,6 +276,7 @@ window.MathJax={
 
     <div class="stage">
       <div class="stage-bar"><span id="summary"></span><a href="#answers">跳到解答 ↓</a></div>
+      <section class="vids" id="vids" hidden></section>
       <article class="paper" id="sheet"><div class="loading">正在排版數學式…</div></article>
       <article class="paper ans" id="answers"></article>
     </div>
@@ -2827,6 +2844,10 @@ function build(){
   return sections;
 }
 
+/* 單元對應影片：由 add_videos.py 產生，不要手改 */
+const VID_T={"1DHtOTDyZNQ": ["【數學改歌】情非得已｜一元一次不等式，乘除負數為什麼要變號", 0], "2bC8xpbZi3I": ["log(M+N) 可以拆嗎？", 1], "37nMy3xf6xg": ["向量垂直?算內積=0就知道", 1], "4qx6SgU2ExU": ["行列式解聯立 十秒解完", 1], "6IZJmzDRhK4": ["【高二上學期 數A】第一次段考數學總複習｜三角函數　7 分鐘一次複習完", 0], "7Qche-xMrgE": ["【學測數學】絕對值不等式 |x-1|+|x-2|≥5 解題技巧", 0], "7_4Jv1ayCHY": ["2 的 100 次方是幾位數？", 1], "7bxkv2p4IHU": ["【高二上學期 數B】第一次段考數學總複習｜弧度量與週期性模型　5 分鐘一次複習完", 0], "A_JPOleN42Y": ["國中數學觀念軸，55 秒帶你走一遍", 1], "AltEZl2cuSI": ["公比是1的等比數列,和一定要用公式算?這題超多人會錯!", 1], "B9uE1Dh1HDk": ["log(3+7)=log3+log7？對數加減的超常見陷阱", 1], "Bhijj80NUO8": ["數學老師把《刻在我心底的名字》唱成公式解😭 判別式一次記住", 1], "CLIUA5G_A4w": ["數學老師把《情非得已》唱成不等式😭 乘除負數為什麼要變號", 1], "DBEEvmJaWgk": ["量一次仰角就能算出樹有多高?", 1], "DNFHiGp_srg": ["【九年級上學期】第一次段考數學總複習｜相似形　6 分鐘一次複習完", 0], "Dv9WjMYJIaU": ["數學老師把《幾分之幾》唱成機率🎵 原來歌名就是公式", 1], "ExoVpQw7VNg": ["【統測數學總複習】2分鐘洗腦神曲,A/B/C全範圍一次掃過!", 0], "FSNGlIDT2oQ": ["邊長比 2:3 面積比多少？", 1], "IXMblS4A2pc": ["【數學改歌】幾分之幾｜機率的定義、互斥與獨立，一首歌唱完", 0], "Ilu7dC_oZmA": ["行列式等於0還能算逆矩陣嗎？矩陣超常見陷阱", 1], "It5smtK6qR8": ["線性規劃最大值 答案一定在頂點", 1], "KF87pH6fOoo": ["互斥事件一定獨立嗎?這題超多人會答錯!", 1], "KxFN6TJxahk": ["根號一定是正的?90%的人都會忽略這個陷阱!", 1], "MQUsVG2UiYE": ["-3² 到底等於多少？", 1], "N1GlT7svZPs": ["正弦還是餘弦?看題目一秒決定", 1], "OcYCxEnl1G4": ["特殊角+正負號 一分鐘記起來", 1], "OoLc1RoiOS4": ["微分求切線 三個步驟搞定", 1], "PS3lmy7MUFA": ["150度的sin值,你確定是負的嗎?", 1], "RsLKtIviej8": ["方向向量平行法向量，直線在平面內還是外？", 1], "S-PEWyMxm1k": ["二次曲線怎麼判斷?看平方項三秒搞定", 1], "SpUAfJ9Jn2s": ["判斷垂直用內積還是外積？空間向量超常見觀念錯誤", 1], "Ts68ba8Z0J8": ["2³ + 2² 等於 2 的 5 次方嗎？", 1], "U60nEEzNIVY": ["絕對值不等式怎麼解？|x-1|+|x-2|≥5 一段影片看懂關鍵步驟", 1], "VED0F3sMFNc": ["振幅是最大值還是一半？", 1], "Wb2OHiwPLPg": ["【數學改歌】甲乙丙丁其實是幾何證明題｜三角形全等 SSS｜國中數學段考必考", 0], "YClDDPpeHng": ["餘式定理可以隨便代值嗎?這題超多人會答錯!", 1], "ZZTfFwFtO7k": ["【高一上學期】第一次段考數學總複習｜數與式　7 分鐘一次複習完", 0], "_sig_DJTV6k": ["【高一數學】常用對數　一次搞懂｜7 分鐘專題複習", 0], "cl6b9slv-7k": ["0 分之 0 就是不存在？", 1], "dgB462IvNjI": ["選委員會該用排列還是組合?90%的人選錯!", 1], "dsAEOQDRxyU": ["向量內積等於0代表什麼？內積是數字不是向量", 1], "dtDCZ_XAvMw": ["學測數學全範圍，一首歌幫你抓觀念", 1], "eM5FsoJRz9M": ["小數第幾位才不是 0？", 1], "eOcLj5Xtgzs": ["測完高度還要加什麼？", 1], "hvRV1_1EZvg": ["【七年級上學期】第一次段考數學總複習｜整數的運算　12 分鐘一次複習完", 0], "mNJiAlgu8Eo": ["【技高 數學C 高二上學期】第一次段考數學總複習｜三角函數的應用與指數　6 分鐘一次複習完", 0], "oHynYCmo4tk": ["正賦文理短期補習班｜學測數學全範圍．一首歌抓觀念軸", 0], "oKztKxiW8-w": ["這個方程式根本畫不出圓,你發現了嗎?", 1], "qxJgJEdpFis": ["【高三上學期】第一次段考數學總複習｜數列與函數的極限　6 分鐘一次複習完", 0], "rQ7GGbpbXd4": ["被除式 = 除式 × 商 + 餘", 1], "s9RHUV2pNUY": ["數學老師把《甲乙丙丁》唱成幾何證明｜甲乙丙丁剛好是四個點", 1], "w31kDI-DAco": ["多項式除法缺項怎麼補？", 1], "wi2LTtWVRMg": ["國中數學 第一、二冊 重點整理｜國三會考先修・20分鐘總複習", 0], "y59MU_8cC4c": ["【技高 數學C 高一上學期】第一次段考數學總複習｜坐標系與函數圖形　6 分鐘一次複習完", 0], "yTnMFrEnZnc": ["IG兩週觀看破10萬！直線方程式選擇題秒選技巧", 1], "ybfhX802zx8": ["【八年級上學期】第一次段考數學總複習｜乘法公式與多項式　7 分鐘一次複習完", 0], "yyfHXEAEUdE": ["sin2θ 等於 2sinθ 嗎？", 1], "zHpP9_AIQWk": ["【數學改歌】刻在我心底的公式｜一元二次方程式公式解＋判別式，一首歌唱完", 0], "zy9oN6NZ1S4": ["小於 0 取中間還是外面？", 1], "zyeulkYHGtk": ["扇形公式角度要換嗎？", 1]};
+const VID_MAP={"int-add": ["hvRV1_1EZvg", "MQUsVG2UiYE"], "int-mul": ["hvRV1_1EZvg", "MQUsVG2UiYE"], "power": ["hvRV1_1EZvg", "Ts68ba8Z0J8"], "factor-num": ["hvRV1_1EZvg", "wi2LTtWVRMg"], "fraction": ["hvRV1_1EZvg", "wi2LTtWVRMg"], "algebra": ["wi2LTtWVRMg"], "lin-eq": ["wi2LTtWVRMg"], "sys-eq": ["wi2LTtWVRMg"], "ratio": ["wi2LTtWVRMg"], "ineq": ["1DHtOTDyZNQ", "CLIUA5G_A4w", "wi2LTtWVRMg"], "coord-fig": ["wi2LTtWVRMg"], "expand": ["ybfhX802zx8"], "factorize": ["ybfhX802zx8"], "sqrt": ["KxFN6TJxahk", "ybfhX802zx8"], "quad-eq": ["zHpP9_AIQWk", "Bhijj80NUO8"], "pythag-fig": ["ybfhX802zx8"], "geom-seq": ["AltEZl2cuSI"], "angles": ["Wb2OHiwPLPg"], "angle-fig": ["Wb2OHiwPLPg", "s9RHUV2pNUY"], "similar": ["DNFHiGp_srg", "FSNGlIDT2oQ"], "similar-fig": ["DNFHiGp_srg", "FSNGlIDT2oQ"], "circle": ["DNFHiGp_srg"], "circle-fig": ["DNFHiGp_srg"], "centers": ["DNFHiGp_srg"], "stats": ["IXMblS4A2pc", "Dv9WjMYJIaU"], "h-abs": ["7Qche-xMrgE", "U60nEEzNIVY"], "h-root": ["ZZTfFwFtO7k", "KxFN6TJxahk"], "h-polydiv": ["ZZTfFwFtO7k", "rQ7GGbpbXd4", "w31kDI-DAco", "YClDDPpeHng"], "h-quadineq": ["zy9oN6NZ1S4"], "h-line": ["yTnMFrEnZnc"], "h-circle": ["oKztKxiW8-w"], "h-seq": ["AltEZl2cuSI"], "h-comb": ["dgB462IvNjI"], "h-prob": ["IXMblS4A2pc", "KF87pH6fOoo"], "h-trig": ["DBEEvmJaWgk", "eOcLj5Xtgzs"], "h-trigfn": ["6IZJmzDRhK4", "VED0F3sMFNc", "yyfHXEAEUdE"], "h-log": ["_sig_DJTV6k", "B9uE1Dh1HDk", "2bC8xpbZi3I"], "h-vec2": ["dsAEOQDRxyU"], "h-mat": ["Ilu7dC_oZmA"], "h-vec3": ["SpUAfJ9Jn2s", "RsLKtIviej8"], "ha-harm": ["6IZJmzDRhK4"], "ha-ratio": ["dsAEOQDRxyU"], "ha-plane": ["RsLKtIviej8"], "ha-cond": ["KF87pH6fOoo"], "hb-sine": ["7bxkv2p4IHU", "VED0F3sMFNc"], "hb-growth": ["_sig_DJTV6k", "7_4Jv1ayCHY"], "hb-space": ["SpUAfJ9Jn2s"], "hb-conic": ["S-PEWyMxm1k"], "hb-mat": ["Ilu7dC_oZmA"], "h3-limit": ["qxJgJEdpFis", "cl6b9slv-7k"], "h3-diff": ["OoLc1RoiOS4"], "h3-ext": ["OoLc1RoiOS4"], "h3-lp": ["It5smtK6qR8"], "h3-rv": ["KF87pH6fOoo"], "c-dist": ["y59MU_8cC4c"], "c-ineq": ["zy9oN6NZ1S4", "U60nEEzNIVY"], "c-radian": ["zyeulkYHGtk"], "c-trig": ["OcYCxEnl1G4", "PS3lmy7MUFA"], "c-vec2": ["37nMy3xf6xg", "dsAEOQDRxyU"], "c-poly": ["rQ7GGbpbXd4", "YClDDPpeHng", "w31kDI-DAco"], "c-fracrad": ["KxFN6TJxahk"], "c-line": ["yTnMFrEnZnc"], "c-circle": ["oKztKxiW8-w"], "c-seq": ["AltEZl2cuSI"], "c-trigsum": ["mNJiAlgu8Eo", "yyfHXEAEUdE", "N1GlT7svZPs"], "c-trilaw": ["mNJiAlgu8Eo", "N1GlT7svZPs"], "c-explog": ["mNJiAlgu8Eo", "B9uE1Dh1HDk", "2bC8xpbZi3I"], "c-logapp": ["eM5FsoJRz9M", "7_4Jv1ayCHY"], "c-vec3": ["SpUAfJ9Jn2s", "37nMy3xf6xg"], "c-det": ["4qx6SgU2ExU", "Ilu7dC_oZmA"], "c-matrix": ["Ilu7dC_oZmA"], "c-perm": ["dgB462IvNjI"], "c-prob": ["KF87pH6fOoo"], "c-deriv": ["OoLc1RoiOS4"], "c-integral": ["ExoVpQw7VNg"]};
+const VID_FB={"國中": ["wi2LTtWVRMg", "A_JPOleN42Y"], "高中": ["oHynYCmo4tk", "dtDCZ_XAvMw"], "技高": ["ExoVpQw7VNg"], "國小": []};
 /* ================= 畫面 ================= */
 const $=id=>document.getElementById(id);
 function texNode(tex){
@@ -2866,13 +2887,35 @@ function renderControls(){
   document.body.classList.toggle('no-ans',!state.withAns);
 }
 
+const CH_URL='https://www.youtube.com/@chuanglaomath';
+function ytQr(url){try{const q=qrcode(0,'M');q.addData(url);q.make();return q.createSvgTag({cellSize:2,margin:0,scalable:true})}catch(e){return''}}
+function unitVids(units){
+  const out=[],seen=new Set();let fromMap=false;
+  units.forEach(u=>(VID_MAP[u.id]||[]).forEach(id=>{if(!seen.has(id)){seen.add(id);out.push(id);fromMap=true}}));
+  if(!out.length){const st=units.length?stageOf(units[0].g):state.stage;(VID_FB[st]||[]).forEach(id=>{if(!seen.has(id)){seen.add(id);out.push(id)}})}
+  out.sort((a,b)=>VID_T[a][1]-VID_T[b][1]);
+  return {ids:out.slice(0,6),exact:fromMap};
+}
+function renderVids(units){
+  const box=$('vids'),{ids,exact}=unitVids(units);
+  const cards=ids.map(id=>{const [t,sh]=VID_T[id];const url=sh?`https://www.youtube.com/shorts/${id}`:`https://youtu.be/${id}`;
+    return `<a class="vcard" href="${url}" target="_blank" rel="noopener"><img src="https://i.ytimg.com/vi/${id}/hqdefault.jpg" alt="" loading="lazy"><span><em>${sh?'1 分鐘':'講解'}</em>${esc(t)}</span></a>`}).join('');
+  box.innerHTML=(ids.length?`<h2>寫之前先看影片</h2><p class="vsub">${exact?'跟這次選的單元有關的講解影片，點了在 YouTube 播放':'這個學段的總複習影片，點了在 YouTube 播放'}</p><div class="vgrid">${cards}</div>`:'<h2>莊老數學教室 YouTube</h2><p class="vsub">國小單元的影片製作中，先到頻道看看其他年級的講解。</p>')+
+    `<div class="vcta"><p><b>覺得出題網站有幫助嗎？</b>幫老師一個忙：訂閱 YouTube「莊老數學教室」、看到影片順手按個讚，再把出題網站分享給同學和家長！你的支持，是我們繼續免費做下去的動力。</p>
+    <div class="vbtns"><a class="vbtn sub" href="${CH_URL}?sub_confirmation=1" target="_blank" rel="noopener">▶ 訂閱 YouTube</a><button class="vbtn share" type="button" id="vshare">分享出題網站</button><a class="vbtn line" href="https://social-plugins.line.me/lineit/share?url=${encodeURIComponent('https://wade-chuang.github.io/jenfoo/quiz/')}" target="_blank" rel="noopener">LINE 分享</a></div><p id="vmsg" aria-live="polite"></p></div>`;
+  box.hidden=false;
+  $('vshare').onclick=()=>{const u='https://wade-chuang.github.io/jenfoo/quiz/',t='正賦數學快速出題｜免費數學練習卷，附解答';
+    if(navigator.share){navigator.share({title:t,url:u}).catch(()=>{})}else if(navigator.clipboard){navigator.clipboard.writeText(u).then(()=>{$('vmsg').textContent='已複製網址，貼到 LINE 群組吧！'},()=>{$('vmsg').textContent='請複製網址：'+u})}else{$('vmsg').textContent='請複製網址：'+u}};
+  return ids;
+}
 function render(){
-  if(!state.sel.size){$('summary').textContent='還沒有選單元';$('sheet').innerHTML='<div class="empty-sheet">請先在左邊選學段，再勾選要練習的單元<br>勾好之後，卷子會自動出現在這裡</div>';$('answers').innerHTML='';$('answers').hidden=true;return}
+  if(!state.sel.size){$('vids').hidden=true;$('summary').textContent='還沒有選單元';$('sheet').innerHTML='<div class="empty-sheet">請先在左邊選學段，再勾選要練習的單元<br>勾好之後，卷子會自動出現在這裡</div>';$('answers').innerHTML='';$('answers').hidden=true;return}
   $('answers').hidden=false;
   const sections=build(),units=sections.map(s=>s.u),grades=[...new Set(units.map(u=>u.g))].map(g=>{const st=stageOf(g);return st==='國中'?g:(st==='國小'?'國小'+glabel(g):st==='技高'?'技高'+glabel(g):glabel(g))}).join('・');
   const total=sections.reduce((n,s)=>n+s.items.length,0),qr=qrSvg();
   const scope=units.length<=3?units.map(u=>u.name).join('、'):`${units.length} 個單元綜合`;
   $('summary').textContent=`卷號 ${state.seed}｜${grades}｜${DIFF_NAME[state.diff]}｜共 ${total} 題`;
+  const vids=renderVids(units),ytUrl=vids.length&&VID_MAP[units[0].id]?(VID_T[vids[0]][1]?`https://www.youtube.com/shorts/${vids[0]}`:`https://youtu.be/${vids[0]}`):CH_URL,ytq=ytQr(ytUrl);
 
   const sheet=$('sheet');sheet.innerHTML=`
     <div class="mhead">${LOGO}<div class="mtitle"><div class="school">正賦文理短期補習班</div><h3>數學練習卷</h3></div>
@@ -2897,7 +2940,8 @@ function render(){
     <div class="mhead">${LOGO}<div class="mtitle"><div class="school">正賦文理短期補習班</div><h3>解答</h3></div><div></div></div>
     <div class="meta"><span>${grades}｜${esc(scope)}</span><span>難度：${DIFF_NAME[state.diff]}　共 ${total} 題　卷號 ${state.seed}</span></div>
     <div id="aqs"></div>
-    <div class="cta-box"><span class="code">${qr}</span><div><b>哪一題卡住了？</b><p>拍照傳 LINE 給莊老師（ID：jenfoo2021），告訴我們卷號與題號，幫你看哪一步出錯。</p><p>正賦文理短期補習班｜只教數學・小五到高三・在地 16 年</p></div></div>`;
+    <div class="cta-box"><span class="code">${qr}</span><div><b>哪一題卡住了？</b><p>拍照傳 LINE 給莊老師（ID：jenfoo2021），告訴我們卷號與題號，幫你看哪一步出錯。</p><p>正賦文理短期補習班｜只教數學・小五到高三・在地 16 年</p></div></div>
+    <div class="cta-box"><span class="code">${ytq}</span><div><b>看影片學這個單元</b><p>手機掃 QR code，看莊老師在 YouTube 的講解影片。覺得有幫助，請訂閱「莊老數學教室」、按讚、分享給同學，你的支持是我們繼續免費出題的動力！</p><p>YouTube：youtube.com/@chuanglaomath　出題網站：wade-chuang.github.io/jenfoo/quiz</p></div></div>`;
   const aqs=$('aqs');
   sections.forEach((s,i)=>{
     const h=document.createElement('div');h.className='sec';h.textContent=`${CN[i]}、${s.u.name}`;aqs.appendChild(h);
