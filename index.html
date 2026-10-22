@@ -244,6 +244,13 @@ p{margin:0}
 .free-cards .comic{display:flex;flex-direction:column;padding:24px}
 .free-cards .comic b{font-size:21px}
 .free-cards .comic em{margin-top:auto;padding-top:14px}
+/* 姊妹品牌卡：刻意和正賦的米金卡不同色，一眼看出是另一個品牌 */
+.free-cards .comic.sister{background:#e6f4ef;border-color:#bfe0d4;position:relative}
+.comic.sister .sis-tag{position:absolute;top:14px;left:14px;font-size:12px;font-weight:700;letter-spacing:.08em;color:#1f6f5c;background:#fff;border:1px solid #bfe0d4;border-radius:999px;padding:2px 10px}
+.comic.sister .sis-pics{display:flex;gap:8px;margin:22px 0 12px}
+.comic.sister .sis-pics img{width:64px;height:64px;border-radius:50%;object-fit:cover;display:block}
+.comic.sister em{color:#1f6f5c}
+.sister-foot a{color:inherit;font-weight:700}
 .free-head p:last-child{margin-top:4px}
 
 /* enrol */
@@ -712,6 +719,11 @@ footer .wrap{align-items:center}
       <a class="more" href="https://www.facebook.com/profile.php?id=100054212841294" target="_blank" rel="noopener">更多消息看 FB 粉專 →</a>
     </div>
     <div class="nlist">
+      <a class="nitem" href="https://wade-chuang.github.io/chifoo/" target="_blank" rel="noopener">
+        <time>2026.10</time>
+        <div><h3>姊妹品牌「啟賦英文小學堂」上線：給國小孩子的免費親子英文</h3><p>家裡有弟弟妹妹的家長可以看看：15 個主題 150 個單字，點可愛的 3D 圖卡就會念給孩子聽，還有慢速聽力小故事和聽音找圖小遊戲。免費、不用註冊。</p></div>
+        <span class="kind">姊妹品牌</span>
+      </a>
       <a class="nitem" href="social/">
         <time>2026.10</time>
         <div><h3>國中社會三年 18 冊全部上線：地理・公民・歷史</h3><p>貓頭鷹教授 × 小莊，用蘭陽平原、噶瑪蘭族、班會和社區的例子講社會科，國一到國三共 18 冊、每冊 6 話漫畫，每話附小測驗，國三會考複習也適用；講義、練習題、詳解 PDF 免費下載，不用註冊、不用加 LINE。</p></div>
@@ -892,6 +904,13 @@ footer .wrap{align-items:center}
         <span>從機場、點餐到會議室談判，三個等級 19 話的英文漫畫。</span>
         <em>開始閱讀 →</em>
       </a>
+      <a class="comic sister" href="https://wade-chuang.github.io/chifoo/" target="_blank" rel="noopener">
+        <small class="sis-tag">姊妹品牌</small>
+        <div class="sis-pics" aria-hidden="true"><img src="img/sister/dolphin.webp" width="64" height="64" alt="" loading="lazy"><img src="img/sister/lion.webp" width="64" height="64" alt="" loading="lazy"><img src="img/sister/pig.webp" width="64" height="64" alt="" loading="lazy"></div>
+        <b>啟賦英文小學堂</b>
+        <span>給國小孩子的免費親子英文：點圖聽發音、跟著念三次，還有慢速聽力小故事。</span>
+        <em>前往啟賦英文小學堂 ↗</em>
+      </a>
     </div>
   </div>
 </section>
@@ -978,6 +997,7 @@ footer .wrap{align-items:center}
     <span>© 2026 私立正賦文理短期補習班　府教終字第 0990094303 號</span>
     <span>宜蘭縣羅東鎮純精路二段 262 號</span>
     <span class="visits" id="visits" hidden>官網累計瀏覽 <b id="busuanzi_value_page_pv"></b> 人次</span>
+    <span class="sister-foot">姊妹品牌：<a href="https://wade-chuang.github.io/chifoo/" target="_blank" rel="noopener">啟賦英文小學堂</a></span>
   </div>
 </footer>
 
