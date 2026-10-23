@@ -236,10 +236,10 @@ function makeSet(unit){
   const out=[],plan=[1,1,1,1,2,2,2,2,3,3],seen=new Set();
   for(let i=0,tries=0;i<10&&tries<60;tries++){const it=fromMath(unit.src,plan[i]);if(!it||seen.has(it.key))continue;seen.add(it.key);out.push(it);i++}
   return out}
-/* 每日挑戰：這個年級的數學單元 6 題＋會考真題 4 題 */
+/* 每日挑戰：這個年級的數學單元 9 題＋最後 1 題會考真題 */
 function dailySet(){const us=MATH.filter(u=>BOOKS[S.grade].includes(u.g)),items=[];
-  for(let k=0;k<12&&items.length<6;k++){const it=fromMath(pick(us),1+(Math.random()*3|0));if(it&&!items.some(x=>x.key===it.key))items.push(it)}
-  return items.concat(shuffleArr(HK).slice(0,4).map(fromHK))}
+  for(let k=0;k<20&&items.length<9;k++){const it=fromMath(pick(us),1+(Math.random()*3|0));if(it&&!items.some(x=>x.key===it.key))items.push(it)}
+  return items.concat(fromHK(pick(HK)))}
 
 /* ================= 畫面 ================= */
 function header(){$('#stStreak').textContent=streak();$('#stStars').textContent=S.stars;$('#muteBtn').textContent=S.mute?'🔇':'🔊'}
@@ -256,7 +256,7 @@ function viewHome(){
   <div class="grades" role="group" aria-label="年級">${[7,8,9].map(n=>`<button data-g="${n}" aria-pressed="${n===g}">${GZH[n]}年級</button>`).join('')}</div>
   <h2>今天也來練一下</h2>
   <div class="row">
-    <button class="big daily" id="goDaily"><span class="ic">🎯</span><div><b>每日挑戰</b><span>${GZH[g]}年級單元 6 題＋會考真題 4 題</span></div></button>
+    <button class="big daily" id="goDaily"><span class="ic">🎯</span><div><b>每日挑戰</b><span>${GZH[g]}年級單元 9 題＋會考真題 1 題</span></div></button>
     <a class="big hk" href="#/hk"><span class="ic">📝</span><div><b>會考數學真題</b><span>111～115 年 ${HK.length} 題・附詳解與全國答對率</span></div></a>
     <button class="big" id="goWrong"><span class="ic">📒</span><div><b>錯題本</b><span>${S.wrong.length} 題等你再挑戰</span></div></button>
   </div>
