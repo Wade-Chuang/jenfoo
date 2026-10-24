@@ -74,8 +74,8 @@ code{font-family:var(--mono);background:var(--brass-soft);padding:1px 6px;border
 .cta{display:flex;flex-wrap:wrap;gap:12px;margin-top:32px}
 .hero-photo{margin:0;position:relative}
 .hero-photo img{border-radius:20px;aspect-ratio:4/4.2;object-fit:cover;box-shadow:var(--shadow)}
-.hero-photo figcaption{position:absolute;left:18px;bottom:18px;background:color-mix(in srgb,var(--navy) 88%,transparent);color:#fff;padding:10px 16px;border-radius:12px;font-size:13px;line-height:1.5}
-.hero-photo figcaption b{display:block;font:700 16px var(--serif);color:var(--brass-2)}
+.hero-photo figcaption{margin-top:14px;font-size:13px;line-height:1.5;color:var(--ink-2);display:flex;align-items:baseline;gap:10px}
+.hero-photo figcaption b{font:700 17px var(--serif);color:var(--ink)}
 @media (max-width:900px){.hero{padding:40px 0}.hero .wrap{grid-template-columns:1fr;gap:32px}.hero-photo{max-width:420px}}
 
 /* 信任數字列 */
