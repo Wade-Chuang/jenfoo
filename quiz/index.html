@@ -7,7 +7,7 @@
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="正賦文理短期補習班">
 <meta property="og:title" content="數學練習卷｜國小到高中職，一鍵出題附解答（免費）">
-<meta property="og:description" content="國小、國中、高中、技高數學A・B・C 共 159 個單元，含幾何附圖題。選單元、選難度，每次都是不重複的新卷子，附解答可直接列印。正賦文理短期補習班提供。">
+<meta property="og:description" content="國小、國中、高中、技高數學A・B・C 共 164 個單元，含幾何附圖題。選單元、選難度，每次都是不重複的新卷子，附解答可直接列印。正賦文理短期補習班提供。">
 <meta property="og:image" content="https://wade-chuang.github.io/jenfoo/quiz/og.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -381,7 +381,7 @@ function powTerm(maxB,maxE){const b=ri(2,maxB),e=ri(2,maxE),t=ri(0,2);
   if(t===0)return{t:`(-${b})^{${e}}`,v:(-b)**e,lead:false};
   if(t===1)return{t:`-${b}^{${e}}`,v:-(b**e),lead:true};
   return{t:`${b}^{${e}}`,v:b**e,lead:false}}
-unit({id:'power',g:'七上',name:'指數與科學記號',instr:'計算下列各式的值，或以科學記號表示。',h:[14,18,22],gen(d){
+unit({id:'power',g:'七上',name:'指數與科學記號',instr:'計算下列各式的值，或依題意作答。',h:[14,18,22],gen(d){
   const EX=(L,ans)=>L.map((s,i)=>'①②③④⑤'[i]+' '+s).join('\n')+'\n所以答案是 '+ans+'。';
   const pp=t=>{const m=t.t.match(/(\d+)\)?\^\{(\d+)\}/);return{b:+m[1],x:+m[2]}};
   const pe=t=>{const {b,x}=pp(t),rep=s=>Array(x).fill(s).join(' \\times ');
@@ -406,11 +406,19 @@ unit({id:'power',g:'七上',name:'指數與科學記號',instr:'計算下列各�
     const e=-ri(3,6),num='0.'+'0'.repeat(-e-1)+digits,ans=`$${mant} \\times 10^{${e}}$`;
     return{q:`將 $${num}$ 以科學記號表示`,a:ans,e:EX([`科學記號要寫成 $a \\times 10^n$，其中 $1 \\leqq a \\lt 10$。`,`把小數點移到第一個不是 $0$ 的數字 $${d1}$ 後面，得 $a = ${mant}$。`,`小數點向右移了 ${-e} 位（數一數：小數點到 $${d1}$ 共 ${-e} 位）。`,`向右移 ${-e} 位等於乘以 $10^{${-e}}$，所以要乘回 $10^{${e}}$：$${num} = ${mant} \\times 10^{${e}}$。`],ans)};
   }
-  const m2=ri(2,9),e1=ri(-6,9),e2=ri(-6,9);
-  if(R()<.5){const m1=ri(2,9),p=m1*m2;let mant,e=e1+e2;if(p>=10){mant=dec1(p);e+=1}else mant=String(p);if(e===0)return null;const ans=`$${mant} \\times 10^{${e}}$`;
-    return{q:`$(${m1} \\times 10^{${e1}}) \\times (${m2} \\times 10^{${e2}})$`,a:ans,e:EX([`係數和係數相乘；$10$ 的次方相乘，指數相加：$(${m1} \\times ${m2}) \\times 10^{${e1} + ${P(e2)}}$。`,`$${m1} \\times ${m2} = ${p}$，$${e1} + ${P(e2)} = ${e1+e2}$，得 $${p} \\times 10^{${e1+e2}}$。`,p>=10?`$${p}$ 不小於 $10$，改寫 $${p} = ${mant} \\times 10$，指數再加 $1$：$${e1+e2} + 1 = ${e}$。`:`係數 $${p}$ 在 $1$ 到 $10$ 之間，已經是科學記號。`],ans)}}
-  const r=ri(2,9),M=r*m2;let m1s,e=e1-e2;if(M>=10){m1s=dec1(M);e-=1}else m1s=String(M);if(e===0)return null;const ans=`$${r} \\times 10^{${e}}$`;
-  return{q:`$(${m1s} \\times 10^{${e1}}) \\div (${m2} \\times 10^{${e2}})$`,a:ans,e:EX([`係數和係數相除；$10$ 的次方相除，指數相減：$(${m1s} \\div ${m2}) \\times 10^{${e1} - ${P(e2)}}$。`,`$${m1s} \\div ${m2} = ${M>=10?`0.${r}`:r}$，$${e1} - ${P(e2)} = ${e1-e2}$，得 $${M>=10?`0.${r}`:r} \\times 10^{${e1-e2}}$。`,M>=10?`$0.${r}$ 小於 $1$，改寫 $0.${r} = ${r} \\times 10^{-1}$，指數再減 $1$：$${e1-e2} - 1 = ${e}$。`:`係數 $${r}$ 在 $1$ 到 $10$ 之間，已經是科學記號。`],ans)};
+  /* 難度3：指數律（N-7-7，以數字例、指數為非負整數；不出負指數，不出科學記號四則運算） */
+  const f=ri(0,4),a=pick([2,3,5,7]);
+  if(f===0){const m=ri(2,9),k=ri(2,9),n=m+k,ans=`$n = ${n}$`;
+    return{q:`求 $n$：$${a}^{${m}} \\times ${a}^{${k}} = ${a}^{n}$`,a:ans,e:EX([`同底數相乘，底數不變、指數相加：$a^m \\times a^n = a^{m+n}$。`,`$${a}^{${m}}$ 是 ${m} 個 $${a}$ 相乘，$${a}^{${k}}$ 是 ${k} 個 $${a}$ 相乘，合起來共 ${m} + ${k} 個。`,`$${a}^{${m}} \\times ${a}^{${k}} = ${a}^{${m} + ${k}} = ${a}^{${n}}$，所以 $n = ${n}$。`],ans)}}
+  if(f===1){const m=ri(2,6),k=ri(2,5),n=m*k,ans=`$n = ${n}$`;
+    return{q:`求 $n$：$(${a}^{${m}})^{${k}} = ${a}^{n}$`,a:ans,e:EX([`次方的次方，底數不變、指數相乘：$(a^m)^n = a^{m \\times n}$。`,`$(${a}^{${m}})^{${k}}$ 是 ${k} 個 $${a}^{${m}}$ 相乘，指數相加 ${k} 次 $${m}$。`,`$(${a}^{${m}})^{${k}} = ${a}^{${m} \\times ${k}} = ${a}^{${n}}$，所以 $n = ${n}$。`],ans)}}
+  if(f===2){const k=ri(2,8),n=ri(1,8),m=k+n,ans=`$n = ${n}$`;
+    return{q:`求 $n$：$${a}^{${m}} \\div ${a}^{${k}} = ${a}^{n}$`,a:ans,e:EX([`同底數相除，底數不變、指數相減：$a^m \\div a^n = a^{m-n}$（$m \\geqq n$）。`,`$${a}^{${m}}$ 有 ${m} 個 $${a}$，除掉 ${k} 個 $${a}$，剩下 ${m} - ${k} 個。`,`$${a}^{${m}} \\div ${a}^{${k}} = ${a}^{${m} - ${k}} = ${a}^{${n}}$，所以 $n = ${n}$。`],ans)}}
+  if(f===3){const [x,y,b,t]=pick([[2,5,10,1],[4,25,100,2],[20,5,100,2],[25,4,100,2],[5,2,10,1]]),k=ri(2,6),n=k*t,ans=`$n = ${n}$`;
+    return{q:`求 $n$：$${x}^{${k}} \\times ${y}^{${k}} = 10^{n}$`,a:ans,e:EX([`指數相同時可以先把底數相乘：$a^n \\times b^n = (a \\times b)^n$。`,`$${x}^{${k}} \\times ${y}^{${k}} = (${x} \\times ${y})^{${k}} = ${b}^{${k}}$。`,t===1?`$${b}^{${k}} = 10^{${k}}$，所以 $n = ${k}$。`:`$100 = 10^{2}$，所以 $100^{${k}} = (10^{2})^{${k}} = 10^{2 \\times ${k}} = 10^{${n}}$，所以 $n = ${n}$。`],ans)}}
+  const [b,p]=a===2?pick([[4,2],[8,3]]):a===3?[9,2]:a===5?[25,2]:[49,2],u=ri(2,7),v=ri(2,4),w=ri(0,3),n=u+p*v-w;if(n<1)return null;const ans=`$n = ${n}$`;
+  const qq=w?`${a}^{${u}} \\times ${b}^{${v}} \\div ${a}^{${w}}`:`${a}^{${u}} \\times ${b}^{${v}}`;
+  return{q:`求 $n$：$${qq} = ${a}^{n}$`,a:ans,e:EX([`先把底數化成相同：$${b} = ${a}^{${p}}$，所以 $${b}^{${v}} = (${a}^{${p}})^{${v}} = ${a}^{${p*v}}$。`,`原式 $= ${a}^{${u}} \\times ${a}^{${p*v}}${w?` \\div ${a}^{${w}}`:''}$。`,`同底數相乘指數相加${w?'、相除指數相減':''}：$${a}^{${u} + ${p*v}${w?` - ${w}`:''}} = ${a}^{${n}}$。`,`所以 $n = ${n}$。`],ans)};
 }});
 
 function factorTex(n){const ps=[];let m=n;for(let p=2;p*p<=m;p++){let e=0;while(m%p===0){m/=p;e++}if(e)ps.push(e>1?`${p}^{${e}}`:`${p}`)}if(m>1)ps.push(`${m}`);return ps}
@@ -523,12 +531,18 @@ unit({id:'sys-eq',g:'七下',name:'二元一次聯立方程式',instr:'解下列
 unit({id:'ratio',g:'七下',name:'比與比例式',instr:'依題意作答。',h:[18,22,28],gen(d){
   const EX=(L,ans)=>L.map((s,i)=>'①②③④⑤'[i]+' '+s).join('\n')+'\n所以答案是 '+ans+'。';
   const cf=t=>t===1?'':t;
+  if(d===1&&R()<.25){const g=ri(2,9),p=ri(1,12),q=ri(2,12);if(p===q||gcd(p,q)!==1)return null;const ans=`$${ftex(F(p,q))}$`;
+    return{q:`求 $${g*p} : ${g*q}$ 的比值`,a:ans,e:EX([`$a : b$ 的比值就是 $a \\div b = \\frac{a}{b}$。`,`$${g*p} : ${g*q}$ 的比值 $= ${g*p} \\div ${g*q} = \\frac{${g*p}}{${g*q}}$。`,`分子分母同除以最大公因數 $${g}$，得 $${ftex(F(p,q))}$。`],ans)}}
+  if(d===1&&R()<.35){const k=ri(2,9),x1=ri(2,9),x2=ri(2,12);if(x1===x2)return null;const y1=k*x1,y2=k*x2,ans=`$y = ${y2}$`;
+    return{q:`已知 $y$ 與 $x$ 成正比，當 $x = ${x1}$ 時 $y = ${y1}$，求 $x = ${x2}$ 時 $y$ 的值`,a:ans,e:EX([`$y$ 與 $x$ 成正比，表示 $y = kx$（$k$ 是不為 $0$ 的固定數），$\\frac{y}{x}$ 的值固定。`,`代入 $x = ${x1}$、$y = ${y1}$：$${y1} = ${x1}k$，$k = ${y1} \\div ${x1} = ${k}$，所以 $y = ${k}x$。`,`當 $x = ${x2}$：$y = ${k} \\times ${x2} = ${y2}$。`],ans)}}
   if(d===1){const a=ri(2,9),b=ri(2,12),k=ri(2,6);if(a===b)return null;const f=ri(0,2);
     const one=(out,inn,coef,prod,x)=>EX([`比例式 $a : b = c : d$ 中，外項乘積＝內項乘積，即 $a \\times d = b \\times c$。`,`外項是 ${out}，內項是 ${inn}：$${coef} \\times x = ${prod}$。`,`兩邊同除以 $${coef}$：$x = ${a*b*k} \\div ${coef} = ${x}$。`],`$x = ${x}$`);
     if(f===0)return{q:`求 $x$：$${a} : ${b} = ${a*k} : x$`,a:`$x = ${b*k}$`,e:one(`$${a}$ 和 $x$`,`$${b}$ 和 $${a*k}$`,a,`${b} \\times ${a*k} = ${a*b*k}`,b*k)};
     if(f===1)return{q:`求 $x$：$${a} : x = ${a*k} : ${b*k}$`,a:`$x = ${b}$`,e:one(`$${a}$ 和 $${b*k}$`,`$x$ 和 $${a*k}$`,a*k,`${a} \\times ${b*k} = ${a*b*k}`,b)};
     return{q:`求 $x$：$x : ${b} = ${a*k} : ${b*k}$`,a:`$x = ${a}$`,e:one(`$x$ 和 $${b*k}$`,`$${b}$ 和 $${a*k}$`,b*k,`${b} \\times ${a*k} = ${a*b*k}`,a)}}
   if(d===2){
+    if(R()<.3){const k=pick([12,18,24,30,36,48,60,72]),ds=[];for(let i=2;i<k;i++)if(k%i===0)ds.push(i);const x1=pick(ds),x2=pick(ds);if(x1===x2)return null;const y1=k/x1,y2=k/x2,ans=`$y = ${y2}$`;
+      return{q:`已知 $y$ 與 $x$ 成反比，當 $x = ${x1}$ 時 $y = ${y1}$，求 $x = ${x2}$ 時 $y$ 的值`,a:ans,e:EX([`$y$ 與 $x$ 成反比，表示 $xy = k$（$k$ 是不為 $0$ 的固定數）。`,`代入 $x = ${x1}$、$y = ${y1}$：$k = ${x1} \\times ${y1} = ${k}$，所以 $xy = ${k}$。`,`當 $x = ${x2}$：$${x2}y = ${k}$，$y = ${k} \\div ${x2} = ${y2}$。`],ans)}}
     if(R()<.5){const f=ri(0,2);let qt,p,q,L;
       if(f===0){const g=ri(3,12);p=ri(1,9);q=ri(1,9);if(p===q||gcd(p,q)!==1)return null;qt=`${g*p} : ${g*q}`;
         L=[`整數比要化簡，就找前項和後項的最大公因數：$${g*p}$ 和 $${g*q}$ 的最大公因數是 $${g}$。`,`前後項同除以 $${g}$：$${g*p} \\div ${g} = ${p}$，$${g*q} \\div ${g} = ${q}$。`]}
@@ -541,6 +555,11 @@ unit({id:'ratio',g:'七下',name:'比與比例式',instr:'依題意作答。',h:
     const r=ri(1,9),s=ri(2,9),t=ri(1,5),p=rnz(-9,9);if(gcd(r,s)!==1||r===s)return null;
     return{q:`求 $x$：$(${lin(1,p)}) : ${s*t} = ${r} : ${s}$`,a:`$x = ${r*t-p}$`,e:EX([`外項乘積＝內項乘積：$${s}(${lin(1,p)}) = ${s*t} \\times ${r}$。`,`右邊 $${s*t} \\times ${r} = ${s*t*r}$；兩邊同除以 $${s}$：$${lin(1,p)} = ${s*t*r} \\div ${s} = ${r*t}$。`,`移項：$x = ${r*t} - ${P(p)} = ${r*t-p}$。`],`$x = ${r*t-p}$`)};
   }
+  if(R()<.4){
+    if(R()<.5){const v=ri(3,12)*5,t1=ri(2,6),t2=ri(2,9);if(t1===t2)return null;const ans=`$${v*t2}$ 公里`;
+      return{q:`汽車以固定的速率行駛，$${t1}$ 小時走了 $${v*t1}$ 公里。照這樣的速率，$${t2}$ 小時可以走多少公里？`,a:ans,e:EX([`速率固定時，路程 $y$ 與時間 $x$ 成正比：$y = kx$。`,`$${v*t1} = ${t1}k$，$k = ${v*t1} \\div ${t1} = ${v}$，即每小時走 $${v}$ 公里。`,`$${t2}$ 小時：$y = ${v} \\times ${t2} = ${v*t2}$（公里）。`],ans)}}
+    const W=pick([24,36,48,60,72,90,120]),ds=[];for(let i=2;i<=W/2;i++)if(W%i===0&&W/i>=2)ds.push(i);const p1=pick(ds),p2=pick(ds);if(p1===p2)return null;const ans=`$${W/p2}$ 天`;
+    return{q:`一件工作由 $${p1}$ 人來做要 $${W/p1}$ 天完成。若每人每天的工作量都相同，改由 $${p2}$ 人來做，要幾天完成？`,a:ans,e:EX([`總工作量固定時，人數 $x$ 與天數 $y$ 成反比：$xy = k$。`,`$k = ${p1} \\times ${W/p1} = ${W}$（人・天）。`,`$${p2}$ 人：$${p2}y = ${W}$，$y = ${W} \\div ${p2} = ${W/p2}$（天）。`],ans)}}
   const a=ri(1,4),c=ri(1,4),b=rnz(-9,9),dd=rnz(-9,9),x0=ri(-5,8),A=a*x0+b,C=c*x0+dd;if(A<=0||C<=0)return null;
   const g=gcd(A,C),p=A/g,q=C/g;if(p===q||p>15||q>15||q*a-p*c===0)return null;const K=q*a-p*c,V=p*dd-q*b;
   return{q:`求 $x$：$(${lin(a,b)}) : (${lin(c,dd)}) = ${p} : ${q}$`,a:`$x = ${x0}$`,e:EX([`外項乘積＝內項乘積：$${cf(q)}(${lin(a,b)}) = ${cf(p)}(${lin(c,dd)})$。`,`去括號：$${lin(q*a,q*b)} = ${lin(p*c,p*dd)}$。`,`移項（$x$ 項到左邊、常數到右邊）：$${poly([[q*a,'x'],[-p*c,'x']])} = ${poly([[p*dd,''],[-q*b,'']])}$。`,`合併得 $${lin(K,0)} = ${V}$${K===1?'':`，兩邊同除以 $${K}$：$x = ${V} \\div ${P(K)} = ${x0}$`}。`],`$x = ${x0}$`)};
@@ -557,8 +576,9 @@ unit({id:'ineq',g:'七下',name:'一元一次不等式',instr:'解下列一元�
   return{q:`$${p}(${lin(1,b)}) ${Q<0?'-':'+'} ${Math.abs(Q)} ${op} ${lin(r,s)}$`,a:ans,e:EX([`用分配律去括號：$${p}(${lin(1,b)}) = ${lin(p,p*b)}$，左邊變成 $${poly([[p,'x'],[p*b,''],[Q,'']])}$。`,`合併左邊常數：$${p*b} + ${P(Q)} = ${p*b+Q}$，得 $${lin(p,p*b+Q)} ${op} ${lin(r,s)}$。`,`移項（$x$ 項到左邊、常數到右邊）：$${poly([[p,'x'],[-r,'x']])} ${op} ${poly([[s,''],[-(p*b+Q),'']])}$。`,`合併：$${lin(p-r,0)} ${op} ${s-p*b-Q}$。`,dv(p-r,s-p*b-Q,op)],ans)};
 }});
 
-unit({id:'expand',g:'八上',name:'乘法公式',instr:'利用乘法公式展開或計算下列各式。',h:[16,20,24],gen(d){
-  const EX=(L,ans)=>L.map((s,i)=>'①②③④⑤'[i]+' '+s).join('\n')+'\n所以答案是 '+ans+'。';
+unit({id:'expand',g:'八上',name:'乘法公式與多項式',instr:'利用乘法公式或多項式的運算，計算下列各式。',h:[16,20,24],gen(d){
+  /* 108課綱 A-8-1～A-8-3：一元多項式；乘積最高三次；除法只做被除式為二次。不出二元 (ax+by)(cx+dy) */
+  const EX=(L,ans)=>L.map((s,i)=>'①②③④⑤'[i]+' '+s).join('\n')+'\n所以答案是'+(ans[0]==='$'?' ':'')+ans+'。';
   const SQ=pos=>pos?'和的平方公式 $(a+b)^2 = a^2 + 2ab + b^2$':'差的平方公式 $(a-b)^2 = a^2 - 2ab + b^2$',DS='平方差公式 $(a+b)(a-b) = a^2 - b^2$';
   const nm=(c,v)=>c<0?`(${lin(c,0,v)})`:lin(c,0,v);
   if(d===1){const a=rnz(-9,9),A=Math.abs(a);
@@ -570,8 +590,11 @@ unit({id:'expand',g:'八上',name:'乘法公式',instr:'利用乘法公式展開
     const c=ri(1,4),dd=rnz(-7,7);if(a===c&&b===dd)return null;const ans=`$${quad(a*c,a*dd+b*c,b*dd)}$`;
     return{q:`$(${lin(a,b)})(${lin(c,dd)})$`,a:ans,e:EX([`用分配律：前面括號的每一項，都乘以後面的括號。`,`$${a}x \\times (${lin(c,dd)}) = ${poly([[a*c,'x^2'],[a*dd,'x']])}$。`,`$${P(b)} \\times (${lin(c,dd)}) = ${lin(b*c,b*dd)}$。`,`合併同類項：$x$ 項 $${a*dd} + ${P(b*c)} = ${a*dd+b*c}$。`],ans)}}
   const f=ri(0,3);
-  if(f===3){const a=ri(1,4),b=rnz(-5,5),c=ri(1,4),dd=rnz(-5,5);if(a===1&&c===1)return null;const ans=`$${poly([[a*c,'x^2'],[a*dd+b*c,'xy'],[b*dd,'y^2']])}$`,Y=poly([[c,'x'],[dd,'y']]);
-    return{q:`$(${poly([[a,'x'],[b,'y']])})(${Y})$`,a:ans,e:EX([`用分配律：前面括號的每一項，都乘以後面的括號。`,`$${lin(a,0)} \\times (${Y}) = ${poly([[a*c,'x^2'],[a*dd,'xy']])}$。`,`$${nm(b,'y')} \\times (${Y}) = ${poly([[b*c,'xy'],[b*dd,'y^2']])}$。`,`合併同類項：$xy$ 項 $${a*dd} + ${P(b*c)} = ${a*dd+b*c}$。`],ans)}}
+  if(f===3){
+    if(R()<.5){const p=rnz(-5,5),b=rnz(-6,6),c=rnz(-9,9),q2=[[1,'x^2'],[b,'x'],[c,'']],ans=`$${poly([[1,'x^3'],[b+p,'x^2'],[c+p*b,'x'],[p*c,'']])}$`;
+      return{q:`$(${lin(1,p)})(${poly(q2)})$`,a:ans,e:EX([`用分配律：$x$ 和 $${P(p)}$ 分別乘以後面的括號。`,`$x \\times (${poly(q2)}) = ${poly([[1,'x^3'],[b,'x^2'],[c,'x']])}$。`,`$${P(p)} \\times (${poly(q2)}) = ${poly([[p,'x^2'],[p*b,'x'],[p*c,'']])}$。`,`合併同類項：$x^2$ 項 $${b} + ${P(p)} = ${b+p}$，$x$ 項 $${c} + ${P(p*b)} = ${c+p*b}$。`],ans)}}
+    const p=rnz(-6,6),q=rnz(-6,6),r=ri(-9,9),B=p+q,C=p*q+r,ans=`商式 $${lin(1,q)}$，餘式 $${r}$`;
+    return{q:`求 $(${quad(1,B,C)}) \\div (${lin(1,p)})$ 的商式與餘式`,a:ans,e:EX([`用直式除法，先看最高次項：$x^2 \\div x = x$，商的第一項是 $x$。`,`$x \\times (${lin(1,p)}) = ${quad(1,p,0)}$，從被除式減掉：$(${quad(1,B,C)}) - (${quad(1,p,0)}) = ${lin(q,C)}$。`,`再看 $${lin(q,0)} \\div x = ${q}$，商的第二項是 $${q}$：$${P(q)} \\times (${lin(1,p)}) = ${lin(q,p*q)}$。`,`$(${lin(q,C)}) - (${lin(q,p*q)}) = ${r}$，次數比除式低，就是餘式。`],ans)}}
   const N=pick([20,30,40,50,60,70,80,90,100,200,1000]),k=rnz(-4,4),K=Math.abs(k),cs=x=>commas(String(x));
   if(f===0){const ans=`$${cs((N+k)**2)}$`;return{q:`$${N+k}^2$`,a:ans,e:EX([`把 $${N+k}$ 看成 $${N} ${k>0?'+':'-'} ${K}$，用${SQ(k>0)}。`,`代入：$${N}^2 ${k>0?'+':'-'} 2 \\times ${N} \\times ${K} + ${K}^2$。`,`逐項計算：$${N}^2 = ${cs(N*N)}$，$2 \\times ${N} \\times ${K} = ${cs(2*N*K)}$，$${K}^2 = ${K*K}$。`,`$${cs(N*N)} ${k>0?'+':'-'} ${cs(2*N*K)} + ${K*K} = ${cs((N+k)**2)}$。`],ans)}}
   if(f===1){const ans=`$${cs(N*N-K*K)}$`;return{q:`$${N+K} \\times ${N-K}$`,a:ans,e:EX([`把兩數看成 $(${N} + ${K})(${N} - ${K})$，用${DS}。`,`代入：$${N}^2 - ${K}^2$。`,`計算：$${cs(N*N)} - ${K*K} = ${cs(N*N-K*K)}$。`],ans)}}
@@ -579,7 +602,7 @@ unit({id:'expand',g:'八上',name:'乘法公式',instr:'利用乘法公式展開
   return{q:`$${N+K}^2 - ${N-K}^2$`,a:ans,e:EX([`用平方差公式 $a^2 - b^2 = (a+b)(a-b)$，這裡 $a = ${N+K}$、$b = ${N-K}$。`,`代入：$(${N+K} + ${N-K}) \\times (${N+K} - ${N-K})$。`,`先算括號：$${N+K} + ${N-K} = ${2*N}$，$${N+K} - ${N-K} = ${2*K}$。`,`相乘：$${2*N} \\times ${2*K} = ${cs(4*N*K)}$。`],ans)};
 }});
 
-unit({id:'sqrt',g:'八上',name:'平方根與根式運算',instr:'化簡下列各式（分母須有理化）。',h:[16,20,26],gen(d){
+unit({id:'sqrt',g:'八上',name:'二次方根與根式運算',instr:'化簡下列各式（分母須有理化）。',h:[16,20,26],gen(d){
   const EX=(L,ans)=>L.map((s,i)=>'①②③④⑤'[i]+' '+s).join('\n')+'\n所以答案是 '+ans+'。';
   const simp=(k,m)=>`\\sqrt{${k*k*m}} = \\sqrt{${k*k} \\times ${m}} = ${rad(k,m)}`;
   if(d===1){if(R()<.3){const k=ri(11,25);return{q:`$\\sqrt{${k*k}}$`,a:`$${k}$`,e:EX([`找哪個正數的平方是 $${k*k}$：$${k}^2 = ${k} \\times ${k} = ${k*k}$。`,`所以 $${k*k}$ 的正平方根是 $${k}$，即 $\\sqrt{${k*k}} = ${k}$。`],`$${k}$`)}}
@@ -656,22 +679,31 @@ const half=x2=>x2%2?(x2/2).toFixed(1):String(x2/2);
 const pt=(x,y)=>`(${x}, ${y})`;
 
 unit({id:'arith',g:'八下',name:'等差數列與等差級數',instr:'依題意作答。',h:[18,24,30],gen(d){
-  const EX=(L,ans)=>L.map((s,i)=>'①②③④⑤'[i]+' '+s).join('\n')+'\n所以答案是 '+ans+'。';
+  /* 108課綱 N-8-4、N-8-5：不處理「已知不相鄰兩項反求首項、項數或公差」與「已知級數和反求首項、項數或公差」 */
+  const EX=(L,ans)=>L.map((s,i)=>'①②③④⑤⑥'[i]+' '+s).join('\n')+'\n所以答案是'+(ans[0]==='$'?' ':'')+ans+'。';
   const cs=x=>commas(String(x)),AN='第 $n$ 項公式：$a_n = a_1 + (n-1)d$';
   const a1=rnz(-20,30),dd=rnz(-9,9);
-  if(d===1){const n=ri(8,40),v=a1+(n-1)*dd;
+  if(d===1){
+    if(R()<.25){const A=ri(-20,30),D=rnz(-9,9),x=A,y=A+2*D,m=A+D,ans=`$${m}$`;
+      return{q:`若 $${x}$、$b$、$${y}$ 三數成等差數列，求等差中項 $b$`,a:ans,e:EX([`三數 $a$、$b$、$c$ 成等差數列時，$b - a = c - b$，所以 $b = \\frac{a + c}{2}$（$b$ 叫等差中項）。`,`代入：$b = \\frac{${x} + ${P(y)}}{2} = \\frac{${x+y}}{2}$。`,`計算得 $b = ${m}$。`],ans)}}
+    const n=ri(8,40),v=a1+(n-1)*dd;
     const calc=[`代入：$a_{${n}} = ${a1} + (${n} - 1) \\times ${P(dd)} = ${a1} + ${n-1} \\times ${P(dd)}$。`,`先乘：$${n-1} \\times ${P(dd)} = ${(n-1)*dd}$，再加：$${a1} + ${P((n-1)*dd)} = ${v}$。`];
     if(R()<.5)return{q:`等差數列首項 $a_1 = ${a1}$，公差 $d = ${dd}$，求第 $${n}$ 項 $a_{${n}}$`,a:`$a_{${n}} = ${v}$`,e:EX([`用等差數列${AN}。`,...calc],`$a_{${n}} = ${v}$`)};
     return{q:`等差數列 $${[0,1,2,3].map(i=>a1+i*dd).join(',\\ ')},\\ \\cdots$，求第 $${n}$ 項`,a:`$${v}$`,e:EX([`首項 $a_1 = ${a1}$，公差 $d = ${a1+dd} - ${P(a1)} = ${dd}$。`,`用${AN}。`,...calc],`$${v}$`)}}
-  if(d===2){
-    if(R()<.5){const m=ri(2,6),k=m+ri(2,8),am=a1+(m-1)*dd,ak=a1+(k-1)*dd;
-      return{q:`等差數列中 $a_{${m}} = ${am}$，$a_{${k}} = ${ak}$，求公差 $d$ 與首項 $a_1$`,a:`$d = ${dd}$，$a_1 = ${a1}$`,e:EX([`從第 ${m} 項走到第 ${k} 項，要加 ${k-m} 次公差：$a_{${k}} - a_{${m}} = ${k-m}d$。`,`代入：$${ak} - ${P(am)} = ${(k-m)*dd}$，所以 $${k-m}d = ${(k-m)*dd}$。`,`$d = ${(k-m)*dd} \\div ${k-m} = ${dd}$。`,`由 $a_{${m}} = a_1 + ${m-1===1?'':m-1}d$：$a_1 = ${am} - ${m-1} \\times ${P(dd)} = ${am} - ${P((m-1)*dd)} = ${a1}$。`],`$d = ${dd}$，$a_1 = ${a1}$`)}}
+  if(d===2){const f=ri(0,2);
+    if(f===0){const n=ri(10,60),v=a1+(n-1)*dd,ans=`第 $${n}$ 項`;
+      return{q:`等差數列 $${[0,1,2].map(i=>a1+i*dd).join(',\\ ')},\\ \\cdots$ 中，$${v}$ 是第幾項？`,a:ans,e:EX([`首項 $a_1 = ${a1}$，公差 $d = ${a1+dd} - ${P(a1)} = ${dd}$。`,`設 $${v}$ 是第 $n$ 項，用${AN}：$${a1} + (n-1) \\times ${P(dd)} = ${v}$。`,`移項：$(n-1) \\times ${P(dd)} = ${v} - ${P(a1)} = ${v-a1}$，$n - 1 = ${v-a1} \\div ${P(dd)} = ${n-1}$。`,`$n = ${n-1} + 1 = ${n}$。`],ans)}}
+    if(f===1){const A=ri(-15,20),D=rnz(-6,8),n=ri(8,30),L=A+(n-1)*D,S=n*(A+L)/2;if(!Number.isInteger(S))return null;const ans=`$${cs(S)}$`;
+      return{q:`等差級數的首項為 $${A}$，公差為 $${D}$，求前 $${n}$ 項的和`,a:ans,e:EX([`先求第 $${n}$ 項（末項）：$a_{${n}} = ${A} + (${n} - 1) \\times ${P(D)} = ${A} + ${P((n-1)*D)} = ${L}$。`,`用等差級數和公式：$S = \\frac{(\\text{首項} + \\text{末項}) \\times \\text{項數}}{2}$。`,`代入：$\\frac{(${A} + ${P(L)}) \\times ${n}}{2} = \\frac{${A+L} \\times ${n}}{2} = \\frac{${cs((A+L)*n)}}{2} = ${cs(S)}$。`],ans)}}
     const D=ri(2,9),A=ri(1,20),n=ri(8,30),L=A+(n-1)*D,S=n*(A+L)/2;
     return{q:`求等差級數 $${A} + ${A+D} + ${A+2*D} + \\cdots + ${L}$ 的和`,a:`$${cs(S)}$`,e:EX([`首項 $${A}$，公差 $${A+D} - ${A} = ${D}$，末項 $${L}$。`,`項數：$n = \\frac{\\text{末項} - \\text{首項}}{\\text{公差}} + 1 = \\frac{${L} - ${A}}{${D}} + 1 = ${n-1} + 1 = ${n}$。`,`用等差級數和公式：$S = \\frac{(\\text{首項} + \\text{末項}) \\times \\text{項數}}{2}$。`,`代入：$\\frac{(${A} + ${L}) \\times ${n}}{2} = \\frac{${A+L} \\times ${n}}{2} = \\frac{${cs((A+L)*n)}}{2} = ${cs(S)}$。`],`$${cs(S)}$`)}}
-  if(R()<.5){const k=ri(3,13),N=pick([100,150,200,300,500]),c=Math.floor(N/k),S=k*c*(c+1)/2;
+  const f=ri(0,2);
+  if(f===0){const k=ri(3,13),N=pick([100,150,200,300,500]),c=Math.floor(N/k),S=k*c*(c+1)/2;
     return{q:`求 $1$ 到 $${N}$ 之間所有 $${k}$ 的倍數的總和`,a:`$${cs(S)}$`,e:EX([`$${k}$ 的倍數：$${k}, ${2*k}, ${3*k}, \\ldots$，是首項 $${k}$、公差 $${k}$ 的等差數列。`,`項數：${N%k?`$${N} \\div ${k}$ 得商 $${c}$ 餘 $${N%k}$，取商 $${c}$`:`$${N} \\div ${k} = ${c}$`}，最後一項是 $${k} \\times ${c} = ${k*c}$。`,`和 $= \\frac{(\\text{首項} + \\text{末項}) \\times \\text{項數}}{2} = \\frac{(${k} + ${k*c}) \\times ${c}}{2}$。`,`$= \\frac{${k+k*c} \\times ${c}}{2} = \\frac{${cs((k+k*c)*c)}}{2} = ${cs(S)}$。`],`$${cs(S)}$`)}}
-  const A=ri(1,15),D=ri(2,6),n=ri(6,20),S=n*(2*A+(n-1)*D)/2,K=2*A+(n-1)*D;
-  return{q:`等差級數首項為 $${A}$，公差為 $${D}$，前 $n$ 項的和為 $${cs(S)}$，求 $n$`,a:`$n = ${n}$`,e:EX([`用等差級數和公式 $S_n = \\frac{n[2a_1 + (n-1)d]}{2}$，代入：$\\frac{n[2 \\times ${A} + (n-1) \\times ${D}]}{2} = ${cs(S)}$。`,`兩邊同乘 $2$：$n[${2*A} + ${D}(n-1)] = ${cs(2*S)}$，即 $n(${lin(D,2*A-D,'n')}) = ${cs(2*S)}$。`,`展開、移項：$${poly([[D,'n^2'],[2*A-D,'n'],[-2*S,'']])} = 0$。`,`十字交乘分解：$(n - ${n})(${lin(D,K,'n')}) = 0$（驗算：$${D} \\times ${n} \\times ${n} ${2*A-D<0?'-':'+'} ${Math.abs(2*A-D)} \\times ${n} = ${cs(2*S)}$）。`,`$n = ${n}$ 或 $n = ${ftex(F(-K,D))}$；項數必須是正整數，負的不合。`],`$n = ${n}$`)};
+  if(f===1){const A=ri(10,30),D=ri(2,4),n=ri(12,30),L=A+(n-1)*D,S=n*(A+L)/2,ans=`$${cs(S)}$ 個`;
+    return{q:`某禮堂的座位，第一排有 $${A}$ 個，之後每一排都比前一排多 $${D}$ 個，共有 $${n}$ 排。這個禮堂共有多少個座位？`,a:ans,e:EX([`每排座位數 $${A}, ${A+D}, ${A+2*D}, \\ldots$ 是首項 $${A}$、公差 $${D}$ 的等差數列，共 $${n}$ 項。`,`最後一排：$${A} + (${n} - 1) \\times ${D} = ${A} + ${(n-1)*D} = ${L}$（個）。`,`總座位數 $= \\frac{(\\text{首項} + \\text{末項}) \\times \\text{項數}}{2} = \\frac{(${A} + ${L}) \\times ${n}}{2}$。`,`$= \\frac{${A+L} \\times ${n}}{2} = \\frac{${cs((A+L)*n)}}{2} = ${cs(S)}$。`],ans)}}
+  const A=ri(-30,10),D=ri(2,7),n=ri(12,40),L=A+(n-1)*D,S=n*(A+L)/2;if(!Number.isInteger(S))return null;const ans=`共 $${n}$ 項，總和 $${cs(S)}$`;
+  return{q:`有限等差數列 $${A},\\ ${A+D},\\ ${A+2*D},\\ \\cdots,\\ ${L}$ 共有幾項？這些項的總和是多少？`,a:ans,e:EX([`首項 $${A}$，公差 $${A+D} - ${P(A)} = ${D}$，末項 $${L}$。`,`項數：$\\frac{${L} - ${P(A)}}{${D}} + 1 = \\frac{${L-A}}{${D}} + 1 = ${n-1} + 1 = ${n}$（項）。`,`總和 $= \\frac{(\\text{首項} + \\text{末項}) \\times \\text{項數}}{2} = \\frac{(${A} + ${P(L)}) \\times ${n}}{2}$。`,`$= \\frac{${A+L} \\times ${n}}{2} = ${cs(S)}$。`],ans)};
 }});
 
 unit({id:'geom-seq',g:'八下',name:'等比數列',instr:'依題意作答。',h:[18,22,28],gen(d){
@@ -682,43 +714,57 @@ unit({id:'geom-seq',g:'八下',name:'等比數列',instr:'依題意作答。',h:
     if(n<5)return null;return{q:`等比數列 $${[0,1,2].map(i=>a*r**i).join(',\\ ')},\\ \\cdots$，求第 $${n}$ 項`,a:`$${commas(String(v))}$`,e:`① 首項 $a_1 = ${a}$，公比 $r = ${a*r} \\div ${P(a)} = ${r}$；公式 $a_n = a_1 \\times r^{n-1}$。\n${st}`}}
   if(d===2){
     if(R()<.5){const c=ri(1,5),u=ri(1,6),v=ri(1,6);if(u===v)return null;const x=c*u*u,y=c*v*v;return{q:`求 $${Math.min(x,y)}$ 與 $${Math.max(x,y)}$ 的等比中項`,a:`$\\pm ${c*u*v}$`,e:`① 若 $a$、$G$、$b$ 成等比數列，則 $G^2 = a \\times b$（$G$ 叫等比中項）。\n② 代入：$G^2 = ${Math.min(x,y)} \\times ${Math.max(x,y)} = ${x*y}$。\n③ 因為 $${c*u*v} \\times ${c*u*v} = ${x*y}$，開根號得 $G = ${c*u*v}$ 或 $G = -${c*u*v}$。\n所以答案是 $\\pm ${c*u*v}$。`}}
-    const a1=rnz(-4,4),r=pick([2,3,-2,-3]);return{q:`等比數列中 $a_2 = ${a1*r}$，$a_5 = ${a1*r**4}$，求公比 $r$ 與首項 $a_1$`,a:`$r = ${r}$，$a_1 = ${a1}$`,e:`① 用公式寫出：$a_2 = a_1 r$，$a_5 = a_1 r^4$。\n② 兩式相除，$a_1$ 消掉：$\\frac{a_5}{a_2} = r^3$，即 $r^3 = ${a1*r**4} \\div ${P(a1*r)} = ${r**3}$。\n③ 因為 $${P(r)}^3 = ${r**3}$，所以 $r = ${r}$。\n④ 首項 $a_1 = a_2 \\div r = ${a1*r} \\div ${P(r)} = ${a1}$。\n所以答案是 $r = ${r}$，$a_1 = ${a1}$。`};
+    const a=rnz(-5,5),r=pick([2,3,4,5,-2,-3]),v=a*r**5;const ts=[0,1,2,3].map(i=>a*r**i);
+    return{q:`等比數列 $${ts.join(',\\ ')},\\ \\cdots$ 的公比是多少？第 $6$ 項是多少？`,a:`公比 $${r}$，第 $6$ 項 $${cm(v)}$`,e:`① 等比數列的公比 $=$ 後項 $\\div$ 前項。\n② 公比 $r = ${ts[1]} \\div ${P(ts[0])} = ${r}$（驗算：$${ts[2]} \\div ${P(ts[1])} = ${r}$）。\n③ 第 $5$ 項 $= ${ts[3]} \\times ${P(r)} = ${cm(a*r**4)}$，第 $6$ 項 $= ${pc(a*r**4)} \\times ${P(r)} = ${cm(v)}$。\n所以答案是公比 $${r}$，第 $6$ 項 $${cm(v)}$。`};
   }
   if(R()<.5){const base=pick([2,3]),a=(base===2?pick([64,128,256]):pick([81,243,729]))*sgn(),rs=sgn(),n=ri(4,8);
     const r=F(rs,base),v=F(a*rs**(n-1),base**(n-1));
     const pn=rs**(n-1),pd=base**(n-1),num=a*pn,g=gcd(num,pd),raw=`${num<0?'-':''}\\frac{${Math.abs(num)}}{${pd}}`;
     return{q:`等比數列首項為 $${a}$，公比為 $${ftex(r)}$，求第 $${n}$ 項`,a:`$${ftex(v)}$`,e:`① 等比數列第 $n$ 項公式：$a_n = a_1 \\times r^{n-1}$。\n② 代入：$a_{${n}} = ${a} \\times \\left(${ftex(r)}\\right)^{${n-1}}$。\n③ 先算次方：$\\left(${ftex(r)}\\right)^{${n-1}} = ${pn<0?'-':''}\\frac{1}{${pd}}$${rs<0?`（負數的${(n-1)%2?'奇數次方是負的':'偶數次方是正的'}）`:''}。\n④ 相乘：$${a} \\times ${pn<0?'\\left(-':''}\\frac{1}{${pd}}${pn<0?'\\right)':''} = ${raw}$${g>1?`，分子分母同除以 $${g}$ 得 $${ftex(v)}$`:'，已是最簡分數'}。\n所以答案是 $${ftex(v)}$。`}}
-  const a1=rnz(-3,3),r=pick([-2,-3,2,3]);return{q:`等比數列中 $a_3 = ${a1*r*r}$，$a_6 = ${a1*r**5}$，求第 $8$ 項`,a:`$${commas(String(a1*r**7))}$`,e:`① 用公式寫出：$a_3 = a_1 r^2$，$a_6 = a_1 r^5$，兩式相除得 $\\frac{a_6}{a_3} = r^3$。\n② $r^3 = ${a1*r**5} \\div ${P(a1*r*r)} = ${r**3}$，因為 $${P(r)}^3 = ${r**3}$，所以 $r = ${r}$。\n③ 第 8 項比第 6 項多乘 2 次公比：$a_8 = a_6 \\times r^2$。\n④ $a_8 = ${a1*r**5} \\times ${P(r)}^2 = ${a1*r**5} \\times ${r*r} = ${cm(a1*r**7)}$。\n所以答案是 $${cm(a1*r**7)}$。`};
+  const a=rnz(-4,4),r=pick([-2,-3,2,3,4]),k=ri(3,7),p=a*r**(k-1),q=a*r**k,v=q*r*r;if(Math.abs(v)>50000)return null;
+  return{q:`等比數列中，第 $${k}$ 項是 $${cm(p)}$，第 $${k+1}$ 項是 $${cm(q)}$，求第 $${k+3}$ 項`,a:`$${cm(v)}$`,e:`① 相鄰兩項的比就是公比：$r = a_{${k+1}} \\div a_{${k}}$。\n② $r = ${pc(q)} \\div ${pc(p)} = ${r}$。\n③ 從第 $${k+1}$ 項到第 $${k+3}$ 項要再乘 $2$ 次公比：$a_{${k+3}} = a_{${k+1}} \\times r^2$。\n④ $a_{${k+3}} = ${pc(q)} \\times ${P(r)}^2 = ${pc(q)} \\times ${r*r} = ${cm(v)}$。\n所以答案是 $${cm(v)}$。`};
 }});
 
-unit({id:'lin-func',g:'八下',name:'線型函數及其圖形',instr:'依題意作答。',h:[18,24,30],gen(d){
+unit({id:'lin-func',g:'八下',name:'線型函數與其圖形',instr:'依題意作答。',h:[18,24,30],gen(d){
+  /* 108課綱 F-8-1：不要出現 f(x) 的抽象型式，一律寫成 y = ax + b；國中不教斜率，用聯立方程式求 a、b */
   const a=rnz(-6,6),b=rnz(-12,12),bs=b<0?'-':'+',ba=Math.abs(b);
-  if(d===1){const k=rnz(-8,8);
-    if(R()<.7)return{q:`已知 $f(x) = ${lin(a,b)}$，求 $f(${k})$`,a:`$${a*k+b}$`,e:`① 求 $f(${k})$ 就是把 $x = ${k}$ 代入 $f(x) = ${lin(a,b)}$。\n② $f(${k}) = ${a} \\times ${P(k)} ${bs} ${ba}$。\n③ 先算乘法 $${a} \\times ${P(k)} = ${a*k}$，再算 $${a*k} ${bs} ${ba} = ${a*k+b}$。\n所以答案是 $${a*k+b}$。`};
-    const k2=rnz(-8,8);if(k===k2)return null;return{q:`已知 $f(x) = ${lin(a,b)}$，求 $f(${k}) + f(${k2})$`,a:`$${a*(k+k2)+2*b}$`,e:`① 分別把 $x = ${k}$、$x = ${k2}$ 代入 $f(x) = ${lin(a,b)}$。\n② $f(${k}) = ${a} \\times ${P(k)} ${bs} ${ba} = ${a*k} ${bs} ${ba} = ${a*k+b}$。\n③ $f(${k2}) = ${a} \\times ${P(k2)} ${bs} ${ba} = ${a*k2} ${bs} ${ba} = ${a*k2+b}$。\n④ 相加：$${a*k+b} + ${P(a*k2+b)} = ${a*(k+k2)+2*b}$。\n所以答案是 $${a*(k+k2)+2*b}$。`}}
-  if(d===2){const x1=ri(-6,6),x2=ri(-6,6);if(x1===x2)return null;const y1=a*x1+b,y2=a*x2+b;
-    const e2=`① 設 $f(x) = ax + b$，先用兩點求斜率 $a$。\n② $a = \\frac{${y2} - ${P(y1)}}{${x2} - ${P(x1)}} = \\frac{${y2-y1}}{${x2-x1}} = ${a}$。\n③ 把 $x = ${x1}$、$y = ${y1}$ 代入 $y = ${lin(a,0)} + b$：$${y1} = ${a} \\times ${P(x1)} + b = ${a*x1} + b$。\n④ 移項：$b = ${y1} - ${P(a*x1)} = ${b}$。\n所以答案是 $f(x) = ${lin(a,b)}$。`;
-    if(R()<.5)return{q:`線型函數 $y = f(x)$ 的圖形通過 $${pt(x1,a*x1+b)}$ 與 $${pt(x2,a*x2+b)}$ 兩點，求 $f(x)$`,a:`$f(x) = ${lin(a,b)}$`,e:e2};
-    return{q:`線型函數 $f(x)$ 滿足 $f(${x1}) = ${a*x1+b}$，$f(${x2}) = ${a*x2+b}$，求 $f(x)$`,a:`$f(x) = ${lin(a,b)}$`,e:e2}}
+  if(d===1){const k=rnz(-8,8),f=ri(0,2);
+    if(f===0)return{q:`線型函數 $y = ${lin(a,b)}$，當 $x = ${k}$ 時，$y$ 的值是多少？`,a:`$y = ${a*k+b}$`,e:`① 把 $x = ${k}$ 代入 $y = ${lin(a,b)}$。\n② $y = ${a} \\times ${P(k)} ${bs} ${ba}$。\n③ 先算乘法 $${a} \\times ${P(k)} = ${a*k}$，再算 $${a*k} ${bs} ${ba} = ${a*k+b}$。\n所以答案是 $y = ${a*k+b}$。`};
+    if(f===1){const y=a*k+b;return{q:`線型函數 $y = ${lin(a,b)}$，當 $y = ${y}$ 時，$x$ 的值是多少？`,a:`$x = ${k}$`,e:`① 把 $y = ${y}$ 代入 $y = ${lin(a,b)}$：$${y} = ${lin(a,b)}$。\n② 移項：$${lin(a,0)} = ${y} ${b<0?'+':'-'} ${ba} = ${y-b}$。\n③ 兩邊同除以 $${a}$：$x = ${y-b} \\div ${P(a)} = ${k}$。\n所以答案是 $x = ${k}$。`}}
+    const c=rnz(-9,9),k2=rnz(-8,8);return{q:`常數函數 $y = ${c}$，當 $x = ${k2}$ 時，$y$ 的值是多少？`,a:`$y = ${c}$`,e:`① 常數函數 $y = ${c}$ 表示不論 $x$ 是多少，$y$ 都等於 $${c}$。\n② 它的圖形是一條通過 $${pt(0,c)}$、和 $x$ 軸平行的水平線。\n③ 所以當 $x = ${k2}$ 時，$y$ 仍然是 $${c}$。\n所以答案是 $y = ${c}$。`}}
+  if(d===2){const x1=ri(-6,6),x2=ri(-6,6);if(x1===x2)return null;const y1=a*x1+b,y2=a*x2+b,EQ=(x,y)=>x===0?`${y} = b`:`${y} = ${lin(x,0,'a')} + b`;
+    const e2=`① 設線型函數為 $y = ax + b$，把兩組 $x$、$y$ 代入：$${EQ(x1,y1)}$，$${EQ(x2,y2)}$。\n② 兩式相減消去 $b$：$${y2} - ${P(y1)} = (${x2} - ${P(x1)})a$，即 $${y2-y1} = ${lin(x2-x1,0,'a')}$。\n③ $a = ${y2-y1} \\div ${P(x2-x1)} = ${a}$。\n④ 把 $a = ${a}$ 代回第一式：$${y1} = ${a*x1} + b$，$b = ${y1} - ${P(a*x1)} = ${b}$。\n所以答案是 $y = ${lin(a,b)}$。`;
+    if(R()<.5)return{q:`線型函數的圖形通過 $${pt(x1,y1)}$ 與 $${pt(x2,y2)}$ 兩點，求此線型函數`,a:`$y = ${lin(a,b)}$`,e:e2};
+    return{q:`線型函數中，當 $x = ${x1}$ 時 $y = ${y1}$，當 $x = ${x2}$ 時 $y = ${y2}$，求此線型函數`,a:`$y = ${lin(a,b)}$`,e:e2}}
   const A=rnz(-5,5),B=rnz(-12,12),xi=F(-B,A),area=F(B*B,2*Math.abs(A));
   return{q:`求 $y = ${lin(A,B)}$ 的圖形與 $x$ 軸、$y$ 軸的交點，以及它與兩軸所圍成的三角形面積`,a:`$x$ 軸 $${pt(ftex(xi),0)}$，$y$ 軸 $${pt(0,B)}$，面積 $${ftex(area)}$`,e:`① 和 $x$ 軸的交點：令 $y = 0$，$0 = ${lin(A,B)}$，移項得 $${lin(A,0)} = ${-B}$。\n② $x = ${-B} \\div ${P(A)} = ${ftex(xi)}$，交點 $${pt(ftex(xi),0)}$。\n③ 和 $y$ 軸的交點：令 $x = 0$，$y = ${A} \\times 0 ${B<0?'-':'+'} ${Math.abs(B)} = ${B}$，交點 $${pt(0,B)}$。\n④ 三角形兩股長是 $${ftex(F(Math.abs(B),Math.abs(A)))}$ 和 $${Math.abs(B)}$，面積 $= \\frac{1}{2} \\times ${ftex(F(Math.abs(B),Math.abs(A)))} \\times ${Math.abs(B)} = ${ftex(area)}$。\n所以答案是 $x$ 軸 $${pt(ftex(xi),0)}$，$y$ 軸 $${pt(0,B)}$，面積 $${ftex(area)}$。`};
 }});
 
 unit({id:'angles',g:'八下',name:'三角形與多邊形的角',instr:'依題意作答。',h:[18,22,28],gen(d){
+  /* 108課綱 S-8-2：不處理多邊形外角和公式；對角線條數不在課綱。另加三角形邊角關係（兩邊和大於第三邊）。 */
+  const angx=(c,k)=>`(${lin(c,k)})^{\\circ}`;
   if(d===1){const f=ri(0,2);
     if(f===0){const n=ri(5,14);return{q:`求 $${n}$ 邊形的內角和`,a:`$${deg(commas(String((n-2)*180)))}$`,e:`① $n$ 邊形內角和公式：$(n-2) \\times 180^{\\circ}$。\n② 代入 $n = ${n}$：$(${n}-2) \\times 180^{\\circ} = ${n-2} \\times 180^{\\circ}$。\n③ 計算 $${n-2} \\times 180 = ${commas(String((n-2)*180))}$。\n所以答案是 $${deg(commas(String((n-2)*180)))}$。`}}
-    const n=pick([5,6,8,9,10,12,15,18]);
-    return f===1?{q:`求正 $${n}$ 邊形每一個內角的度數`,a:`$${deg(180-360/n)}$`,e:`① 先算外角：多邊形外角和是 $360^{\\circ}$，正 $${n}$ 邊形 $${n}$ 個外角都相等。\n② 每個外角 $= 360^{\\circ} \\div ${n} = ${deg(360/n)}$。\n③ 同一個頂點的內角和外角合起來是 $180^{\\circ}$：內角 $= 180^{\\circ} - ${deg(360/n)} = ${deg(180-360/n)}$。\n所以答案是 $${deg(180-360/n)}$。`}:{q:`求正 $${n}$ 邊形每一個外角的度數`,a:`$${deg(360/n)}$`,e:`① 任何多邊形的外角和都是 $360^{\\circ}$。\n② 正 $${n}$ 邊形有 $${n}$ 個外角，而且都相等。\n③ 每個外角 $= 360^{\\circ} \\div ${n} = ${deg(360/n)}$。\n所以答案是 $${deg(360/n)}$。`};
+    if(f===1){const n=pick([5,6,8,9,10,12,15,18]),S=(n-2)*180,v=S/n;
+      return{q:`求正 $${n}$ 邊形每一個內角的度數`,a:`$${deg(v)}$`,e:`① 先求內角和：$(${n}-2) \\times 180^{\\circ} = ${n-2} \\times 180^{\\circ} = ${deg(commas(String(S)))}$。\n② 正 $${n}$ 邊形的 $${n}$ 個內角都相等。\n③ 每個內角 $= ${commas(String(S))}^{\\circ} \\div ${n} = ${deg(v)}$。\n所以答案是 $${deg(v)}$。`}}
+    const A=ri(25,85),B=ri(25,85);if(A+B>=170)return null;
+    return{q:`$\\triangle ABC$ 中，$\\angle A = ${deg(A)}$，$\\angle B = ${deg(B)}$，延長 $${seg('BC')}$ 到 $D$，求外角 $\\angle ACD$`,a:`$${deg(A+B)}$`,e:`① 三角形的一個外角等於它的兩個內對角的和。\n② $\\angle ACD$ 的兩個內對角是 $\\angle A$ 和 $\\angle B$。\n③ $\\angle ACD = ${deg(A)} + ${deg(B)} = ${deg(A+B)}$。\n所以答案是 $${deg(A+B)}$。`};
   }
   if(d===2){const f=ri(0,2);
     if(f===0){const A=ri(30,80),B=ri(30,80);return{q:`$\\angle ACD$ 是 $\\triangle ABC$ 的外角，若 $\\angle ACD = ${deg(A+B)}$，$\\angle A = ${deg(A)}$，求 $\\angle B$`,a:`$${deg(B)}$`,e:`① 三角形的外角等於兩個內對角的和：$\\angle ACD = \\angle A + \\angle B$。\n② 代入：$${deg(A+B)} = ${deg(A)} + \\angle B$。\n③ 移項：$\\angle B = ${deg(A+B)} - ${deg(A)} = ${deg(B)}$。\n所以答案是 $${deg(B)}$。`}}
-    if(f===1){const p=ri(1,7),q=ri(1,7),r=ri(1,7),s=p+q+r;if(180%s||p===q&&q===r)return null;const mx=Math.max(p,q,r);
-      return{q:`$\\triangle ABC$ 中，$\\angle A : \\angle B : \\angle C = ${p} : ${q} : ${r}$，求最大角的度數`,a:`$${deg(180/s*Math.max(p,q,r))}$`,e:`① 三角形內角和是 $180^{\\circ}$，把它按比例分成好幾份。\n② 總份數 $= ${p} + ${q} + ${r} = ${s}$ 份。\n③ 每一份 $= 180^{\\circ} \\div ${s} = ${deg(180/s)}$。\n④ 最大角占 $${mx}$ 份：$${mx} \\times ${deg(180/s)} = ${deg(180/s*mx)}$。\n所以答案是 $${deg(180/s*mx)}$。`}}
-    const B=ri(20,85),k=pick([2,3]),A=180-B,c=A-k*B;if(c===0||Math.abs(c)>60)return null;const cs=c>0?'+':'-',co=c>0?'-':'+',ca=deg(Math.abs(c));
-    return{q:`平行四邊形 $ABCD$ 中，$\\angle A = ${k}\\angle B ${c>0?'+':'-'} ${deg(Math.abs(c))}$，求 $\\angle A$ 與 $\\angle B$`,a:`$\\angle A = ${deg(A)}$，$\\angle B = ${deg(B)}$`,e:`① 平行四邊形鄰角互補：$\\angle A + \\angle B = 180^{\\circ}$。\n② 代入：$(${k}\\angle B ${cs} ${ca}) + \\angle B = 180^{\\circ}$，合併得 $${k+1}\\angle B ${cs} ${ca} = 180^{\\circ}$。\n③ 移項：$${k+1}\\angle B = 180^{\\circ} ${co} ${ca} = ${deg((k+1)*B)}$，$\\angle B = ${deg((k+1)*B)} \\div ${k+1} = ${deg(B)}$。\n④ $\\angle A = 180^{\\circ} - ${deg(B)} = ${deg(A)}$。\n所以答案是 $\\angle A = ${deg(A)}$，$\\angle B = ${deg(B)}$。`};
+    if(f===1){const x=ri(20,55),p=rnz(-15,30),c=pick([2,3]),C=180-x-(x+p),k=C-c*x;if(C<=5||x+p<=5||k===0||Math.abs(k)>60)return null;
+      return{q:`$\\triangle ABC$ 中，$\\angle A = x^{\\circ}$，$\\angle B = ${angx(1,p)}$，$\\angle C = ${angx(c,k)}$，求 $x$`,a:`$x = ${x}$`,e:`① 三角形內角和是 $180^{\\circ}$：$x + (${lin(1,p)}) + (${lin(c,k)}) = 180$。\n② 合併同類項：$${lin(c+2,p+k)} = 180$。\n③ 移項：$${c+2}x = 180 ${p+k<0?'+':'-'} ${Math.abs(p+k)} = ${(c+2)*x}$。\n④ $x = ${(c+2)*x} \\div ${c+2} = ${x}$。\n所以答案是 $x = ${x}$。`}}
+    const a=ri(3,12),b=ri(a+1,a+10),lo=b-a+1,hi=a+b-1,cnt=hi-lo+1;
+    return{q:`三角形的兩邊長分別是 $${a}$ 和 $${b}$，第三邊長 $x$ 為整數，$x$ 共有幾種可能？`,a:`$${cnt}$ 種`,e:`① 三角形任意兩邊和大於第三邊，任意兩邊差小於第三邊。\n② 所以 $${b} - ${a} \\lt x \\lt ${b} + ${a}$，即 $${b-a} \\lt x \\lt ${a+b}$。\n③ 整數 $x$ 可以是 $${lo}, ${lo+1}, \\ldots, ${hi}$。\n④ 共 $${hi} - ${lo} + 1 = ${cnt}$ 種。\n所以答案是 $${cnt}$ 種。`};
   }
-  if(R()<.5){const n=pick([8,9,10,12,15,18,20,24,30,36]);return{q:`正 $n$ 邊形的每一個內角都是 $${deg(180-360/n)}$，求 $n$`,a:`$n = ${n}$`,e:`① 內角和外角合起來是 $180^{\\circ}$：每個外角 $= 180^{\\circ} - ${deg(180-360/n)} = ${deg(360/n)}$。\n② 多邊形外角和是 $360^{\\circ}$，正多邊形每個外角都相等。\n③ 邊數 $n = 360 \\div ${360/n} = ${n}$。\n所以答案是 $n = ${n}$。`}}
-  const n=ri(7,16),S=commas(String((n-2)*180));return{q:`某多邊形的內角和為 $${deg(commas(String((n-2)*180)))}$，求它的邊數與對角線條數`,a:`$${n}$ 邊形，對角線 $${n*(n-3)/2}$ 條`,e:`① 用內角和公式列式：$(n-2) \\times 180 = ${S}$。\n② 兩邊同除以 $180$：$n - 2 = ${S} \\div 180 = ${n-2}$，所以 $n = ${n-2} + 2 = ${n}$。\n③ 對角線條數公式 $\\frac{n(n-3)}{2}$：代入得 $\\frac{${n} \\times ${n-3}}{2} = \\frac{${n*(n-3)}}{2} = ${n*(n-3)/2}$。\n所以答案是 $${n}$ 邊形，對角線 $${n*(n-3)/2}$ 條。`};
+  const f=ri(0,3);
+  if(f===0){const n=pick([5,6,8,9,10,12,15,18,20,24,30,36]),v=(n-2)*180/n;return{q:`正 $n$ 邊形的每一個內角都是 $${deg(v)}$，求 $n$`,a:`$n = ${n}$`,e:`① 正 $n$ 邊形內角和是 $(n-2) \\times 180^{\\circ}$，$n$ 個內角都相等，所以 $(n-2) \\times 180 = ${v}n$。\n② 展開：$180n - 360 = ${v}n$。\n③ 移項：$180n - ${v}n = 360$，即 $${180-v}n = 360$。\n④ $n = 360 \\div ${180-v} = ${n}$。\n所以答案是 $n = ${n}$。`}}
+  if(f===1){const n=ri(7,16),S=commas(String((n-2)*180));return{q:`某凸多邊形的內角和為 $${deg(S)}$，求它的邊數`,a:`$${n}$ 邊`,e:`① 用內角和公式列式：$(n-2) \\times 180 = ${S}$。\n② 兩邊同除以 $180$：$n - 2 = ${S} \\div 180 = ${n-2}$。\n③ $n = ${n-2} + 2 = ${n}$。\n所以答案是 $${n}$ 邊。`}}
+  if(f===2){const x=ri(30,70),cs=[1,ri(1,2),ri(1,3),ri(1,2)],k2=rnz(-20,30),k3=rnz(-30,20),k4=360-(cs[0]+cs[1]+cs[2]+cs[3])*x-k2-k3;
+    const ks=[0,k2,k3,k4],angs=cs.map((c,i)=>c*x+ks[i]);if(k4===0||Math.abs(k4)>80||angs.some(v=>v<=10||v>=180))return null;const C=cs.reduce((s,v)=>s+v,0),K=k2+k3+k4;
+    return{q:`凸四邊形 $ABCD$ 中，$\\angle A = x^{\\circ}$，$\\angle B = ${angx(cs[1],k2)}$，$\\angle C = ${angx(cs[2],k3)}$，$\\angle D = ${angx(cs[3],k4)}$，求 $x$`,a:`$x = ${x}$`,e:`① 四邊形內角和是 $(4-2) \\times 180^{\\circ} = 360^{\\circ}$。\n② 列式：$x + (${lin(cs[1],k2)}) + (${lin(cs[2],k3)}) + (${lin(cs[3],k4)}) = 360$。\n③ 合併同類項：$${lin(C,K)} = 360$，${K===0?`$${C}x = 360$`:`移項得 $${C}x = 360 ${K<0?'+':'-'} ${Math.abs(K)} = ${C*x}$`}。\n④ $x = ${C*x} \\div ${C} = ${x}$。\n所以答案是 $x = ${x}$。`}}
+  const a=ri(3,15),b=ri(3,15),mx=a+b-1;
+  return{q:`$\\triangle ABC$ 中，$${seg('AB')} = ${a}$，$${seg('BC')} = ${b}$，若 $${seg('AC')}$ 的長度是整數，則 $${seg('AC')}$ 最長是多少？`,a:`$${mx}$`,e:`① 三角形任意兩邊和大於第三邊：$${seg('AC')} \\lt ${seg('AB')} + ${seg('BC')}$。\n② $${seg('AC')} \\lt ${a} + ${b} = ${a+b}$。\n③ 也要滿足兩邊差小於第三邊：$${seg('AC')} \\gt ${Math.abs(a-b)}$，$${mx}$ 符合。\n④ 小於 $${a+b}$ 的最大整數是 $${mx}$。\n所以答案是 $${mx}$。`};
 }});
 
 unit({id:'similar',g:'九上',name:'比例線段與相似形',instr:'依題意作答。',h:[20,26,32],gen(d){
@@ -754,7 +800,7 @@ unit({id:'circle',g:'九上',name:'圓的性質',instr:'依題意作答。',h:[2
   const y=2*ri(15,70);return{q:`由圓外一點 $P$ 作圓 $O$ 的兩條切線，切點為 $A$、$B$。若 $\\angle APB = ${deg(y)}$，求 $\\angle AOB$`,a:`$${deg(180-y)}$`,e:`① 切線垂直於過切點的半徑：$\\angle OAP = \\angle OBP = 90^{\\circ}$。\n② 四邊形 $OAPB$ 的內角和是 $360^{\\circ}$。\n③ $\\angle AOB = 360^{\\circ} - 90^{\\circ} - 90^{\\circ} - ${deg(y)} = ${deg(180-y)}$。\n所以答案是 $${deg(180-y)}$。`};
 }});
 
-unit({id:'centers',g:'九上',name:'三角形的外心、內心與重心',instr:'依題意作答。',h:[18,22,28],gen(d){
+unit({id:'centers',g:'九上',name:'幾何推理：三角形的外心、內心與重心',instr:'依題意作答。',h:[18,22,28],gen(d){
   if(d===1){
     if(R()<.5){const k=ri(2,9);return{q:`$G$ 為 $\\triangle ABC$ 的重心，$${seg('AD')}$ 為 $${seg('BC')}$ 邊上的中線。若 $${seg('AD')} = ${3*k}$，求 $${seg('AG')}$ 與 $${seg('GD')}$`,a:`$${seg('AG')} = ${2*k}$，$${seg('GD')} = ${k}$`,e:`① 重心把中線分成 $2 : 1$，靠頂點的一段占 $\\frac{2}{3}$，另一段占 $\\frac{1}{3}$。\n② $${seg('AG')} = ${3*k} \\times \\frac{2}{3} = ${2*k}$。\n③ $${seg('GD')} = ${3*k} \\times \\frac{1}{3} = ${k}$（檢查：$${2*k} + ${k} = ${3*k}$）。\n所以答案是 $${seg('AG')} = ${2*k}$，$${seg('GD')} = ${k}$。`}}
     const [a,b,c]=triple(3);return{q:`直角三角形的兩股長為 $${a}$ 與 $${b}$，求它的外接圓半徑`,a:`$${ftex(F(c,2))}$`,e:`① 直角三角形的外心在斜邊中點，外接圓半徑 $=$ 斜邊的一半。\n② 用畢氏定理求斜邊：$${a}^2 + ${b}^2 = ${a*a} + ${b*b} = ${c*c}$。\n③ 斜邊 $= \\sqrt{${c*c}} = ${c}$。\n④ 外接圓半徑 $= ${c} \\div 2 = ${ftex(F(c,2))}$。\n所以答案是 $${ftex(F(c,2))}$。`};
@@ -772,55 +818,80 @@ unit({id:'centers',g:'九上',name:'三角形的外心、內心與重心',instr:
 
 function vform(a,h,k){const base=h===0?'x^2':`(${lin(1,-h)})^2`,pre=a===1?'':a===-1?'-':String(a);return`y = ${pre}${base}${k===0?'':k>0?` + ${k}`:` - ${-k}`}`}
 unit({id:'quad-func',g:'九下',name:'二次函數',instr:'依題意作答。',h:[20,26,32],gen(d){
+  /* 108課綱 F-9-2：只處理 y=ax^2、y=ax^2+k、y=a(x-h)^2、y=a(x-h)^2+k；二次函數的配方法是 10 年級，不出 */
   const pre=a=>a===1?'':a===-1?'-':String(a),kt=k=>k===0?'':k>0?` + ${k}`:` - ${-k}`;
   if(d===1){const a=rnz(-3,3),h=ri(-6,6),k=ri(-9,9);
     return{q:`寫出二次函數 $${vform(a,h,k)}$ 圖形的頂點、對稱軸與開口方向`,a:`頂點 $${pt(h,k)}$，對稱軸 $x = ${h}$，開口向${a>0?'上':'下'}`,e:`① 頂點式 $y = a(x-h)^2 + k$ 的頂點是 $(h, k)$，對稱軸是 $x = h$。\n② 把題目對照成 $y = ${a}(x - ${P(h)})^2 + ${P(k)}$，所以 $a = ${a}$、$h = ${h}$、$k = ${k}$。\n③ 頂點 $${pt(h,k)}$，對稱軸 $x = ${h}$。\n④ $a = ${a}$ ${a>0?'大於':'小於'} $0$，所以開口向${a>0?'上':'下'}。\n所以答案是頂點 $${pt(h,k)}$，對稱軸 $x = ${h}$，開口向${a>0?'上':'下'}。`}}
-  if(d===2){const a=pick([1,-1,2,-2]),h=rnz(-5,5),k=ri(-9,9),c=a*h*h+k,ah=a*h*h;
-    return{q:`求二次函數 $y = ${quad(a,-2*a*h,a*h*h+k)}$ 圖形的頂點，並求 $y$ 的最大值或最小值`,a:`頂點 $${pt(h,k)}$，${a>0?'最小':'最大'}值為 $${k}$`,e:`① 用配方法化成頂點式。${a===1?'':`先把前兩項提出 $${a}$：`}$y = ${pre(a)}(${quad(1,-2*h,0)})${kt(c)}$。\n② 括號內加上 $(${P(-h)})^2 = ${h*h}$ 再減掉：$y = ${pre(a)}(${quad(1,-2*h,h*h)})${kt(-ah)}${kt(c)}$。\n③ 整理：$${vform(a,h,k)}$，頂點 $${pt(h,k)}$。\n④ $a = ${a}$ ${a>0?'大於 $0$，開口向上，頂點最低，有最小':'小於 $0$，開口向下，頂點最高，有最大'}值 $${k}$。\n所以答案是頂點 $${pt(h,k)}$，${a>0?'最小':'最大'}值為 $${k}$。`}}
-  if(R()<.5){const a=pick([1,-1,2]),r1=rnz(-6,6),r2=rnz(-6,6);if(r1===r2)return null;const [hi,lo]=r1>r2?[r1,r2]:[r2,r1];
-    return{q:`求二次函數 $y = ${quad(a,-a*(r1+r2),a*r1*r2)}$ 的圖形與 $x$ 軸、$y$ 軸的交點`,a:`$x$ 軸：$${pt(lo,0)}$、$${pt(hi,0)}$；$y$ 軸：$${pt(0,a*r1*r2)}$`,e:`① 和 $x$ 軸的交點：令 $y = 0$，$${quad(a,-a*(r1+r2),a*r1*r2)} = 0$${a===1?'':`，兩邊同除以 $${a}$ 得 $${quad(1,-(r1+r2),r1*r2)} = 0$`}。\n② 十字交乘：找兩數相乘得 $${r1*r2}$、相加得 $${-(r1+r2)}$，是 $${-r1}$ 和 $${-r2}$。\n③ 分解成 $(${lin(1,-r1)})(${lin(1,-r2)}) = 0$，所以 $x = ${lo}$ 或 $x = ${hi}$。\n④ 和 $y$ 軸的交點：令 $x = 0$，只剩常數項，$y = ${a*r1*r2}$。\n所以答案是 $x$ 軸：$${pt(lo,0)}$、$${pt(hi,0)}$；$y$ 軸：$${pt(0,a*r1*r2)}$。`}}
+  const LR=h=>h>0?`向右平移 $${h}$ 單位`:`向左平移 $${-h}$ 單位`,UD=k=>k>0?`向上平移 $${k}$ 單位`:`向下平移 $${-k}$ 單位`;
+  if(d===2){const f=ri(0,2),a=rnz(-3,3),h=ri(-6,6),k=ri(-9,9),mm=a>0?'最小':'最大';
+    if(f===0)return{q:`二次函數 $${vform(a,h,k)}$，當 $x$ 為多少時，$y$ 有${mm}值？${mm}值是多少？`,a:`$x = ${h}$ 時，${mm}值 $${k}$`,e:`① 這是已配方好的形式 $y = a(x-h)^2 + k$，頂點是 $${pt(h,k)}$。\n② $a = ${a}$ ${a>0?'大於':'小於'} $0$，圖形開口向${a>0?'上，頂點是最低點':'下，頂點是最高點'}。\n③ ${h===0?'$x^2$':`$(${lin(1,-h)})^2$`} 一定大於或等於 $0$，當 $x = ${h}$ 時它等於 $0$，此時 $y = ${k}$。\n④ 所以 $x = ${h}$ 時 $y$ 有${mm}值 $${k}$${a>0?'，沒有最大值':'，沒有最小值'}。\n所以答案是 $x = ${h}$ 時，${mm}值 $${k}$。`};
+    if(f===1){if(h===0||k===0)return null;const base=`y = ${a===1?'':a===-1?'-':a}x^2`;
+      return{q:`將二次函數 $${base}$ 的圖形${LR(h)}，再${UD(k)}，求新圖形的二次函數`,a:`$${vform(a,h,k)}$`,e:`① $${base}$ 的頂點是 $(0, 0)$，平移不會改變開口方向與大小，$a$ 仍是 $${a}$。\n② ${LR(h)}，頂點的 $x$ 坐標變成 $0 ${h>0?'+':'-'} ${Math.abs(h)} = ${h}$。\n③ ${UD(k)}，頂點的 $y$ 坐標變成 $0 ${k>0?'+':'-'} ${Math.abs(k)} = ${k}$，新頂點 $${pt(h,k)}$。\n④ 寫成 $y = a(x-h)^2 + k$ 的形式：$${vform(a,h,k)}$。\n所以答案是 $${vform(a,h,k)}$。`}}
+    const x0=h+rnz(-3,3),sq=(x0-h)**2,y0=a*sq+k;
+    return{q:`點 $${pt(x0,'b')}$ 在二次函數 $${vform(a,h,k)}$ 的圖形上，求 $b$`,a:`$b = ${y0}$`,e:`① 點在圖形上，表示把 $x = ${x0}$ 代入，算出的 $y$ 就是 $b$。\n② $b = ${a===1?'':a===-1?'-':a}(${x0} - ${P(h)})^2${k===0?'':k>0?` + ${k}`:` - ${-k}`} = ${a===1?'':a===-1?'-':a}${x0-h<0?`(${x0-h})`:x0-h}^2${k===0?'':k>0?` + ${k}`:` - ${-k}`}$。\n③ $= ${a} \\times ${sq}${k===0?'':k>0?` + ${k}`:` - ${-k}`} = ${y0}$。\n所以答案是 $b = ${y0}$。`}}
+  if(R()<.35){const a=rnz(-3,3),h=rnz(-6,6),k=ri(-9,9),yi=a*h*h+k;
+    return{q:`求二次函數 $${vform(a,h,k)}$ 的圖形與 $y$ 軸的交點`,a:`$${pt(0,yi)}$`,e:`① 和 $y$ 軸的交點，$x$ 坐標是 $0$，把 $x = 0$ 代入。\n② $y = ${a===1?'':a===-1?'-':a}(0 - ${P(h)})^2${k===0?'':k>0?` + ${k}`:` - ${-k}`} = ${a} \\times ${h*h}${k===0?'':k>0?` + ${k}`:` - ${-k}`}$。\n③ 計算得 $y = ${yi}$。\n所以答案是 $${pt(0,yi)}$。`}}
+  if(R()<.45){const a=rnz(-3,3),h=ri(-5,5),k=ri(-9,9),s=rnz(-5,5),t=rnz(-6,6),H=h+s,K=k+t;
+    return{q:`將二次函數 $${vform(a,h,k)}$ 的圖形${LR(s)}，再${UD(t)}，求新圖形的二次函數`,a:`$${vform(a,H,K)}$`,e:`① 原圖形的頂點是 $${pt(h,k)}$；平移不會改變開口方向與大小，$a$ 仍是 $${a}$。\n② ${LR(s)}：頂點 $x$ 坐標 $${h} ${s>0?'+':'-'} ${Math.abs(s)} = ${H}$。\n③ ${UD(t)}：頂點 $y$ 坐標 $${k} ${t>0?'+':'-'} ${Math.abs(t)} = ${K}$，新頂點 $${pt(H,K)}$。\n④ 寫成 $y = a(x-h)^2 + k$ 的形式：$${vform(a,H,K)}$。\n所以答案是 $${vform(a,H,K)}$。`}}
   const a=rnz(-3,3),h=ri(-5,5),k=ri(-9,9),p=h+rnz(-3,3),yp=a*(p-h)**2+k,sq=(p-h)**2;
   return{q:`二次函數圖形的頂點為 $${pt(h,k)}$，且通過點 $${pt(p,a*(p-h)**2+k)}$，求此二次函數`,a:`$${vform(a,h,k)}$`,e:`① 已知頂點 $${pt(h,k)}$，設頂點式 $y = a${h===0?'x^2':`(${lin(1,-h)})^2`}${kt(k)}$。\n② 代入點 $${pt(p,yp)}$：$${yp} = a(${p} - ${P(h)})^2${kt(k)} = a \\times ${p-h<0?`(${p-h})`:p-h}^2${kt(k)}$。\n③ 化簡：$${yp} = ${sq===1?'':sq}a${kt(k)}$${k===0?'':`，移項得 $${sq===1?'':sq}a = ${yp} ${k>0?'-':'+'} ${Math.abs(k)} = ${a*sq}$`}。\n④ $a = ${a*sq} \\div ${sq} = ${a}$，代回頂點式。\n所以答案是 $${vform(a,h,k)}$。`};
 }});
 
 function twoDice(test){let c=0;for(let i=1;i<=6;i++)for(let j=1;j<=6;j++)if(test(i,j))c++;return F(c,36)}
 unit({id:'stats',g:'九下',name:'統計與機率',instr:'依題意作答。',h:[22,26,30],gen(d){
+  /* 108課綱 D-9-1 全距、四分位距、盒狀圖；D-9-2 樹狀圖以兩層為限；D-9-3 具對稱性的古典機率。平均數、中位數、眾數移到七下 stats7 */
   const pr=(c,t)=>`\\frac{${c}}{${t}}${F(c,t).d!==t?` = ${ftex(F(c,t))}`:''}`;
-  if(d===1){const n=pick([5,7,9]),vals=new Set();while(vals.size<n-1)vals.add(ri(40,99));const arr=[...vals];const mode=pick(arr);arr.push(mode);
-    const sum=arr.reduce((s,x)=>s+x,0);if(sum%n)return null;const s=[...arr].sort((x,y)=>x-y);shuffle(arr);
-    return{q:`下列 $${n}$ 筆資料：$${arr.join(',\\ ')}$，求平均數、中位數與眾數`,a:`平均數 $${sum/n}$，中位數 $${s[(n-1)/2]}$，眾數 $${mode}$`,e:`① 平均數 $=$ 總和 $\\div$ 筆數，總和 $= ${arr.join(' + ')} = ${sum}$。\n② 平均數 $= ${sum} \\div ${n} = ${sum/n}$。\n③ 由小到大排：$${s.join(',\\ ')}$。\n④ 共 $${n}$ 筆，正中間是第 $\\frac{${n}+1}{2} = ${(n+1)/2}$ 個，中位數是 $${s[(n-1)/2]}$。\n⑤ $${mode}$ 出現 2 次，其他都只出現 1 次，眾數是 $${mode}$。\n所以答案是平均數 $${sum/n}$，中位數 $${s[(n-1)/2]}$，眾數 $${mode}$。`}}
+  const five=()=>{const m=ri(20,50),q1=m+ri(5,15),md=q1+ri(3,12),q3=md+ri(3,12),M=q3+ri(5,20);return[m,q1,md,q3,M]};
+  if(d===1){const f=ri(0,2);
+    if(f===0){const n=ri(6,10),arr=Array.from({length:n},()=>ri(30,99)),mx=Math.max(...arr),mn=Math.min(...arr);if(mx===mn)return null;
+      return{q:`下列 $${n}$ 筆資料：$${arr.join(',\\ ')}$，求這組資料的全距`,a:`$${mx-mn}$`,e:`① 全距 $=$ 最大值 $-$ 最小值。\n② 找出最大值是 $${mx}$，最小值是 $${mn}$。\n③ 全距 $= ${mx} - ${mn} = ${mx-mn}$。\n所以答案是 $${mx-mn}$。`}}
+    if(f===1){const [m,q1,md,q3,M]=five();
+      return{q:`某組資料的盒狀圖中，最小值是 $${m}$，第 1 四分位數 $Q_1$ 是 $${q1}$，中位數 $Q_2$ 是 $${md}$，第 3 四分位數 $Q_3$ 是 $${q3}$，最大值是 $${M}$。求這組資料的全距與四分位距`,a:`全距 $${M-m}$，四分位距 $${q3-q1}$`,e:`① 全距 $=$ 最大值 $-$ 最小值 $= ${M} - ${m} = ${M-m}$。\n② 四分位距 $= Q_3 - Q_1$。\n③ 四分位距 $= ${q3} - ${q1} = ${q3-q1}$。\n所以答案是全距 $${M-m}$，四分位距 $${q3-q1}$。`}}
+    const ev=pick([['偶數',3],['質數',3],['3 的倍數',2],['6 的因數',4],['大於 4 的點數',2],['小於 3 的點數',2]]);
+    const ls={'偶數':'2、4、6','質數':'2、3、5','3 的倍數':'3、6','6 的因數':'1、2、3、6','大於 4 的點數':'5、6','小於 3 的點數':'1、2'}[ev[0]];
+    return{q:`擲一顆公正的骰子一次，求出現「${ev[0]}」的機率`,a:`$${ftex(F(ev[1],6))}$`,e:`① 骰子共有 $1$～$6$ 點，$6$ 種結果出現的機會相等。\n② ${ev[0]}有 ${ls}，共 $${ev[1]}$ 種。\n③ 機率 $= \\frac{\\text{符合的情形}}{\\text{全部情形}} = ${pr(ev[1],6)}$。\n所以答案是 $${ftex(F(ev[1],6))}$。`};
+  }
   if(d===2){const f=ri(0,2);
     if(f===0){const n=pick([8,12]),arr=Array.from({length:n},()=>ri(10,99)),s=[...arr].sort((x,y)=>x-y);
       const q1=s[n/4-1]+s[n/4],q3=s[3*n/4-1]+s[3*n/4];
       return{q:`下列 $${n}$ 筆資料：$${arr.join(',\\ ')}$，求第 1 四分位數 $Q_1$、第 3 四分位數 $Q_3$ 與四分位距`,a:`$Q_1 = ${half(q1)}$，$Q_3 = ${half(q3)}$，四分位距 $${half(q3-q1)}$`,e:`① 由小到大排：$${s.join(',\\ ')}$。\n② 共 $${n}$ 筆，前半 $${n/2}$ 筆的中位數是 $Q_1$，就是第 $${n/4}$、$${n/4+1}$ 個的平均。\n③ $Q_1 = \\frac{${s[n/4-1]} + ${s[n/4]}}{2} = \\frac{${q1}}{2} = ${half(q1)}$。\n④ 後半的中位數是 $Q_3$（第 $${3*n/4}$、$${3*n/4+1}$ 個）：$Q_3 = \\frac{${s[3*n/4-1]} + ${s[3*n/4]}}{2} = \\frac{${q3}}{2} = ${half(q3)}$。\n⑤ 四分位距 $= Q_3 - Q_1 = ${half(q3)} - ${half(q1)} = ${half(q3-q1)}$。\n所以答案是 $Q_1 = ${half(q1)}$，$Q_3 = ${half(q3)}$，四分位距 $${half(q3-q1)}$。`}}
-    if(f===1){const ev=pick([['偶數',3],['質數',3],['3 的倍數',2],['6 的因數',4],['大於 4 的點數',2],['小於 3 的點數',2]]);
-      const ls={'偶數':'2、4、6','質數':'2、3、5','3 的倍數':'3、6','6 的因數':'1、2、3、6','大於 4 的點數':'5、6','小於 3 的點數':'1、2'}[ev[0]];
-      return{q:`擲一顆公正的骰子一次，求出現${ev[0]}的機率`,a:`$${ftex(F(ev[1],6))}$`,e:`① 骰子共有 $1$～$6$ 點，$6$ 種結果出現的機會相等。\n② ${ev[0]}有 ${ls}，共 $${ev[1]}$ 種。\n③ 機率 $= \\frac{\\text{符合的情形}}{\\text{全部情形}} = ${pr(ev[1],6)}$。\n所以答案是 $${ftex(F(ev[1],6))}$。`}}
+    if(f===1){const v=five(),nm=['最小值','第 1 四分位數','中位數','第 3 四分位數','最大值'],[i,j]=pick([[0,1],[0,2],[1,3],[1,4],[2,4],[0,3],[3,4]]),p=(j-i)*25,N=pick([40,80,120,200]);
+      return{q:`某班 $${N}$ 位學生的成績畫成盒狀圖：最小值 $${v[0]}$ 分、$Q_1 = ${v[1]}$ 分、中位數 $${v[2]}$ 分、$Q_3 = ${v[3]}$ 分、最大值 $${v[4]}$ 分。成績介於 $${v[i]}$ 分到 $${v[j]}$ 分之間的約有多少人？`,a:`約 $${N*p/100}$ 人`,e:`① 盒狀圖的五個數把資料大約分成四等分，每一段約占全部的 $25\\%$。\n② $${v[i]}$ 分是${nm[i]}，$${v[j]}$ 分是${nm[j]}，中間有 $${j-i}$ 段。\n③ 約占 $${j-i} \\times 25\\% = ${p}\\%$。\n④ 人數約 $${N} \\times ${p}\\% = ${N*p/100}$（人）。\n所以答案是約 $${N*p/100}$ 人。`}}
     const r=ri(2,9),w=ri(2,9),b=ri(1,6),t=r+w+b,ev=pick([['紅球',r],['白球',w],['紅球或藍球',r+b],['不是白球',r+b]]);
     const ds=ev[0]==='紅球'?`紅球有 $${r}$ 顆`:ev[0]==='白球'?`白球有 $${w}$ 顆`:ev[0]==='紅球或藍球'?`紅球或藍球有 $${r} + ${b} = ${r+b}$ 顆`:`不是白球就是紅球或藍球，有 $${r} + ${b} = ${r+b}$ 顆`;
     return{q:`袋中有紅球 $${r}$ 顆、白球 $${w}$ 顆、藍球 $${b}$ 顆，任取一球，求取到${ev[0]}的機率`,a:`$${ftex(F(ev[1],t))}$`,e:`① 袋中共有 $${r} + ${w} + ${b} = ${t}$ 顆球，每顆被取到的機會相等。\n② ${ds}。\n③ 機率 $= \\frac{\\text{符合的情形}}{\\text{全部情形}} = ${pr(ev[1],t)}$。\n所以答案是 $${ftex(F(ev[1],t))}$。`};
   }
-  if(R()<.75){const k=ri(3,11),m=ri(1,4),evs=[
+  const f=ri(0,2);
+  if(f===0){const k=ri(3,11),m=ri(1,4),evs=[
       [`點數和為 $${k}$`,(i,j)=>i+j===k],[`點數和大於 $${k}$`,(i,j)=>i+j>k],['兩顆點數相同',(i,j)=>i===j],
       ['點數乘積為偶數',(i,j)=>i*j%2===0],[`兩顆點數相差 $${m}$`,(i,j)=>Math.abs(i-j)===m]];
     const [t,fn]=pick(evs),fr=twoDice(fn),cnt=36*fr.n/fr.d;
     const prs=[],row=[];for(let i=1;i<=6;i++){let c=0;for(let j=1;j<=6;j++)if(fn(i,j)){c++;prs.push(`(${i},${j})`)}row.push(c)}
     const ln2=cnt<=6?`② 用（第一顆, 第二顆）列出${t}的情形：${prs.map(x=>`$${x}$`).join('、')}。`:`② 依第一顆是 $1$～$6$ 點分類，第二顆符合的分別有 ${row.map(x=>`$${x}$`).join('、')} 種。`;
-    return{q:`同時擲兩顆公正的骰子，求${t}的機率`,a:`$${ftex(twoDice(fn))}$`,e:`① 第一顆 $6$ 種、第二顆 $6$ 種，共 $6 \\times 6 = 36$ 種等可能的結果。\n${ln2}\n③ 共 $${cnt<=6?cnt:row.join(' + ')+' = '+cnt}$ 種。\n④ 機率 $= ${pr(cnt,36)}$。\n所以答案是 $${ftex(fr)}$。`}}
-  const ev=pick([['恰好出現兩個正面',3],['至少出現一個正面',7],['三枚都同一面',2],['恰好出現一個正面',3]]);
-  const ls={'恰好出現兩個正面':'正正反、正反正、反正正','至少出現一個正面':'除了「反反反」以外都符合，$8 - 1 = 7$','三枚都同一面':'正正正、反反反','恰好出現一個正面':'正反反、反正反、反反正'}[ev[0]];
-  return{q:`同時擲三枚公正的硬幣，求${ev[0]}的機率`,a:`$${ftex(F(ev[1],8))}$`,e:`① 每枚硬幣有正、反 2 種，三枚共 $2 \\times 2 \\times 2 = 8$ 種等可能的結果。\n② ${ev[0]}的情形：${ls}，共 $${ev[1]}$ 種。\n③ 機率 $= \\frac{\\text{符合的情形}}{\\text{全部情形}} = ${pr(ev[1],8)}$。\n所以答案是 $${ftex(F(ev[1],8))}$。`};
+    return{q:`同時擲兩顆公正的骰子，求${t}的機率`,a:`$${ftex(twoDice(fn))}$`,e:`① 用兩層樹狀圖：第一顆 $6$ 種、第二顆 $6$ 種，共 $6 \\times 6 = 36$ 種等可能的結果。\n${ln2}\n③ 共 $${cnt<=6?cnt:row.join(' + ')+' = '+cnt}$ 種。\n④ 機率 $= ${pr(cnt,36)}$。\n所以答案是 $${ftex(fr)}$。`}}
+  if(f===1){const r=ri(1,6),w=ri(1,6),t=r+w,ev=pick([['兩次都是紅球',r*r,`紅紅：$${r} \\times ${r} = ${r*r}$ 種`],['兩次都是白球',w*w,`白白：$${w} \\times ${w} = ${w*w}$ 種`],['兩次顏色不同',2*r*w,`紅白 $${r} \\times ${w} = ${r*w}$ 種，白紅 $${w} \\times ${r} = ${r*w}$ 種，共 $${2*r*w}$ 種`],['兩次顏色相同',r*r+w*w,`紅紅 $${r*r}$ 種，白白 $${w*w}$ 種，共 $${r*r+w*w}$ 種`]]);
+    return{q:`袋中有紅球 $${r}$ 顆、白球 $${w}$ 顆。從袋中任取一球，記下顏色後放回，再任取一球，求${ev[0]}的機率`,a:`$${ftex(F(ev[1],t*t))}$`,e:`① 取後放回，第二次和第一次一樣有 $${t}$ 顆球可選。\n② 用兩層樹狀圖：全部情形有 $${t} \\times ${t} = ${t*t}$ 種，機會相等。\n③ ${ev[0]}：${ev[2]}。\n④ 機率 $= ${pr(ev[1],t*t)}$。\n所以答案是 $${ftex(F(ev[1],t*t))}$。`}}
+  const ev=pick([['硬幣出現正面且骰子出現偶數',3,'（正, 2）、（正, 4）、（正, 6）'],['硬幣出現反面且骰子點數大於 4',2,'（反, 5）、（反, 6）'],['硬幣出現正面且骰子出現 3 的倍數',2,'（正, 3）、（正, 6）'],['骰子出現 1 點（硬幣正反都可以）',2,'（正, 1）、（反, 1）'],['硬幣出現反面且骰子出現質數',3,'（反, 2）、（反, 3）、（反, 5）']]);
+  return{q:`同時擲一枚公正的硬幣和一顆公正的骰子，求${ev[0]}的機率`,a:`$${ftex(F(ev[1],12))}$`,e:`① 用兩層樹狀圖：硬幣有正、反 $2$ 種，骰子有 $6$ 種，共 $2 \\times 6 = 12$ 種等可能的結果。\n② 符合的情形：${ev[2]}，共 $${ev[1]}$ 種。\n③ 機率 $= ${pr(ev[1],12)}$。\n所以答案是 $${ftex(F(ev[1],12))}$。`};
 }});
 
-unit({id:'solid',g:'九下',name:'柱體的體積與表面積',instr:'依題意作答（答案保留 π）。',h:[20,26,30],gen(d){
+unit({id:'solid',g:'九下',name:'立體圖形的表面積與體積',instr:'依題意作答（答案保留 π）。',h:[20,26,30],gen(d){
+  /* 108課綱 S-9-13：直角柱、直圓錐、正角錐的表面積；直角柱的體積（直圓柱為國小複習）。不出錐體體積 */
   if(d===1){
     if(R()<.3){const a=ri(2,12);return{q:`正方體的邊長為 $${a}$ 公分，求它的體積與表面積`,a:`體積 $${a**3}$ 立方公分，表面積 $${6*a*a}$ 平方公分`,e:`① 正方體體積 $=$ 邊長 $\\times$ 邊長 $\\times$ 邊長。\n② 體積 $= ${a} \\times ${a} \\times ${a} = ${a**3}$（立方公分）。\n③ 正方體有 6 個一樣大的正方形面，每面 $${a} \\times ${a} = ${a*a}$。\n④ 表面積 $= 6 \\times ${a*a} = ${6*a*a}$（平方公分）。\n所以答案是體積 $${a**3}$ 立方公分，表面積 $${6*a*a}$ 平方公分。`}}
     const a=ri(2,12),b=ri(2,12),c=ri(2,12);if(a===b&&b===c)return null;
     return{q:`長方體的長、寬、高分別為 $${a}$、$${b}$、$${c}$ 公分，求它的體積與表面積`,a:`體積 $${a*b*c}$ 立方公分，表面積 $${2*(a*b+b*c+c*a)}$ 平方公分`,e:`① 體積 $=$ 長 $\\times$ 寬 $\\times$ 高 $= ${a} \\times ${b} \\times ${c} = ${a*b*c}$。\n② 長方體有 3 組相同的面，表面積 $= 2 \\times (\\text{長}\\times\\text{寬} + \\text{寬}\\times\\text{高} + \\text{高}\\times\\text{長})$。\n③ 三種面：$${a} \\times ${b} = ${a*b}$，$${b} \\times ${c} = ${b*c}$，$${c} \\times ${a} = ${c*a}$，和為 $${a*b+b*c+c*a}$。\n④ 表面積 $= 2 \\times ${a*b+b*c+c*a} = ${2*(a*b+b*c+c*a)}$。\n所以答案是體積 $${a*b*c}$ 立方公分，表面積 $${2*(a*b+b*c+c*a)}$ 平方公分。`}}
   if(d===2){
+    if(R()<.35){const a=ri(2,12),l=ri(3,15),side=4*a*l/2,S=a*a+side;
+      return{q:`正四角錐的底面是邊長 $${a}$ 公分的正方形，每個側面三角形的高（斜高）是 $${l}$ 公分，求它的表面積`,a:`$${S}$ 平方公分`,e:`① 正四角錐的展開圖：$1$ 個正方形底面，加上 $4$ 個全等的等腰三角形側面。\n② 底面積 $= ${a} \\times ${a} = ${a*a}$。\n③ 每個側面 $= ${a} \\times ${l} \\div 2 = ${a*l/2}$，$4$ 個側面共 $4 \\times ${a*l/2} = ${side}$。\n④ 表面積 $= ${a*a} + ${side} = ${S}$。\n所以答案是 $${S}$ 平方公分。`}}
     if(R()<.5){const [a,b,c]=triple(2),h=ri(2,15);return{q:`直角柱的底面是兩股長 $${a}$、$${b}$ 公分的直角三角形，柱高 $${h}$ 公分，求它的體積與表面積`,a:`體積 $${a*b/2*h}$ 立方公分，表面積 $${a*b+(a+b+c)*h}$ 平方公分`,e:`① 先求斜邊：$\\sqrt{${a}^2 + ${b}^2} = \\sqrt{${a*a} + ${b*b}} = \\sqrt{${c*c}} = ${c}$。\n② 底面積 $= ${a} \\times ${b} \\div 2 = ${a*b/2}$，體積 $=$ 底面積 $\\times$ 高 $= ${a*b/2} \\times ${h} = ${a*b/2*h}$。\n③ 兩個底面共 $2 \\times ${a*b/2} = ${a*b}$。\n④ 側面積 $=$ 底面周長 $\\times$ 高 $= (${a} + ${b} + ${c}) \\times ${h} = ${a+b+c} \\times ${h} = ${(a+b+c)*h}$。\n⑤ 表面積 $= ${a*b} + ${(a+b+c)*h} = ${a*b+(a+b+c)*h}$。\n所以答案是體積 $${a*b/2*h}$ 立方公分，表面積 $${a*b+(a+b+c)*h}$ 平方公分。`}}
     const r=ri(1,9),h=ri(2,15);return{q:`圓柱的底面半徑為 $${r}$ 公分，高為 $${h}$ 公分，求它的體積與表面積`,a:`體積 $${r*r*h}\\pi$ 立方公分，表面積 $${2*r*r+2*r*h}\\pi$ 平方公分`,e:`① 體積 $=$ 底面積 $\\times$ 高 $= \\pi r^2 h = \\pi \\times ${r}^2 \\times ${h} = ${r*r*h}\\pi$。\n② 兩個底面圓：$2 \\times \\pi \\times ${r}^2 = ${2*r*r}\\pi$。\n③ 側面攤開是長方形，長是底面圓周 $2\\pi \\times ${r} = ${2*r}\\pi$，寬是高 $${h}$：側面積 $= ${2*r}\\pi \\times ${h} = ${2*r*h}\\pi$。\n④ 表面積 $= ${2*r*r}\\pi + ${2*r*h}\\pi = ${2*r*r+2*r*h}\\pi$。\n所以答案是體積 $${r*r*h}\\pi$ 立方公分，表面積 $${2*r*r+2*r*h}\\pi$ 平方公分。`};
   }
+  if(R()<.4){
+    if(R()<.5){const r=ri(1,9),l=r+ri(1,10),S=r*r+r*l;
+      return{q:`直圓錐的底面半徑為 $${r}$ 公分，斜高（母線長）為 $${l}$ 公分，求它的表面積`,a:`$${S}\\pi$ 平方公分`,e:`① 直圓錐的展開圖：$1$ 個圓形底面，加上 $1$ 個扇形側面（扇形半徑是斜高 $${l}$，弧長是底面圓周長）。\n② 底面積 $= \\pi \\times ${r}^2 = ${r*r}\\pi$。\n③ 扇形弧長 $= 2\\pi \\times ${r} = ${2*r}\\pi$，占半徑 $${l}$ 的整個圓周 $${2*l}\\pi$ 的 $\\frac{${2*r}\\pi}{${2*l}\\pi}$，所以側面積 $= \\pi \\times ${l}^2 \\times \\frac{${r}}{${l}} = ${r*l}\\pi$。\n④ 表面積 $= ${r*r}\\pi + ${r*l}\\pi = ${S}\\pi$。\n所以答案是 $${S}\\pi$ 平方公分。`}}
+    const [p,q,c]=triple(2),sw=R()<.5,r=sw?p:q,h=sw?q:p,l=c,S=r*r+r*l;
+    return{q:`直圓錐的底面半徑為 $${r}$ 公分，高為 $${h}$ 公分，求它的表面積`,a:`$${S}\\pi$ 平方公分`,e:`① 高、底面半徑、斜高圍成直角三角形，斜高 $= \\sqrt{${r}^2 + ${h}^2} = \\sqrt{${r*r+h*h}} = ${l}$。\n② 底面積 $= \\pi \\times ${r}^2 = ${r*r}\\pi$。\n③ 側面展開是半徑 $${l}$ 的扇形，弧長等於底面圓周 $${2*r}\\pi$，側面積 $= \\pi \\times ${l}^2 \\times \\frac{${2*r}\\pi}{${2*l}\\pi} = ${r*l}\\pi$。\n④ 表面積 $= ${r*r}\\pi + ${r*l}\\pi = ${S}\\pi$。\n所以答案是 $${S}\\pi$ 平方公分。`}}
   if(R()<.5){const r=ri(1,8),h=ri(2,15);return{q:`圓柱的底面半徑為 $${r}$ 公分，表面積為 $${2*r*r+2*r*h}\\pi$ 平方公分，求它的高與體積`,a:`高 $${h}$ 公分，體積 $${r*r*h}\\pi$ 立方公分`,e:`① 圓柱表面積 $= 2\\pi r^2 + 2\\pi r h$（兩個底面 $+$ 側面）。\n② 代入 $r = ${r}$：$2\\pi \\times ${r}^2 + 2\\pi \\times ${r} \\times h = ${2*r*r}\\pi + ${2*r}\\pi h = ${2*r*r+2*r*h}\\pi$。\n③ 兩邊同除以 $\\pi$ 再移項：$${2*r}h = ${2*r*r+2*r*h} - ${2*r*r} = ${2*r*h}$。\n④ $h = ${2*r*h} \\div ${2*r} = ${h}$。\n⑤ 體積 $= \\pi \\times ${r}^2 \\times ${h} = ${r*r*h}\\pi$。\n所以答案是高 $${h}$ 公分，體積 $${r*r*h}\\pi$ 立方公分。`}}
   const a=ri(1,5),b=ri(1,5),c=ri(1,5),t=ri(1,4);if(a===b&&b===c)return null;const kk=z=>z===1?'k':z+'k';
   return{q:`長方體的長、寬、高比為 $${a} : ${b} : ${c}$，所有稜長的總和為 $${4*(a+b+c)*t}$ 公分，求它的體積`,a:`$${a*b*c*t**3}$ 立方公分`,e:`① 設長、寬、高分別為 $${kk(a)}$、$${kk(b)}$、$${kk(c)}$。\n② 長方體有 12 條稜，長、寬、高各 4 條：稜長和 $= 4 \\times (${kk(a)} + ${kk(b)} + ${kk(c)}) = ${4*(a+b+c)}k$。\n③ $${4*(a+b+c)}k = ${4*(a+b+c)*t}$，$k = ${4*(a+b+c)*t} \\div ${4*(a+b+c)} = ${t}$。\n④ 長 $= ${a*t}$、寬 $= ${b*t}$、高 $= ${c*t}$。\n⑤ 體積 $= ${a*t} \\times ${b*t} \\times ${c*t} = ${a*b*c*t**3}$。\n所以答案是 $${a*b*c*t**3}$ 立方公分。`};
@@ -3564,6 +3635,218 @@ unit({id:'tb-eq',g:'數B三',name:'方程式（判別式、根與係數、高次
 (()=>{const ORDER=['ta-dist','ta-func','ta-line','ta-poly','ta-fracrad','ta-trig','ta-trig2','ta-circle','ta-seq','ta-ineq','ta-lp','ta-explog','ta-logapp','ta-perm','ta-prob','ta-stat',
   'tb-dist','tb-func','tb-line','tb-poly','tb-fracrad','tb-trig','tb-radian','tb-vec2','tb-circle','tb-seq','tb-eq','tb-lp','tb-explog','tb-logapp','tb-trilaw','tb-trigsum','tb-perm','tb-prob','tb-stat'];
   const pulled=ORDER.map(id=>U.splice(U.findIndex(u=>u.id===id),1)[0]);U.push(...pulled)})();
+/* ---------- 108 課綱補齊的國中單元（2026-10-24）：七下統計、線對稱與三視圖；八上統計資料處理；八下平行與四邊形；九上連比與比例線段 ---------- */
+unit({id:'stats7',g:'七下',name:'統計圖表與資料分析',instr:'依題意作答。',h:[18,22,28],gen(d){
+  /* 108課綱 D-7-1 統計圖表（長條圖、圓形圖、折線圖，含百分率）；D-7-2 平均數、中位數、眾數 */
+  const EX=(L,ans)=>L.map((s,i)=>'①②③④⑤⑥'[i]+' '+s).join('\n')+'\n所以答案是 '+ans+'。';
+  const fmt=x=>Number.isInteger(x)?String(x):String(+x.toFixed(2));
+  if(d===1){const f=ri(0,2);
+    if(f===0){const n=ri(4,7),arr=Array.from({length:n},()=>ri(40,99)),sum=arr.reduce((s,x)=>s+x,0);if(sum%n)return null;const ans=`$${sum/n}$`;
+      return{q:`求下列 $${n}$ 筆資料的平均數：$${arr.join(',\\ ')}$`,a:ans,e:EX([`平均數 $=$ 資料總和 $\\div$ 資料筆數。`,`總和 $= ${arr.join(' + ')} = ${sum}$。`,`平均數 $= ${sum} \\div ${n} = ${sum/n}$。`],ans)}}
+    if(f===1){const n=pick([5,7,9,6,8]),arr=Array.from({length:n},()=>ri(10,99)),s=[...arr].sort((x,y)=>x-y);
+      const odd=n%2===1,md=odd?s[(n-1)/2]:(s[n/2-1]+s[n/2])/2,ans=`$${fmt(md)}$`;
+      return{q:`求下列 $${n}$ 筆資料的中位數：$${arr.join(',\\ ')}$`,a:ans,e:EX([`先由小到大排列：$${s.join(',\\ ')}$。`,odd?`共 $${n}$ 筆（奇數筆），正中間是第 $\\frac{${n}+1}{2} = ${(n+1)/2}$ 個。`:`共 $${n}$ 筆（偶數筆），正中間有兩個：第 $${n/2}$ 個和第 $${n/2+1}$ 個。`,odd?`第 $${(n+1)/2}$ 個是 $${md}$，就是中位數。`:`中位數是這兩個數的平均：$\\frac{${s[n/2-1]} + ${s[n/2]}}{2} = \\frac{${s[n/2-1]+s[n/2]}}{2} = ${fmt(md)}$。`],ans)}}
+    const vals=new Set();while(vals.size<5)vals.add(ri(1,20));const arr=[...vals],mode=arr[0],c=ri(3,4),data=[...arr];for(let i=1;i<c;i++)data.push(mode);data.push(arr[1]);shuffle(data);const ans=`$${mode}$`;
+    return{q:`求下列資料的眾數：$${data.join(',\\ ')}$`,a:ans,e:EX([`眾數是資料中出現次數最多的數。`,`數一數：$${mode}$ 出現 $${c}$ 次，$${arr[1]}$ 出現 $2$ 次，其他的數各出現 $1$ 次。`,`出現最多次的是 $${mode}$。`],ans)};
+  }
+  if(d===2){const f=ri(0,2);
+    if(f===0){const n=pick([5,7,9]),vals=new Set();while(vals.size<n-1)vals.add(ri(40,99));const arr=[...vals];const mode=pick(arr);arr.push(mode);
+      const sum=arr.reduce((s,x)=>s+x,0);if(sum%n)return null;const s=[...arr].sort((x,y)=>x-y);shuffle(arr);
+      return{q:`下列 $${n}$ 筆資料：$${arr.join(',\\ ')}$，求平均數、中位數與眾數`,a:`平均數 $${sum/n}$，中位數 $${s[(n-1)/2]}$，眾數 $${mode}$`,e:`① 平均數 $=$ 總和 $\\div$ 筆數，總和 $= ${arr.join(' + ')} = ${sum}$。\n② 平均數 $= ${sum} \\div ${n} = ${sum/n}$。\n③ 由小到大排：$${s.join(',\\ ')}$。\n④ 共 $${n}$ 筆，正中間是第 $\\frac{${n}+1}{2} = ${(n+1)/2}$ 個，中位數是 $${s[(n-1)/2]}$。\n⑤ $${mode}$ 出現 2 次，其他都只出現 1 次，眾數是 $${mode}$。\n所以答案是平均數 $${sum/n}$，中位數 $${s[(n-1)/2]}$，眾數 $${mode}$。`}}
+    if(f===1){const p=pick([5,10,15,20,25,30,35,40,45,50,60,75]),nm=pick(['騎腳踏車','搭公車','走路','家長接送']),ang=p*360/100,ans=`$${deg(ang)}$`;
+      return{q:`某校調查學生上學的方式，畫成圓形圖。其中「${nm}」的學生占全部的 $${p}\\%$，在圓形圖中「${nm}」這一塊扇形的圓心角是幾度？`,a:ans,e:EX([`圓形圖整個圓是 $360^{\\circ}$，代表全部的 $100\\%$。`,`每一塊扇形的圓心角 $=$ 所占百分率 $\\times 360^{\\circ}$。`,`$${p}\\% \\times 360^{\\circ} = \\frac{${p}}{100} \\times 360^{\\circ} = ${deg(ang)}$。`],ans)}}
+    const T=pick([40,50,80,100,120,200,250,400]),p=pick([10,15,20,25,30,35,40,45,60]),k=T*p/100;if(!Number.isInteger(k))return null;const ang=p*360/100,ans=`$${deg(ang)}$`;
+    return{q:`全班共有 $${T}$ 筆調查資料，其中有 $${k}$ 筆選「喜歡數學」。若畫成圓形圖，「喜歡數學」這一塊扇形的圓心角是幾度？`,a:ans,e:EX([`先求百分率：$${k} \\div ${T} = ${fmt(k/T)} = ${p}\\%$。`,`圓形圖整個圓是 $360^{\\circ}$，圓心角 $=$ 百分率 $\\times 360^{\\circ}$。`,`$${p}\\% \\times 360^{\\circ} = ${deg(ang)}$。`],ans)};
+  }
+  const f=ri(0,3);
+  if(f===0){const base=pick([60,70,80]),pts=[0,1,2,3,4].map(i=>base+i*5),ns=pts.map(()=>ri(1,9)),N=ns.reduce((s,x)=>s+x,0),S=pts.reduce((s,x,i)=>s+x*ns[i],0);if(S%N)return null;const ans=`$${S/N}$ 分`;
+    return{q:`某次小考的成績統計如下（用長條圖表示）：${pts.map((x,i)=>`$${x}$ 分有 $${ns[i]}$ 人`).join('、')}。全體的平均分數是多少？`,a:ans,e:EX([`總人數 $= ${ns.join(' + ')} = ${N}$（人）。`,`總分 $= ${pts.map((x,i)=>`${x} \\times ${ns[i]}`).join(' + ')}$。`,`$= ${pts.map((x,i)=>x*ns[i]).join(' + ')} = ${S}$（分）。`,`平均 $= ${S} \\div ${N} = ${S/N}$（分）。`],ans)}}
+  if(f===1){const k=ri(3,5),A=ri(70,85),B=A+pick([1,2,3,4]),x=B*(k+1)-A*k;if(x>100||x<0)return null;const ans=`$${x}$ 分`;
+    return{q:`小明前 $${k}$ 次數學小考的平均是 $${A}$ 分。第 $${k+1}$ 次要考幾分，$${k+1}$ 次的平均才會剛好是 $${B}$ 分？`,a:ans,e:EX([`前 $${k}$ 次總分 $=$ 平均 $\\times$ 次數 $= ${A} \\times ${k} = ${A*k}$（分）。`,`$${k+1}$ 次平均 $${B}$ 分，總分要 $${B} \\times ${k+1} = ${B*(k+1)}$（分）。`,`第 $${k+1}$ 次要考 $${B*(k+1)} - ${A*k} = ${x}$（分）。`],ans)}}
+  if(f===2){const days=['星期一','星期二','星期三','星期四','星期五'],v=days.map(()=>ri(12,40)),mx=Math.max(...v),mn=Math.min(...v);if(mx===mn||v.filter(x=>x===mx).length>1||v.filter(x=>x===mn).length>1)return null;const im=v.indexOf(mx),in_=v.indexOf(mn),ans=`$${mx-mn}$ 杯`;
+    return{q:`某飲料店一週營業日賣出的杯數畫成折線圖，各點依序為：${days.map((s,i)=>`${s} $${v[i]}$ 杯`).join('、')}。賣最多的一天比賣最少的一天多賣幾杯？`,a:ans,e:EX([`從折線圖讀出每一天的杯數，找出最高點和最低點。`,`最高點是${days[im]}的 $${mx}$ 杯，最低點是${days[in_]}的 $${mn}$ 杯。`,`相差 $${mx} - ${mn} = ${mx-mn}$（杯）。`],ans)}}
+  const T=pick([200,400,500,800,1000,1200]),parts=[ri(2,8)*5,ri(2,8)*5,ri(1,6)*5];const rest=100-parts.reduce((s,x)=>s+x,0);if(rest<5)return null;const ps=[...parts,rest],nm=['國文','英文','數學','自然'],i=ri(0,3),cnt=T*ps[i]/100;if(!Number.isInteger(cnt))return null;const ans=`$${cnt}$ 人`;
+  const shown=ps.map((p,j)=>j===i?null:`${nm[j]} $${p}\\%$`).filter(Boolean);
+  return{q:`某校調查 $${T}$ 位學生最喜歡的科目（每人選一科），畫成圓形圖：${shown.join('、')}，其餘都選${nm[i]}。最喜歡${nm[i]}的有多少人？`,a:ans,e:EX([`圓形圖各部分的百分率加起來是 $100\\%$。`,`${nm[i]}占 $100\\% - ${shown.map(s=>s.match(/\$(\d+)/)[1]+'\\%').join(' - ')} = ${ps[i]}\\%$。`,`人數 $= ${T} \\times ${ps[i]}\\% = ${T} \\times \\frac{${ps[i]}}{100} = ${cnt}$（人）。`],ans)};
+}});
+
+unit({id:'sym7',g:'七下',name:'垂直、線對稱與三視圖',instr:'依題意作答。',h:[18,24,34],gen(d){
+  const EX=(L,ans)=>L.map((s,i)=>'①②③④⑤'[i]+' '+s).join('\n')+'\n所以答案是 '+ans+'。';
+  if(d===1){const f=ri(0,2);
+    if(f===0){const n=ri(5,12);
+      const S=[['等腰三角形（不是正三角形）',1,'只有頂角的角平分線（也就是底邊的中垂線）能把它對摺成兩半'],
+        ['正三角形',3,'每一個頂點和對邊中點的連線都是對稱軸，三個頂點各一條'],
+        ['正方形',4,'兩條對角線，加上兩組對邊中點的連線'],
+        ['長方形（不是正方形）',2,'兩組對邊中點的連線；對角線沿著摺不會疊合，不是對稱軸'],
+        ['菱形（不是正方形）',2,'兩條對角線；對邊中點的連線沿著摺不會疊合'],
+        ['箏形（不是菱形）',1,'只有連接兩組等長鄰邊交點的那一條對角線'],
+        [`正 $${n}$ 邊形`,n,n%2?`$${n}$ 是奇數，每一個頂點和對邊中點的連線都是對稱軸，共 $${n}$ 條`:`$${n}$ 是偶數，相對兩頂點的連線有 $${n/2}$ 條，相對兩邊中點的連線也有 $${n/2}$ 條`]];
+      const [nm,k,why]=pick(S);
+      return{q:`${nm}有幾條對稱軸？`,a:`$${k}$ 條`,e:EX([`對稱軸：沿著這條直線對摺，兩邊能完全疊合。`,`${nm}：${why}。`,`合計有 $${k}$ 條對稱軸。`],`$${k}$ 條`)}}
+    if(f===1){const a=ri(2,15),g=ri(0,2);
+      if(g===0)return{q:`點 $A$ 與點 $A'$ 對稱於直線 $L$，$${seg("AA'")}$ 與 $L$ 交於 $M$。若 $${seg('AM')} = ${a}$，求 $${seg("AA'")}$ 的長`,a:`$${2*a}$`,e:EX([`線對稱的性質：對稱點的連線段會被對稱軸垂直平分。`,`所以 $M$ 是 $${seg("AA'")}$ 的中點，$${seg("A'M")} = ${seg('AM')} = ${a}$。`,`$${seg("AA'")} = ${a} + ${a} = ${2*a}$。`],`$${2*a}$`)};
+      if(g===1)return{q:`點 $A$ 與點 $A'$ 對稱於直線 $L$，$${seg("AA'")}$ 與 $L$ 交於 $M$。若 $${seg("AA'")} = ${2*a}$，求 $${seg("A'M")}$ 的長`,a:`$${a}$`,e:EX([`線對稱的性質：對稱點的連線段會被對稱軸垂直平分。`,`所以 $M$ 是 $${seg("AA'")}$ 的中點。`,`$${seg("A'M")} = ${2*a} \\div 2 = ${a}$。`],`$${a}$`)};
+      return{q:`點 $A$ 與點 $A'$ 對稱於直線 $L$，$${seg("AA'")}$ 與 $L$ 交於 $M$，$${seg('AM')} = ${a}$。求 $${seg("AA'")}$ 與直線 $L$ 的夾角是幾度`,a:`$${deg(90)}$`,e:EX([`線對稱的性質：對稱點的連線段會被對稱軸垂直平分。`,`「垂直」平分表示 $${seg("AA'")} \\perp L$。`,`互相垂直的兩直線夾角是 $${deg(90)}$（和 $${seg('AM')}$ 的長度無關）。`],`$${deg(90)}$`)}}
+    if(R()<.5){const b=ri(2,12),a=b+ri(1,6),c=b+ri(1,6);if(a===c)return null;const L=shuffle([['A',a],['B',b],['C',c]]);
+      return{q:`$P$ 是直線 $L$ 外一點，$A$、$B$、$C$ 都在 $L$ 上，$${L.map(([n,v])=>`${seg('P'+n)} = ${v}`).join('$，$')}$，且 $${seg('PB')} \\perp L$。求點 $P$ 到直線 $L$ 的距離`,a:`$${b}$`,e:EX([`點到直線的距離：從點向直線作垂線，垂線段的長度。`,`$${seg('PB')} \\perp L$，所以 $${seg('PB')}$ 就是 $P$ 到 $L$ 的垂線段。`,`$P$ 到 $L$ 的距離 $= ${seg('PB')} = ${b}$（垂線段也是所有連線段中最短的）。`],`$${b}$`)}}
+    const a=ri(3,15);
+    return{q:`直線 $L$ 是 $${seg('AB')}$ 的中垂線，點 $P$ 在 $L$ 上。若 $${seg('PA')} = ${a}$，求 $${seg('PB')}$`,a:`$${a}$`,e:EX([`中垂線是 $${seg('AB')}$ 的對稱軸，$A$、$B$ 對稱於 $L$。`,`$P$ 在對稱軸上，$${seg('PA')}$ 與 $${seg('PB')}$ 是對稱線段，對稱線段等長。`,`$${seg('PB')} = ${seg('PA')} = ${a}$。`],`$${a}$`)};
+  }
+  if(d===2){const f=ri(0,3);
+    if(f===0){const A=ri(30,90),B=ri(30,90),C=180-A-B;if(C<20)return null;
+      return{q:`$\\triangle ABC$ 與 $\\triangle DEF$ 對稱於直線 $L$（$A$ 與 $D$、$B$ 與 $E$、$C$ 與 $F$ 是對稱點）。若 $\\angle A = ${deg(A)}$，$\\angle E = ${deg(B)}$，求 $\\angle F$`,a:`$${deg(C)}$`,e:EX([`線對稱的性質：對稱角相等。`,`$\\angle D = \\angle A = ${deg(A)}$。`,`三角形內角和 $180^{\\circ}$：$\\angle F = 180^{\\circ} - ${deg(A)} - ${deg(B)} = ${deg(C)}$。`],`$${deg(C)}$`)}}
+    if(f===1){const t=ri(15,70);
+      if(R()<.5)return{q:`等腰 $\\triangle ABC$ 中，$${seg('AB')} = ${seg('AC')}$，直線 $AD$ 是它的對稱軸並交 $${seg('BC')}$ 於 $D$。若 $\\angle BAD = ${deg(t)}$，求 $\\angle B$`,a:`$${deg(90-t)}$`,e:EX([`對稱軸 $AD$ 垂直平分對稱點 $B$、$C$ 的連線段，所以 $\\angle ADB = 90^{\\circ}$。`,`在 $\\triangle ABD$ 中，內角和 $180^{\\circ}$。`,`$\\angle B = 180^{\\circ} - 90^{\\circ} - ${deg(t)} = ${deg(90-t)}$。`],`$${deg(90-t)}$`)};
+      return{q:`等腰 $\\triangle ABC$ 中，$${seg('AB')} = ${seg('AC')}$，直線 $AD$ 是它的對稱軸並交 $${seg('BC')}$ 於 $D$。若 $\\angle BAD = ${deg(t)}$，求頂角 $\\angle BAC$`,a:`$${deg(2*t)}$`,e:EX([`線對稱的性質：對稱角相等。`,`$\\angle BAD$ 與 $\\angle CAD$ 對稱於 $AD$，所以 $\\angle CAD = \\angle BAD = ${deg(t)}$。`,`$\\angle BAC = ${deg(t)} + ${deg(t)} = ${deg(2*t)}$。`],`$${deg(2*t)}$`)}}
+    if(f===2){const x0=ri(1,9),a=ri(2,5),c=ri(1,4);if(a===c)return null;const b=ri(-5,9),dd=a*x0+b-c*x0;if(a*x0+b<=0||dd===0)return null;
+      const hi=a>c?[a,b,c,dd]:[c,dd,a,b];
+      return{q:`點 $P$ 在 $${seg('AB')}$ 的中垂線上，$${seg('PA')} = ${lin(a,b)}$，$${seg('PB')} = ${lin(c,dd)}$，求 $x$`,a:`$x = ${x0}$`,e:EX([`中垂線上的點到線段兩端點等距：$${seg('PA')} = ${seg('PB')}$。`,`列式：$${lin(a,b)} = ${lin(c,dd)}$。`,`移項：$${lin(hi[0],0)} - ${lin(hi[2],0)} = ${P(hi[3])} - ${P(hi[1])}$，得 $${lin(hi[0]-hi[2],0)} = ${hi[3]-hi[1]}$。`,`$x = ${hi[3]-hi[1]} \\div ${hi[0]-hi[2]} = ${x0}$。`],`$x = ${x0}$`)}}
+    const x0=ri(2,9),a=ri(2,3),b=ri(-3,5),AB=a*x0+b,c=ri(1,2),BC=ri(3,15);if(AB<=0||AB===BC||AB-c*x0===0||a<=c)return null;const e2=AB-c*x0;
+    return{q:`箏形 $ABCD$ 以對角線 $AC$ 為對稱軸，$${seg('AB')} = ${lin(a,b)}$，$${seg('AD')} = ${lin(c,e2)}$，$${seg('BC')} = ${BC}$，求箏形的周長`,a:`$${2*(AB+BC)}$`,e:EX([`$B$、$D$ 對稱於 $AC$，對稱線段等長：$${seg('AB')} = ${seg('AD')}$，$${seg('CD')} = ${seg('BC')} = ${BC}$。`,`列式 $${lin(a,b)} = ${lin(c,e2)}$，移項得 $${lin(a-c,0)} = ${e2-b}$${a-c>1?`，$x = ${x0}$`:''}。`,`$${seg('AB')} = ${seg('AD')} = ${a} \\times ${x0} ${b<0?'-':'+'} ${Math.abs(b)} = ${AB}$。`,`周長 $= 2 \\times (${AB} + ${BC}) = ${2*(AB+BC)}$。`],`$${2*(AB+BC)}$`)};
+  }
+  if(R()<.7){
+    const G=[[0,0,0],[0,0,0],[0,0,0]];for(let i=0;i<3;i++)for(let j=0;j<3;j++)G[i][j]=R()<.25?0:ri(1,3);
+    const cells=[];for(let i=0;i<3;i++)for(let j=0;j<3;j++)if(G[i][j])cells.push([i,j]);if(cells.length<5)return null;
+    const seen=new Set([cells[0].join()]),st=[cells[0]];while(st.length){const [i,j]=st.pop();for(const [di,dj] of [[1,0],[-1,0],[0,1],[0,-1]]){const u=i+di,v=j+dj;if(u<0||u>2||v<0||v>2||!G[u][v]||seen.has(u+','+v))continue;seen.add(u+','+v);st.push([u,v])}}
+    if(seen.size!==cells.length)return null;
+    const tbl=`$\\begin{array}{|c|c|c|}\\hline ${G.map(r=>r.join(' & ')).join(' \\\\ \\hline ')} \\\\ \\hline \\end{array}$`;
+    const pre=`在 $3 \\times 3$ 的方格上疊正方體積木，從正上方往下看，每一格疊的積木個數如下表（表的上方是後面、下方是前面，$0$ 表示沒有積木）：${tbl}`;
+    const f=ri(0,3),cm=[0,1,2].map(j=>Math.max(G[0][j],G[1][j],G[2][j])),rm=G.map(r=>Math.max(...r)),tot=G.flat().reduce((s,x)=>s+x,0);
+    const nm=['後','中','前'];
+    if(f===0)return{q:`${pre}從正前方看（前視圖）會看到幾個正方形？`,a:`$${cm[0]+cm[1]+cm[2]}$ 個`,e:EX([`前視圖：從前面看，每一直行只看得到這一行最高的那一疊。`,`左、中、右三直行最高分別是 $${cm[0]}$、$${cm[1]}$、$${cm[2]}$ 層。`,`前視圖的正方形個數 $= ${cm.join(' + ')} = ${cm[0]+cm[1]+cm[2]}$。`],`$${cm[0]+cm[1]+cm[2]}$ 個`)};
+    if(f===1)return{q:`${pre}從左邊看（左視圖）會看到幾個正方形？`,a:`$${rm[0]+rm[1]+rm[2]}$ 個`,e:EX([`左視圖：從左邊看，每一橫列（後、中、前）只看得到這一列最高的那一疊。`,`${rm.map((v,i)=>`${nm[i]}排最高 $${v}$ 層`).join('，')}。`,`左視圖的正方形個數 $= ${rm.join(' + ')} = ${rm[0]+rm[1]+rm[2]}$。`],`$${rm[0]+rm[1]+rm[2]}$ 個`)};
+    if(f===2)return{q:`${pre}從正上方看（上視圖）會看到幾個正方形？`,a:`$${cells.length}$ 個`,e:EX([`上視圖：從上面往下看，每一格只要有積木，就看到 $1$ 個正方形，和疊幾層無關。`,`表中不是 $0$ 的格子有 $${cells.length}$ 格。`,`上視圖的正方形個數是 $${cells.length}$。`],`$${cells.length}$ 個`)};
+    return{q:`${pre}這個立體圖形共用了幾個積木？`,a:`$${tot}$ 個`,e:EX([`表中每一格的數字就是那一格疊的積木個數。`,`把九格全部加起來：$${G.flat().join(' + ')} = ${tot}$。`,`共用了 $${tot}$ 個積木。`],`$${tot}$ 個`)};
+  }
+  const a=ri(5,20),b=ri(3,2*a-1),Pm=2*a+b;
+  return{q:`等腰 $\\triangle ABC$ 中，$${seg('AB')} = ${seg('AC')} = ${a}$，直線 $AD$ 是它的對稱軸並交 $${seg('BC')}$ 於 $D$。若 $\\triangle ABC$ 的周長為 $${Pm}$，求 $${seg('BD')}$`,a:`$${half(b)}$`,e:EX([`底邊 $${seg('BC')} = ${Pm} - ${a} - ${a} = ${b}$。`,`對稱軸 $AD$ 垂直平分對稱點 $B$、$C$ 的連線段，所以 $D$ 是 $${seg('BC')}$ 的中點。`,`$${seg('BD')} = ${b} \\div 2 = ${half(b)}$。`],`$${half(b)}$`)};
+}});
+
+unit({id:'freq8',g:'八上',name:'統計資料處理',instr:'依題意作答。',h:[24,28,32],gen(d){
+  const EX=(L,ans)=>L.map((s,i)=>'①②③④⑤'[i]+' '+s).join('\n')+'\n所以答案是 '+ans+'。';
+  const N=pick([20,25,50]),k=5,lo=pick([30,40,50]),w=10,mx=N===50?18:10;
+  const f=[];let s=0;for(let i=0;i<k-1;i++){const v=ri(1,mx);f.push(v);s+=v}const last=N-s;if(last<1||last>mx)return null;f.push(last);
+  const cls=f.map((_,i)=>`${lo+i*w} \\sim ${lo+i*w+w}`),cum=[];f.reduce((t,v,i)=>(cum[i]=t+v),0);
+  const pc=v=>v*100/N;
+  const tbl=(lab,vals)=>`$\\begin{array}{|c|${'c|'.repeat(k)}}\\hline \\text{分數（分）} & ${cls.join(' & ')} \\\\ \\hline \\text{${lab}} & ${vals.join(' & ')} \\\\ \\hline \\end{array}$`;
+  const pre=lab=>`某班 $${N}$ 人數學成績的次數分配表如下（各組含下限、不含上限）：${tbl(lab,f)}`;
+  const j=ri(1,k-2),C=`「$${cls[j]}$」`;
+  if(d===1){
+    if(R()<.5)return{q:`${pre('人數')}求${C}這一組的以下累積次數`,a:`$${cum[j]}$`,e:EX([`以下累積次數：從第一組一直加到這一組的次數。`,`$${f.slice(0,j+1).join(' + ')} = ${cum[j]}$。`,`表示成績未滿 $${lo+j*w+w}$ 分的有 $${cum[j]}$ 人。`],`$${cum[j]}$`)};
+    return{q:`${pre('人數')}求${C}這一組的相對次數（以百分率表示）`,a:`$${pc(f[j])}\\%$`,e:EX([`相對次數 $= \\frac{\\text{該組次數}}{\\text{總次數}} \\times 100\\%$。`,`這一組有 $${f[j]}$ 人，總人數 $${N}$ 人。`,`$\\frac{${f[j]}}{${N}} \\times 100\\% = ${pc(f[j])}\\%$。`],`$${pc(f[j])}\\%$`)};
+  }
+  if(d===2){const g=ri(0,2);
+    if(g===0)return{q:`${pre('人數')}求${C}這一組的以下累積相對次數（以百分率表示）`,a:`$${pc(cum[j])}\\%$`,e:EX([`先求以下累積次數：$${f.slice(0,j+1).join(' + ')} = ${cum[j]}$。`,`以下累積相對次數 $= \\frac{\\text{以下累積次數}}{\\text{總次數}} \\times 100\\%$。`,`$\\frac{${cum[j]}}{${N}} \\times 100\\% = ${pc(cum[j])}\\%$。`],`$${pc(cum[j])}\\%$`)};
+    if(g===1){const m=lo+j*w,t=f.slice(j).reduce((a,b)=>a+b,0);
+      return{q:`${pre('人數')}成績在 $${m}$ 分以上（含 $${m}$ 分）的有幾人？`,a:`$${t}$ 人`,e:EX([`$${m}$ 分以上，就是從${C}這一組加到最後一組。`,`$${f.slice(j).join(' + ')} = ${t}$。`,`也可以用總人數減掉未滿 $${m}$ 分的人：$${N} - ${cum[j-1]} = ${t}$。`],`$${t}$ 人`)}}
+    const vals=f.map((v,i)=>i===j?'x':v),o=N-f[j];
+    return{q:`某班 $${N}$ 人數學成績的次數分配表如下（各組含下限、不含上限），其中${C}這一組的人數 $x$ 被汙損了：${tbl('人數',vals)}求這一組的相對次數（以百分率表示）`,a:`$${pc(f[j])}\\%$`,e:EX([`其他各組人數和 $= ${f.filter((_,i)=>i!==j).join(' + ')} = ${o}$。`,`$x = ${N} - ${o} = ${f[j]}$。`,`相對次數 $= \\frac{${f[j]}}{${N}} \\times 100\\% = ${pc(f[j])}\\%$。`],`$${pc(f[j])}\\%$`)};
+  }
+  const g=ri(0,2);
+  if(g===0){const cp=cum.map(v=>`${pc(v)}\\%`);
+    return{q:`某班 $${N}$ 人數學成績的以下累積相對次數分配表如下（各組含下限、不含上限）：${tbl('以下累積相對次數',cp)}求${C}這一組有幾人`,a:`$${f[j]}$ 人`,e:EX([`這一組的相對次數 $=$ 這一組的以下累積相對次數 $-$ 前一組的以下累積相對次數。`,`$${pc(cum[j])}\\% - ${pc(cum[j-1])}\\% = ${pc(f[j])}\\%$。`,`人數 $= ${N} \\times ${pc(f[j])}\\% = ${f[j]}$。`],`$${f[j]}$ 人`)}}
+  if(g===1){
+    return{q:`某班 $${N}$ 人數學成績的以下累積次數分配表如下（各組含下限、不含上限）：${tbl('以下累積次數',cum)}求${C}這一組的相對次數（以百分率表示）`,a:`$${pc(f[j])}\\%$`,e:EX([`這一組的次數 $=$ 這一組的以下累積次數 $-$ 前一組的以下累積次數。`,`$${cum[j]} - ${cum[j-1]} = ${f[j]}$ 人。`,`相對次數 $= \\frac{${f[j]}}{${N}} \\times 100\\% = ${pc(f[j])}\\%$。`],`$${pc(f[j])}\\%$`)}}
+  let i1=ri(0,k-2),i2=ri(i1+1,k-1);const A=lo+i1*w+w,B=lo+i2*w+w,pa=pc(cum[i1]),pb=pc(cum[i2]),n=cum[i2]-cum[i1];if(B===lo+k*w&&R()<.5)return null;
+  return{q:`某班 $${N}$ 人的數學成績畫成以下累積相對次數折線圖，圖上 $${A}$ 分對應 $${pa}\\%$，$${B}$ 分對應 $${pb}\\%$。成績在 $${A}$ 分以上、未滿 $${B}$ 分的有幾人？`,a:`$${n}$ 人`,e:EX([`折線圖上 $${A}$ 分對應 $${pa}\\%$，表示未滿 $${A}$ 分的人占 $${pa}\\%$；未滿 $${B}$ 分的人占 $${pb}\\%$。`,`$${A}$ 分以上、未滿 $${B}$ 分的人占 $${pb}\\% - ${pa}\\% = ${pb-pa}\\%$。`,`人數 $= ${N} \\times ${pb-pa}\\% = ${n}$。`],`$${n}$ 人`)};
+}});
+
+unit({id:'quad8',g:'八下',name:'平行與四邊形',instr:'依題意作答。',h:[18,22,28],gen(d){
+  const EX=(L,ans)=>L.map((s,i)=>'①②③④⑤'[i]+' '+s).join('\n')+'\n所以答案是 '+ans+'。';
+  if(d===1){const f=ri(0,3);
+    if(f===0){const t=ri(40,140);if(t===90)return null;
+      if(R()<.5)return{q:`平行四邊形 $ABCD$ 中，$\\angle A = ${deg(t)}$，求 $\\angle B$`,a:`$${deg(180-t)}$`,e:EX([`平行四邊形 $${seg('AD')} \\parallel ${seg('BC')}$，同側內角互補，所以鄰角互補。`,`$\\angle A + \\angle B = 180^{\\circ}$。`,`$\\angle B = 180^{\\circ} - ${deg(t)} = ${deg(180-t)}$。`],`$${deg(180-t)}$`)};
+      return{q:`平行四邊形 $ABCD$ 中，$\\angle A = ${deg(t)}$，求 $\\angle C$`,a:`$${deg(t)}$`,e:EX([`平行四邊形的兩組對角分別相等。`,`$\\angle A$ 與 $\\angle C$ 是對角。`,`$\\angle C = \\angle A = ${deg(t)}$。`],`$${deg(t)}$`)}}
+    if(f===1){const a=ri(2,12),b=ri(2,12);
+      return{q:`平行四邊形 $ABCD$ 的兩條對角線交於 $O$，$${seg('AO')} = ${a}$，$${seg('BO')} = ${b}$，求 $${seg('AC')} + ${seg('BD')}$`,a:`$${2*a+2*b}$`,e:EX([`平行四邊形的兩條對角線互相平分。`,`$${seg('AC')} = 2 \\times ${seg('AO')} = ${2*a}$，$${seg('BD')} = 2 \\times ${seg('BO')} = ${2*b}$。`,`$${seg('AC')} + ${seg('BD')} = ${2*a} + ${2*b} = ${2*a+2*b}$。`],`$${2*a+2*b}$`)}}
+    if(f===2){const a=ri(3,15);
+      return{q:`長方形 $ABCD$ 的兩條對角線交於 $O$，若 $${seg('AC')} = ${2*a}$，求 $${seg('OB')}$`,a:`$${a}$`,e:EX([`長方形的兩條對角線等長且互相平分。`,`$${seg('BD')} = ${seg('AC')} = ${2*a}$。`,`$${seg('OB')} = ${2*a} \\div 2 = ${a}$。`],`$${a}$`)}}
+    const s=ri(3,20),nm=pick(['菱形','正方形']);
+    return{q:`${nm} $ABCD$ 的周長為 $${4*s}$，求 $${seg('AB')}$`,a:`$${s}$`,e:EX([`${nm}的四個邊都等長。`,`周長 $= 4 \\times ${seg('AB')}$。`,`$${seg('AB')} = ${4*s} \\div 4 = ${s}$。`],`$${s}$`)};
+  }
+  if(d===2){const f=ri(0,4);
+    if(f===0){const x0=ri(10,40),a=ri(1,3),c=a+ri(1,2),b=rnz(-20,40),A=a*x0+b,e2=A-c*x0;if(A<40||A>140||A===90)return null;
+      return{q:`平行四邊形 $ABCD$ 中，$\\angle A = (${lin(a,b)})^{\\circ}$，$\\angle C = (${lin(c,e2)})^{\\circ}$，求 $\\angle B$`,a:`$${deg(180-A)}$`,e:EX([`平行四邊形對角相等：$${lin(a,b)} = ${lin(c,e2)}$。`,`移項：$${lin(c-a,0)} = ${b} - ${P(e2)} = ${b-e2}$${c-a>1?`，$x = ${b-e2} \\div ${c-a} = ${x0}$`:''}。`,`$\\angle A = ${a===1?'':a+' \\times '}${x0} ${b<0?'-':'+'} ${Math.abs(b)} = ${deg(A)}$。`,`鄰角互補：$\\angle B = 180^{\\circ} - ${deg(A)} = ${deg(180-A)}$。`],`$${deg(180-A)}$`)}}
+    if(f===1){const x0=ri(2,9),p=ri(1,8),q=x0-p;const AO=x0+p;
+      return{q:`平行四邊形 $ABCD$ 的兩條對角線交於 $O$，$${seg('AO')} = ${lin(1,p)}$，$${seg('OC')} = ${lin(2,-q)}$，求 $${seg('AC')}$`,a:`$${2*AO}$`,e:EX([`平行四邊形的對角線互相平分：$${seg('AO')} = ${seg('OC')}$。`,`$${lin(1,p)} = ${lin(2,-q)}$，移項得 $x = ${p} + ${P(q)} = ${x0}$。`,`$${seg('AO')} = ${x0} + ${p} = ${AO}$，$${seg('AC')} = 2 \\times ${AO} = ${2*AO}$。`],`$${2*AO}$`)}}
+    if(f===2){const [a,b,c]=triple(2);
+      if(R()<.5)return{q:`菱形 $ABCD$ 的兩條對角線長分別為 $${2*a}$ 和 $${2*b}$，求菱形的邊長`,a:`$${c}$`,e:EX([`菱形的對角線互相垂直平分，把菱形分成 $4$ 個全等的直角三角形。`,`每個直角三角形的兩股是 $${2*a} \\div 2 = ${a}$ 和 $${2*b} \\div 2 = ${b}$。`,`由畢氏定理，邊長 $= \\sqrt{${a}^2 + ${b}^2} = \\sqrt{${a*a+b*b}} = ${c}$。`],`$${c}$`)};
+      return{q:`菱形 $ABCD$ 的兩條對角線長分別為 $${2*a}$ 和 $${2*b}$，求菱形的面積`,a:`$${2*a*b}$`,e:EX([`菱形的對角線互相垂直，面積 $= \\text{對角線} \\times \\text{對角線} \\div 2$。`,`$${2*a} \\times ${2*b} = ${4*a*b}$。`,`$${4*a*b} \\div 2 = ${2*a*b}$。`],`$${2*a*b}$`)}}
+    if(f===3){const t=ri(40,85),ask=ri(0,2);
+      const pre=`等腰梯形 $ABCD$ 中，$${seg('AD')} \\parallel ${seg('BC')}$，$${seg('AB')} = ${seg('CD')}$，$\\angle B = ${deg(t)}$`;
+      if(ask===0)return{q:`${pre}，求 $\\angle C$`,a:`$${deg(t)}$`,e:EX([`等腰梯形的兩底角相等。`,`$\\angle B$ 和 $\\angle C$ 都在下底 $${seg('BC')}$ 上。`,`$\\angle C = \\angle B = ${deg(t)}$。`],`$${deg(t)}$`)};
+      return{q:`${pre}，求 $\\angle ${ask===1?'A':'D'}$`,a:`$${deg(180-t)}$`,e:EX([`$${seg('AD')} \\parallel ${seg('BC')}$，同側內角互補。`,ask===1?`$\\angle A + \\angle B = 180^{\\circ}$，$\\angle A = 180^{\\circ} - ${deg(t)} = ${deg(180-t)}$。`:`等腰梯形兩底角相等，$\\angle C = \\angle B = ${deg(t)}$。`,ask===1?`（也可由等腰梯形上底兩底角相等驗證 $\\angle D = \\angle A$。）`:`$\\angle C + \\angle D = 180^{\\circ}$，$\\angle D = 180^{\\circ} - ${deg(t)} = ${deg(180-t)}$。`],`$${deg(180-t)}$`)}}
+    const a=ri(3,15),b=a+2*ri(1,8);
+    return{q:`梯形 $ABCD$ 中，上底 $${seg('AD')} = ${a}$，下底 $${seg('BC')} = ${b}$，$E$、$F$ 分別是兩腰 $${seg('AB')}$、$${seg('CD')}$ 的中點，求 $${seg('EF')}$`,a:`$${(a+b)/2}$`,e:EX([`梯形兩腰中點的連線段長等於兩底長和的一半。`,`$${seg('EF')} = \\frac{${seg('AD')} + ${seg('BC')}}{2} = \\frac{${a} + ${b}}{2}$。`,`$= \\frac{${a+b}}{2} = ${(a+b)/2}$。`],`$${(a+b)/2}$`)};
+  }
+  const f=ri(0,5);
+  if(f===0){const a=ri(3,15),m=a+ri(1,10),b=2*m-a;
+    return{q:`梯形 $ABCD$ 中，$${seg('AD')} \\parallel ${seg('BC')}$，兩腰中點的連線段長為 $${m}$，上底 $${seg('AD')} = ${a}$，求下底 $${seg('BC')}$`,a:`$${b}$`,e:EX([`兩腰中點連線段長 $= \\frac{\\text{上底} + \\text{下底}}{2}$。`,`$${m} = \\frac{${a} + ${seg('BC')}}{2}$，所以 $${a} + ${seg('BC')} = ${2*m}$。`,`$${seg('BC')} = ${2*m} - ${a} = ${b}$。`],`$${b}$`)}}
+  if(f===1){const a=ri(3,12),b=a+ri(1,8);
+    return{q:`平行四邊形 $ABCD$ 中，$${seg('AD')} = ${a}$，$${seg('AB')} = ${b}$，$\\angle DAB$ 的角平分線交 $${seg('CD')}$ 於 $E$，求 $${seg('CE')}$`,a:`$${b-a}$`,e:EX([`$AE$ 平分 $\\angle DAB$：$\\angle DAE = \\angle EAB$。`,`$${seg('AB')} \\parallel ${seg('DC')}$，內錯角相等：$\\angle EAB = \\angle AED$，所以 $\\angle DAE = \\angle AED$。`,`$\\triangle ADE$ 是等腰三角形，$${seg('DE')} = ${seg('AD')} = ${a}$。`,`對邊相等 $${seg('CD')} = ${seg('AB')} = ${b}$，$${seg('CE')} = ${b} - ${a} = ${b-a}$。`],`$${b-a}$`)}}
+  if(f===2){const t=2*ri(20,80);if(t===90)return null;
+    return{q:`長方形 $ABCD$ 的兩條對角線交於 $O$，若 $\\angle AOB = ${deg(t)}$，求 $\\angle OAB$`,a:`$${deg((180-t)/2)}$`,e:EX([`長方形的對角線等長且互相平分，所以 $${seg('OA')} = ${seg('OB')}$。`,`$\\triangle OAB$ 是等腰三角形，$\\angle OAB = \\angle OBA$。`,`$\\angle OAB = (180^{\\circ} - ${deg(t)}) \\div 2 = ${deg((180-t)/2)}$。`],`$${deg((180-t)/2)}$`)}}
+  if(f===3){const t=2*ri(25,70);if(t===90)return null;
+    if(R()<.5)return{q:`菱形 $ABCD$ 中，$\\angle ABC = ${deg(t)}$，求 $\\angle ABD$`,a:`$${deg(t/2)}$`,e:EX([`菱形的對角線互相垂直平分，而且平分頂角（菱形對稱於對角線）。`,`$${seg('BD')}$ 平分 $\\angle ABC$。`,`$\\angle ABD = ${deg(t)} \\div 2 = ${deg(t/2)}$。`],`$${deg(t/2)}$`)};
+    return{q:`菱形 $ABCD$ 中，$\\angle ABC = ${deg(t)}$，求 $\\angle BAC$`,a:`$${deg((180-t)/2)}$`,e:EX([`菱形四邊等長，$${seg('BA')} = ${seg('BC')}$，$\\triangle ABC$ 是等腰三角形。`,`兩底角相等：$\\angle BAC = \\angle BCA$。`,`$\\angle BAC = (180^{\\circ} - ${deg(t)}) \\div 2 = ${deg((180-t)/2)}$。`],`$${deg((180-t)/2)}$`)}}
+  if(f===4){const al=ri(40,140),ga=ri(40,140);if((al+ga)%2||al===ga)return null;const b=(360-al-ga)/2;if(b<40||b>140)return null;
+    return{q:`箏形 $ABCD$ 中，$${seg('AB')} = ${seg('AD')}$，$${seg('CB')} = ${seg('CD')}$，$\\angle A = ${deg(al)}$，$\\angle C = ${deg(ga)}$，求 $\\angle B$`,a:`$${deg(b)}$`,e:EX([`箏形對稱於對角線 $AC$，所以 $\\angle B = \\angle D$。`,`四邊形內角和 $360^{\\circ}$：$\\angle B + \\angle D = 360^{\\circ} - ${deg(al)} - ${deg(ga)} = ${deg(2*b)}$。`,`$\\angle B = ${deg(2*b)} \\div 2 = ${deg(b)}$。`],`$${deg(b)}$`)}}
+  const s=ri(5,20),k=ri(1,8),AB=s+k,BC=s-k;if(BC<2)return null;const Pm=2*(AB+BC);
+  return{q:`平行四邊形 $ABCD$ 的周長為 $${Pm}$，且 $${seg('AB')}$ 比 $${seg('BC')}$ 長 $${2*k}$，求 $${seg('AB')}$`,a:`$${AB}$`,e:EX([`平行四邊形兩組對邊分別相等，所以 $${seg('AB')} + ${seg('BC')} = ${Pm} \\div 2 = ${AB+BC}$。`,`設 $${seg('BC')} = x$，則 $${seg('AB')} = x + ${2*k}$，$2x + ${2*k} = ${AB+BC}$。`,`$x = (${AB+BC} - ${2*k}) \\div 2 = ${BC}$。`,`$${seg('AB')} = ${BC} + ${2*k} = ${AB}$。`],`$${AB}$`)};
+}});
+
+unit({id:'ratio9',g:'九上',name:'連比與比例線段',instr:'依題意作答。',h:[18,22,28],gen(d){
+  const EX=(L,ans)=>L.map((s,i)=>'①②③④⑤'[i]+' '+s).join('\n')+'\n所以答案是 '+ans+'。';
+  const g3=(a,b,c)=>gcd(gcd(a,b),c);
+  if(d===1){const f=ri(0,2);
+    if(f===0){const p=ri(1,9),q=ri(1,9),r=ri(1,9),g=ri(2,9);if(g3(p,q,r)!==1||p===q&&q===r)return null;
+      return{q:`化為最簡整數比：$${g*p} : ${g*q} : ${g*r}$`,a:`$${p} : ${q} : ${r}$`,e:EX([`連比化簡：三個數同除以它們的最大公因數。`,`$${g*p}$、$${g*q}$、$${g*r}$ 的最大公因數是 $${g}$。`,`同除以 $${g}$：$${g*p} \\div ${g} = ${p}$，$${g*q} \\div ${g} = ${q}$，$${g*r} \\div ${g} = ${r}$。`],`$${p} : ${q} : ${r}$`)}}
+    if(f===1){const p=ri(1,7),q=ri(1,7),r=ri(1,7),k=ri(2,9);if(g3(p,q,r)!==1)return null;const S=k*(p+q+r),w=ri(0,2),nm='xyz'[w],v=[p,q,r][w];
+      return{q:`已知 $x : y : z = ${p} : ${q} : ${r}$，且 $x + y + z = ${S}$，求 $${nm}$`,a:`$${nm} = ${v*k}$`,e:EX([`設 $x = ${p}k$，$y = ${q}k$，$z = ${r}k$。`,`$${p}k + ${q}k + ${r}k = ${p+q+r}k = ${S}$，$k = ${S} \\div ${p+q+r} = ${k}$。`,`$${nm} = ${v} \\times ${k} = ${v*k}$。`],`$${nm} = ${v*k}$`)}}
+    const m=ri(2,15);
+    if(R()<.5)return{q:`$\\triangle ABC$ 中，$D$、$E$ 分別是 $${seg('AB')}$、$${seg('AC')}$ 的中點。若 $${seg('BC')} = ${2*m}$，求 $${seg('DE')}$`,a:`$${m}$`,e:EX([`連接三角形兩邊中點的線段，平行於第三邊，長度是第三邊的一半。`,`$${seg('DE')} = \\frac{1}{2} ${seg('BC')}$。`,`$${seg('DE')} = ${2*m} \\div 2 = ${m}$。`],`$${m}$`)};
+    return{q:`$\\triangle ABC$ 中，$D$、$E$ 分別是 $${seg('AB')}$、$${seg('AC')}$ 的中點。若 $${seg('DE')} = ${m}$，求 $${seg('BC')}$`,a:`$${2*m}$`,e:EX([`連接三角形兩邊中點的線段，平行於第三邊，長度是第三邊的一半。`,`所以 $${seg('BC')} = 2 \\times ${seg('DE')}$。`,`$${seg('BC')} = 2 \\times ${m} = ${2*m}$。`],`$${2*m}$`)};
+  }
+  if(d===2){const f=ri(0,4);
+    if(f===0){const p=ri(1,9),q=ri(2,9),r=ri(2,9),s=ri(1,9);if(gcd(p,q)!==1||gcd(r,s)!==1||q===r)return null;
+      const L=lcm(q,r),A=p*L/q,B=L,C=s*L/r,g=g3(A,B,C);if(g!==1||Math.max(A,B,C)>99)return null;
+      return{q:`已知 $a : b = ${p} : ${q}$，$b : c = ${r} : ${s}$，求 $a : b : c$（最簡整數比）`,a:`$${A} : ${B} : ${C}$`,e:EX([`兩個比的共同項是 $b$，要把 $b$ 化成相同的數：$${q}$ 和 $${r}$ 的最小公倍數是 $${L}$。`,`$a : b = ${p} : ${q} = ${A} : ${L}$（前後項同乘 $${L/q}$）。`,`$b : c = ${r} : ${s} = ${L} : ${C}$（前後項同乘 $${L/r}$）。`,`合併得 $a : b : c = ${A} : ${B} : ${C}$。`],`$${A} : ${B} : ${C}$`)}}
+    if(f===1){const ds=shuffle([2,3,4,5,6,8,9,10,12].slice()).slice(0,3);const [u,v,w]=ds;const L=lcm(lcm(u,v),w);if(L>60)return null;const A=L/u,B=L/v,C=L/w,g=g3(A,B,C);
+      return{q:`化為最簡整數比：$\\frac{1}{${u}} : \\frac{1}{${v}} : \\frac{1}{${w}}$`,a:`$${A/g} : ${B/g} : ${C/g}$`,e:EX([`分數連比先去分母：三項同乘分母 $${u}$、$${v}$、$${w}$ 的最小公倍數 $${L}$。`,`$\\frac{1}{${u}} \\times ${L} = ${A}$，$\\frac{1}{${v}} \\times ${L} = ${B}$，$\\frac{1}{${w}} \\times ${L} = ${C}$。`,g>1?`三項再同除以最大公因數 $${g}$，得 $${A/g} : ${B/g} : ${C/g}$。`:`$${A}$、$${B}$、$${C}$ 的最大公因數是 $1$，已是最簡整數比。`],`$${A/g} : ${B/g} : ${C/g}$`)}}
+    if(f===2){const p=ri(1,6),q=ri(1,6),s=ri(1,4),t=ri(1,4);if(p===q&&s===t)return null;
+      return{q:`三條平行線 $L_1 \\parallel L_2 \\parallel L_3$ 被直線 $M$ 依序截於 $A$、$B$、$C$，被直線 $N$ 依序截於 $D$、$E$、$F$。若 $${seg('AB')} = ${p*s}$，$${seg('BC')} = ${q*s}$，$${seg('DE')} = ${p*t}$，求 $${seg('EF')}$`,a:`$${q*t}$`,e:EX([`平行線截比例線段：$${seg('AB')} : ${seg('BC')} = ${seg('DE')} : ${seg('EF')}$。`,`代入：$${p*s} : ${q*s} = ${p*t} : ${seg('EF')}$。`,`外項乘積 $=$ 內項乘積：$${p*s} \\times ${seg('EF')} = ${q*s} \\times ${p*t} = ${q*s*p*t}$。`,`$${seg('EF')} = ${q*s*p*t} \\div ${p*s} = ${q*t}$。`],`$${q*t}$`)}}
+    if(f===3){const p=ri(1,5),q=ri(1,5),s=ri(1,4),t=ri(1,4);if(p===q)return null;
+      return{q:`$\\triangle ABC$ 中，$D$、$E$ 分別在 $${seg('AB')}$、$${seg('AC')}$ 上，且 $${seg('DE')} \\parallel ${seg('BC')}$。若 $${seg('AD')} = ${p*s}$，$${seg('DB')} = ${q*s}$，$${seg('AE')} = ${p*t}$，求 $${seg('AC')}$`,a:`$${(p+q)*t}$`,e:EX([`$${seg('DE')} \\parallel ${seg('BC')}$，平行線截比例線段：$${seg('AD')} : ${seg('DB')} = ${seg('AE')} : ${seg('EC')}$。`,`$${p*s} : ${q*s} = ${p*t} : ${seg('EC')}$，外項乘積 $=$ 內項乘積：$${p*s} \\times ${seg('EC')} = ${q*s*p*t}$。`,`$${seg('EC')} = ${q*s*p*t} \\div ${p*s} = ${q*t}$。`,`$${seg('AC')} = ${seg('AE')} + ${seg('EC')} = ${p*t} + ${q*t} = ${(p+q)*t}$。`],`$${(p+q)*t}$`)}}
+    const x0=ri(2,9),a=ri(1,3),b=ri(1,9),DE=a*x0+b,c=2*a+ri(1,2),e2=c*x0-2*DE;if(e2<=0)return null;
+    return{q:`$\\triangle ABC$ 中，$D$、$E$ 分別是 $${seg('AB')}$、$${seg('AC')}$ 的中點。若 $${seg('DE')} = ${lin(a,b)}$，$${seg('BC')} = ${lin(c,-e2)}$，求 $${seg('BC')}$`,a:`$${2*DE}$`,e:EX([`兩邊中點連線段長是第三邊的一半：$${seg('BC')} = 2 \\times ${seg('DE')}$。`,`$${lin(c,-e2)} = 2(${lin(a,b)}) = ${lin(2*a,2*b)}$。`,`移項：$${lin(c-2*a,0)} = ${2*b} + ${e2} = ${2*b+e2}$，$x = ${x0}$。`,`$${seg('BC')} = ${c} \\times ${x0} - ${e2} = ${2*DE}$。`],`$${2*DE}$`)};
+  }
+  const f=ri(0,3);
+  if(f===0){const p=ri(1,6),q=ri(1,6),r=ri(1,6),k=ri(1,6);if(g3(p,q,r)!==1)return null;const A=ri(1,4),B=ri(1,4),C=rnz(-3,3);const K=A*p+B*q+C*r;if(K<=0)return null;
+    return{q:`已知 $x : y : z = ${p} : ${q} : ${r}$，且 $${poly([[A,'x'],[B,'y'],[C,'z']])} = ${K*k}$，求 $x + y + z$`,a:`$${(p+q+r)*k}$`,e:EX([`設 $x = ${p}k$，$y = ${q}k$，$z = ${r}k$（$k \\neq 0$）。`,`代入：$${poly([[A,'x'],[B,'y'],[C,'z']]).replace('x',`(${p}k)`).replace('y',`(${q}k)`).replace('z',`(${r}k)`)} = ${K}k = ${K*k}$。`,`$k = ${K*k} \\div ${K} = ${k}$。`,`$x + y + z = ${p+q+r}k = ${p+q+r} \\times ${k} = ${(p+q+r)*k}$。`],`$${(p+q+r)*k}$`)}}
+  if(f===1){const p=ri(1,6),q=ri(2,6),r=ri(2,6),s=ri(1,6);if(gcd(p,q)!==1||gcd(r,s)!==1||q===r)return null;const L=lcm(q,r),A=p*L/q,B=L,C=s*L/r;if(g3(A,B,C)!==1)return null;const k=pick([100,200,300,500]),T=(A+B+C)*k;
+    return{q:`甲、乙、丙三人分 $${commas(String(T))}$ 元，甲 $:$ 乙 $= ${p} : ${q}$，乙 $:$ 丙 $= ${r} : ${s}$，丙分得多少元？`,a:`$${commas(String(C*k))}$ 元`,e:EX([`共同項是乙：$${q}$ 和 $${r}$ 的最小公倍數是 $${L}$，甲 $:$ 乙 $:$ 丙 $= ${A} : ${B} : ${C}$。`,`總份數 $= ${A} + ${B} + ${C} = ${A+B+C}$ 份。`,`每一份 $= ${commas(String(T))} \\div ${A+B+C} = ${k}$ 元。`,`丙分得 $${C} \\times ${k} = ${commas(String(C*k))}$ 元。`],`$${commas(String(C*k))}$ 元`)}}
+  if(f===2){
+    if(R()<.5){const a=ri(4,20),b=ri(4,20),c=ri(4,20);if(a+b<=c||a+c<=b||b+c<=a||(a+b+c)%2)return null;const S=a+b+c;
+      return{q:`$\\triangle ABC$ 的三邊長為 $${a}$、$${b}$、$${c}$，$D$、$E$、$F$ 分別是三邊的中點，求 $\\triangle DEF$ 的周長`,a:`$${S/2}$`,e:EX([`連接兩邊中點的線段長是第三邊的一半，所以 $\\triangle DEF$ 的三邊分別是 $\\triangle ABC$ 三邊的一半。`,`$\\triangle ABC$ 的周長 $= ${a} + ${b} + ${c} = ${S}$。`,`$\\triangle DEF$ 的周長 $= ${S} \\div 2 = ${S/2}$。`],`$${S/2}$`)}}
+    const m=ri(4,20),n=ri(4,20);
+    return{q:`四邊形 $ABCD$ 的對角線 $${seg('AC')} = ${m}$，$${seg('BD')} = ${n}$，$E$、$F$、$G$、$H$ 分別是 $${seg('AB')}$、$${seg('BC')}$、$${seg('CD')}$、$${seg('DA')}$ 的中點，求四邊形 $EFGH$ 的周長`,a:`$${m+n}$`,e:EX([`在 $\\triangle ABC$ 中，$${seg('EF')}$ 連接兩邊中點，$${seg('EF')} = \\frac{1}{2}${seg('AC')}$；同理 $${seg('HG')} = \\frac{1}{2}${seg('AC')}$（看 $\\triangle ACD$）。`,`在 $\\triangle ABD$、$\\triangle CBD$ 中，$${seg('EH')} = ${seg('FG')} = \\frac{1}{2}${seg('BD')}$。`,`周長 $= ${seg('AC')} + ${seg('BD')} = ${m} + ${n} = ${m+n}$。`],`$${m+n}$`)}}
+  const x0=ri(2,12),k=ri(1,6),t=ri(1,4),g=gcd(x0,x0+k),AE=t*x0/g,EC=t*(x0+k)/g;if(EC>40)return null;
+  return{q:`$\\triangle ABC$ 中，$D$、$E$ 分別在 $${seg('AB')}$、$${seg('AC')}$ 上，且 $${seg('DE')} \\parallel ${seg('BC')}$。若 $${seg('AD')} = x$，$${seg('DB')} = ${lin(1,k)}$，$${seg('AE')} = ${AE}$，$${seg('EC')} = ${EC}$，求 $x$`,a:`$x = ${x0}$`,e:EX([`$${seg('DE')} \\parallel ${seg('BC')}$，平行線截比例線段：$${seg('AD')} : ${seg('DB')} = ${seg('AE')} : ${seg('EC')}$。`,`$x : (${lin(1,k)}) = ${AE} : ${EC}$，外項乘積 $=$ 內項乘積：$${EC}x = ${AE}(${lin(1,k)})$。`,`$${EC}x = ${lin(AE,AE*k)}$，移項得 $${lin(EC-AE,0)} = ${AE*k}$。`,`$x = ${AE*k} \\div ${EC-AE} = ${x0}$。`],`$x = ${x0}$`)};
+}});
+
+/* 國中單元照 115 學年度（108 課綱）國中數學課程計畫的章序排：屏東縣 30 多所國中、康軒／翰林／南一三家章序一致。
+   八上：乘法公式→二次方根→畢氏定理→因式分解→一元二次方程式→第5章統計資料處理；九上第三章是「推理證明與三角形的心」（幾何推理）。
+   還沒寫好的新單元 id 會自動略過。 */
+(()=>{const JH=['int-add','int-mul','power','factor-num','fraction','algebra','lin-eq',
+  'sys-eq','coord-fig','ratio','ineq','stats7','sym7',
+  'expand','sqrt','pythag-fig','factorize','quad-eq','freq8',
+  'arith','geom-seq','lin-func','angles','angle-fig','quad8',
+  'ratio9','similar','similar-fig','circle','circle-fig','centers',
+  'quad-func','stats','solid'];
+  const at=U.findIndex(u=>JH.includes(u.id)),pulled=[];
+  JH.forEach(id=>{const i=U.findIndex(u=>u.id===id);if(i>=0)pulled.push(U.splice(i,1)[0])});
+  const f8=pulled.find(u=>u.id==='freq8');if(f8)f8.g='八上';
+  U.splice(Math.min(at,U.length),0,...pulled)})();
 
 /* ================= 出卷 ================= */
 const STAGES=[{k:'國小',g:['小一','小二','小三','小四','小五','小六']},{k:'國中',g:['七上','七下','八上','八下','九上','九下']},{k:'高中',g:['高一上','高一下','數A 二上','數A 二下','數B 二上','數B 二下','數甲 上','數甲 下','數乙 上','數乙 下']},{k:'技高',g:['數A一','數A二','數A三','數A四','數B一','數B二','數B三','數B四','數C一','數C二','數C三','數C四']}];
