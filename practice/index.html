@@ -4,13 +4,13 @@
 <meta charset="utf-8">
 <meta name="referrer" content="no-referrer-when-downgrade">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>正賦線上練習｜國中・技高數學、會考真題 線上作答馬上批改</title>
-<meta name="description" content="正賦文理免費數學線上練習：國中七上到九下 29 單元、技高數學A・B・C 56 單元，題目每次都不一樣，加上 111～115 年會考數學真題，答完馬上批改、看詳解和全國答對率。不用註冊，手機平板都能用。">
+<title>正賦線上練習｜國中・技高數學、會考統測真題 線上作答馬上批改</title>
+<meta name="description" content="正賦文理免費數學線上練習：國中七上到九下 29 單元、技高數學A・B・C 56 單元，題目每次都不一樣，加上 111～115 年會考數學、統測數學A・B・C 真題，答完馬上批改、看詳解和全國答對率。不用註冊，手機平板都能用。">
 <link rel="icon" type="image/png" href="../img/logo.png">
 <link rel="canonical" href="https://wade-chuang.github.io/jenfoo/practice/">
 <meta property="og:type" content="website"><meta property="og:site_name" content="正賦文理">
-<meta property="og:title" content="正賦線上練習｜國中・技高數學、會考真題，答完馬上批改">
-<meta property="og:description" content="國中七上到九下、技高數學A・B・C 單元練習，加上 111～115 年會考真題，看詳解和全國答對率。免費、不用註冊。">
+<meta property="og:title" content="正賦線上練習｜國中・技高數學、會考統測真題，答完馬上批改">
+<meta property="og:description" content="國中七上到九下、技高數學A・B・C 單元練習，加上 111～115 年會考、統測數學A・B・C 真題，看詳解。免費、不用註冊。">
 <meta property="og:image" content="https://wade-chuang.github.io/jenfoo/practice/og.jpg"><meta property="og:url" content="https://wade-chuang.github.io/jenfoo/practice/">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -156,6 +156,7 @@ footer a{font-weight:700}
 
 <script src="data/math_units.js?v=fd008793"></script>
 <script src="data/huikao.js?v=4bdc135d"></script>
+<script src="data/tongce.js?v=0b39e58d"></script>
 <script>
 /* ================= 基本設定 ================= */
 const $=s=>document.querySelector(s);
@@ -196,6 +197,10 @@ function unitById(id){const k=id.slice(0,1),v=id.slice(2);
   if(k==='c'&&HK_CH[v])return{id,kind:'hk',name:'會考真題・'+HK_CH[v],pool:HK.filter(q=>q.ch===v),n:10,back:'#/hk'};
   if(k==='y'){const pool=HK.filter(q=>q.y===+v);return pool.length&&{id,kind:'hk',name:v+' 年會考數學（選擇題全卷）',pool,n:pool.length,ordered:true,back:'#/hk'}}
   if(k==='r')return{id,kind:'hk',name:'會考真題・隨機 10 題',pool:HK,n:10,back:'#/hk'};
+  if(k==='t'){const [pp,t,x]=v.split('.'),all=TC.filter(q=>q.p===pp),back='#/tc/'+pp;if(!all.length)return null;
+    if(t==='c'&&TC_CH[pp][x])return{id,kind:'hk',name:'統測數'+pp+'・'+TC_CH[pp][x],pool:all.filter(q=>q.ch===x),n:10,back};
+    if(t==='y'){const pool=all.filter(q=>q.y===+x);return pool.length&&{id,kind:'hk',name:x+' 年統測數學('+pp+')全卷',pool,n:pool.length,ordered:true,back}}
+    if(t==='r')return{id,kind:'hk',name:'統測數'+pp+'・隨機 10 題',pool:all,n:10,back}}
   return null}
 
 /* ================= 出題 ================= */
@@ -241,18 +246,20 @@ function fromMath(u,d){
   if(wrong.length<3)return null;
   const opts=shuffleArr([ans,...wrong]),instr=u.instr&&!/^依題意作答/.test(u.instr)?u.instr:'';
   return{kind:'math',tag:(/^數[ABC]/.test(u.g)?'技高'+u.g.slice(0,2)+' '+bookName(u.g):u.g)+'・'+u.name.replace(/（附圖）/,''),instr,q:it.q,opts,ans:opts.indexOf(ans),e:'正確答案：'+ans,fig:it.fig||'',key:it.k||(it.q+'|'+ans)}}
-function fromHK(q){return{kind:'hk',hk:q.id,tag:q.y+' 年會考 第 '+q.no+' 題・'+HK_CH[q.ch],ans:q.a,key:'hk'+q.id}}
-const hkById=id=>HK.find(q=>q.id===id);
+// 會考與統測真題共用同一套作答畫面（統測沒有公布各題答對率）
+function fromHK(q){return{kind:'hk',hk:q.id,tag:q.p?`${q.y} 年統測數學(${q.p}) 第 ${q.no} 題・${TC_CH[q.p][q.ch]}`:q.y+' 年會考 第 '+q.no+' 題・'+HK_CH[q.ch],ans:q.a,key:'hk'+q.id}}
+const hkById=id=>HK.find(q=>q.id===id)||TC.find(q=>q.id===id);
 
 function makeSet(unit){
   if(unit.kind==='hk'){const pool=unit.ordered?unit.pool:shuffleArr(unit.pool);return pool.slice(0,unit.n).map(fromHK)}
   const out=[],plan=[1,1,1,1,2,2,2,2,3,3],seen=new Set();
   for(let i=0,tries=0;i<10&&tries<60;tries++){const it=fromMath(unit.src,plan[i]);if(!it||seen.has(it.key))continue;seen.add(it.key);out.push(it);i++}
   return out}
-/* 每日挑戰：國中＝這個年級的單元 9 題＋最後 1 題會考真題；技高＝這份試卷的單元 10 題 */
-function dailySet(){const us=MATH.filter(u=>BOOKS[S.grade].includes(u.g)),items=[],n=isTK(S.grade)?10:9;
-  for(let k=0;k<30&&items.length<n;k++){const it=fromMath(pick(us),1+(Math.random()*3|0));if(it&&!items.some(x=>x.key===it.key))items.push(it)}
-  return isTK(S.grade)?items:items.concat(fromHK(pick(HK)))}
+/* 每日挑戰：這個年級／這份試卷的單元 9 題＋最後 1 題真題（國中會考、技高統測） */
+function dailySet(){const us=MATH.filter(u=>BOOKS[S.grade].includes(u.g)),items=[];
+  for(let k=0;k<30&&items.length<9;k++){const it=fromMath(pick(us),1+(Math.random()*3|0));if(it&&!items.some(x=>x.key===it.key))items.push(it)}
+  const real=isTK(S.grade)?TC.filter(q=>q.p===S.grade):HK;
+  return real.length?items.concat(fromHK(pick(real))):items}
 
 /* ================= 畫面 ================= */
 function header(){$('#stStreak').textContent=streak();$('#stStars').textContent=S.stars;$('#muteBtn').textContent=S.mute?'🔇':'🔊'}
@@ -272,8 +279,8 @@ function viewHome(){
   ${isTK(g)?'<p class="hint">工科（機械、電機電子、化工、土木）選數學C；商管、設計、餐旅食品、農業、外語選數學B；護理、家政、幼保、影視選數學A。</p>':''}
   <h2>今天也來練一下</h2>
   <div class="row">
-    <button class="big daily" id="goDaily"><span class="ic">🎯</span><div><b>每日挑戰</b><span>${isTK(g)?GNAME[g]+'各冊混合 10 題':GNAME[g]+'單元 9 題＋會考真題 1 題'}</span></div></button>
-    <a class="big hk" href="#/hk"><span class="ic">📝</span><div><b>會考數學真題</b><span>111～115 年 ${HK.length} 題・附詳解與全國答對率</span></div></a>
+    <button class="big daily" id="goDaily"><span class="ic">🎯</span><div><b>每日挑戰</b><span>${isTK(g)?GNAME[g]+'單元 9 題＋統測真題 1 題':GNAME[g]+'單元 9 題＋會考真題 1 題'}</span></div></button>
+    ${isTK(g)?tcCard(g)+hkCard():hkCard()+tcCard('C')}
     <button class="big" id="goWrong"><span class="ic">📒</span><div><b>錯題本</b><span>${S.wrong.length} 題等你再挑戰</span></div></button>
   </div>
   <h2>數學單元練習<small>${GNAME[g]}・題目每次都不一樣</small></h2>
@@ -281,6 +288,22 @@ function viewHome(){
   ${ctaBox()}`;
   document.querySelectorAll('.grades button').forEach(b=>b.onclick=()=>{S.grade=b.dataset.g;save();viewHome()});
   $('#goDaily').onclick=()=>location.hash='#/daily';$('#goWrong').onclick=()=>location.hash='#/wrong';
+  bindUnits()}
+
+const hkCard=()=>`<a class="big hk" href="#/hk"><span class="ic">📝</span><div><b>會考數學真題</b><span>111～115 年 ${HK.length} 題・附詳解與全國答對率</span></div></a>`;
+const tcCard=pp=>TC.length?`<a class="big hk" href="#/tc/${pp}"><span class="ic">🛠️</span><div><b>統測數學真題</b><span>111～115 年 數學A・B・C 共 ${TC.length} 題・附詳解</span></div></a>`:'';
+function viewTC(pp){
+  if(!TC_CH[pp])pp='C';const all=TC.filter(q=>q.p===pp),chs=Object.keys(TC_CH[pp]),ys=[...new Set(all.map(q=>q.y))];
+  $('#view').innerHTML=`<a class="back" href="#/">← 回首頁</a>
+  <h2>🛠️ 統測數學真題<small>111～115 年・四技二專統一入學測驗</small></h2>
+  <div class="grades" role="group" aria-label="試卷">${['A','B','C'].map(x=>`<a class="btn" style="${x===pp?'background:var(--ink);color:var(--bg);border-color:var(--ink)':''}" href="#/tc/${x}">數學(${x})</a>`).join('')}</div>
+  <p class="hint">工科選數學(C)；商管、設計、餐旅食品、農業、外語選數學(B)；護理、家政、幼保、影視選數學(A)。每題答完可以看一步一步的詳解。題目取自技專校院入學測驗中心公開試題。</p>
+  ${all.length?`<h3>先來暖身</h3><div class="units">${unitBtn('t:'+pp+'.r','🎲','隨機 10 題','五年數學('+pp+')真題裡隨機抽')}</div>
+  <h3>依章節練（每次抽 10 題）</h3>
+  <div class="units">${chs.map((c,i)=>{const n=all.filter(q=>q.ch===c).length;return n?unitBtn('t:'+pp+'.c.'+c,i+1,TC_CH[pp][c],n+' 題真題'):''}).join('')}</div>
+  <h3>整份考一次（照題號、25 題）</h3>
+  <div class="units">${ys.map(y=>unitBtn('t:'+pp+'.y.'+y,y,y+' 年統測數學('+pp+')',all.filter(q=>q.y===y).length+' 題・建議限時 80 分鐘')).join('')}</div>`:'<div class="empty">這一卷的題目正在準備中。</div>'}
+  ${ctaBox()}`;
   bindUnits()}
 
 function viewHK(){
@@ -330,7 +353,8 @@ function answer(k){
   save();Q.answered=true;
   $('#combo').textContent=Q.combo>=2?'🔥 連對 '+Q.combo:'';
   let extra='';
-  if(hk){const p=Math.round(hk.rate*100);
+  if(hk&&hk.rate==null)extra=`<p class="rate">正確答案 <b>(${'ABCD'[hk.a]})</b></p>`;
+  else if(hk){const p=Math.round(hk.rate*100);
     extra=`<p class="rate">正確答案 <b>(${'ABCD'[hk.a]})</b>・全國答對率 <b>${p}%</b>　${ok?(p<40?'這題全國不到四成答對，你很強！':p<60?'這題算難，答對很棒！':''):(p<40?'這題全國只有 '+p+'% 答對，看完詳解就會了。':'')}</p>`}
   $('#fb').innerHTML=`<div class="fb ${ok?'ok':'no'}"><div>${ok?pick(['答對了！','漂亮！','完全正確！','穩！']):'差一點！'}</div>${hk?extra:`<p>${it.e}</p>`}</div>
     ${hk?solHTML(hk):''}<button class="next" id="nextBtn">${Q.i+1<Q.items.length?'下一題 →':'看成績 →'}</button>`;
@@ -375,6 +399,7 @@ function route(){
   if(Q)clearTimeout(Q.auto);
   const h=decodeURIComponent(location.hash.slice(1)||'/'),p=h.split('/').filter(Boolean);header();window.scrollTo(0,0);
   if(p[0]==='hk')return viewHK();
+  if(p[0]==='tc')return viewTC(p[1]||(isTK(S.grade)?S.grade:'C'));
   if(p[0]==='q'){const u=unitById(p.slice(1).join('/'));if(u){const items=makeSet(u);if(items.length)return startQuiz(items,{unit:u.id,back:u.back})}}
   if(p[0]==='daily')return startQuiz(dailySet(),{back:'#/'});
   if(p[0]==='wrong')return viewWrong();
