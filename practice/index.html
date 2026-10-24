@@ -74,6 +74,9 @@ h3{font:700 16px var(--sans);margin:16px 0 8px;color:var(--muted)}
 .unit div{flex:1;min-width:0}.unit b{display:block}.unit small{color:var(--muted)}
 .stars{color:var(--brass);letter-spacing:2px;font-size:17px;white-space:nowrap}.stars .off{color:var(--line)}
 .back{display:inline-flex;align-items:center;gap:6px;font-weight:700;color:var(--muted);padding:6px 0;text-decoration:none}
+.tabs{display:flex;gap:6px;margin:14px 0 2px;border-bottom:2px solid var(--line)}
+.tabs a{padding:10px 18px;font-weight:900;text-decoration:none;color:var(--muted);border-radius:12px 12px 0 0;margin-bottom:-2px;border:2px solid transparent}
+.tabs a[aria-current="page"]{color:var(--ink);background:var(--paper);border-color:var(--line);border-bottom-color:var(--paper)}
 .cols{display:grid;gap:4px 20px}@media (min-width:760px){.cols{grid-template-columns:1fr 1fr}}
 /* 作答 */
 .qtop{display:flex;align-items:center;gap:10px;margin:6px 0 12px;font-family:var(--mono)}
@@ -143,6 +146,7 @@ footer a{font-weight:700}
       <button class="chip" id="muteBtn" aria-label="音效開關">🔊</button>
     </div>
   </header>
+  <nav class="tabs" aria-label="分區"><a href="#/" id="tabP">📘 單元練習</a><a href="#/exam" id="tabE">📝 歷屆試題</a></nav>
   <main id="view"></main>
   <footer>
     <span>© 2026 正賦文理短期補習班・免費線上練習</span>
@@ -255,14 +259,18 @@ function makeSet(unit){
   const out=[],plan=[1,1,1,1,2,2,2,2,3,3],seen=new Set();
   for(let i=0,tries=0;i<10&&tries<60;tries++){const it=fromMath(unit.src,plan[i]);if(!it||seen.has(it.key))continue;seen.add(it.key);out.push(it);i++}
   return out}
-/* 每日挑戰：這個年級／這份試卷的單元 9 題＋最後 1 題真題（國中會考、技高統測） */
+/* 每日挑戰（單元練習區）：這個年級／這份試卷的單元 10 題 */
 function dailySet(){const us=MATH.filter(u=>BOOKS[S.grade].includes(u.g)),items=[];
-  for(let k=0;k<30&&items.length<9;k++){const it=fromMath(pick(us),1+(Math.random()*3|0));if(it&&!items.some(x=>x.key===it.key))items.push(it)}
-  const real=isTK(S.grade)?TC.filter(q=>q.p===S.grade):HK;
-  return real.length?items.concat(fromHK(pick(real))):items}
+  for(let k=0;k<30&&items.length<10;k++){const it=fromMath(pick(us),1+(Math.random()*3|0));if(it&&!items.some(x=>x.key===it.key))items.push(it)}
+  return items}
+/* 每日一題真題（歷屆試題區）：國中抽會考、技高抽自己那一卷的統測 */
+const realPool=()=>isTK(S.grade)?TC.filter(q=>q.p===S.grade):HK;
+const isExamItem=w=>w.kind==='hk';
 
 /* ================= 畫面 ================= */
-function header(){$('#stStreak').textContent=streak();$('#stStars').textContent=S.stars;$('#muteBtn').textContent=S.mute?'🔇':'🔊'}
+function header(){const inExam=/^#\/(exam|hk|tc|daily1|wrong\/e)/.test(location.hash)||/^#\/q\/(c|y|r|t)(%3A|:)/.test(location.hash);
+  $('#tabP').toggleAttribute('aria-current',!inExam);$('#tabE').toggleAttribute('aria-current',inExam);$(inExam?'#tabE':'#tabP').setAttribute('aria-current','page');
+  $('#stStreak').textContent=streak();$('#stStars').textContent=S.stars;$('#muteBtn').textContent=S.mute?'🔇':'🔊'}
 function starStr(n){return'<span class="stars">'+'★'.repeat(n)+'<span class="off">'+'★'.repeat(3-n)+'</span></span>'}
 const unitBtn=(id,i,name,sub)=>`<button class="unit" data-id="${id}"><span class="n">${i}</span><div><b>${esc(name)}</b><small>${sub}</small></div>${starStr(S.best[id]||0)}</button>`;
 const ctaBox=()=>`<section class="cta"><div><b>練到卡住了？</b><p>國中數學、會考衝刺，不懂的題目拍照傳給莊老師。</p></div><a class="btn line" href="${LINE}" target="_blank" rel="noopener">加 LINE 問老師</a></section>`;
@@ -279,22 +287,39 @@ function viewHome(){
   ${isTK(g)?'<p class="hint">工科（機械、電機電子、化工、土木）選數學C；商管、設計、餐旅食品、農業、外語選數學B；護理、家政、幼保、影視選數學A。</p>':''}
   <h2>今天也來練一下</h2>
   <div class="row">
-    <button class="big daily" id="goDaily"><span class="ic">🎯</span><div><b>每日挑戰</b><span>${isTK(g)?GNAME[g]+'單元 9 題＋統測真題 1 題':GNAME[g]+'單元 9 題＋會考真題 1 題'}</span></div></button>
-    ${isTK(g)?tcCard(g)+hkCard():hkCard()+tcCard('C')}
-    <button class="big" id="goWrong"><span class="ic">📒</span><div><b>錯題本</b><span>${S.wrong.length} 題等你再挑戰</span></div></button>
+    <button class="big daily" id="goDaily"><span class="ic">🎯</span><div><b>每日挑戰</b><span>${GNAME[g]}各單元混合 10 題</span></div></button>
+    <a class="big" href="#/wrong"><span class="ic">📒</span><div><b>單元錯題本</b><span>${S.wrong.filter(w=>!isExamItem(w)).length} 題等你再挑戰</span></div></a>
+    <a class="big hk" href="#/exam"><span class="ic">📝</span><div><b>想練歷屆試題？</b><span>會考、統測真題在上方「歷屆試題」</span></div></a>
   </div>
   <h2>數學單元練習<small>${GNAME[g]}・題目每次都不一樣</small></h2>
   <div class="cols">${BOOKS[g].map(b=>{const us=MATH.filter(u=>u.g===b);return`<div><h3>${bookName(b)}</h3><div class="units">${us.map((u,i)=>unitBtn('m:'+u.id,i+1,u.name.replace(/（附圖）/,''),/附圖/.test(u.name)?'附圖題・每次 10 題':'每次 10 題・由易到難')).join('')}</div></div>`}).join('')}</div>
   ${ctaBox()}`;
   document.querySelectorAll('.grades button').forEach(b=>b.onclick=()=>{S.grade=b.dataset.g;save();viewHome()});
-  $('#goDaily').onclick=()=>location.hash='#/daily';$('#goWrong').onclick=()=>location.hash='#/wrong';
+  $('#goDaily').onclick=()=>location.hash='#/daily';
+  bindUnits()}
+
+/* 歷屆試題區：會考、統測分開列，另有每日一題與歷屆錯題本 */
+function viewExam(){
+  const g=S.grade,tk=isTK(g),wn=S.wrong.filter(isExamItem).length;
+  const hk=`<h2>國中教育會考<small>數學・111～115 年</small></h2><div class="row">${hkCard()}</div>`;
+  const tc=TC.length?`<h2>統測（四技二專統一入學測驗）<small>數學A・B・C・111～115 年</small></h2>
+    <div class="row">${['A','B','C'].map(x=>`<a class="big${tk&&x===g?' hk':''}" href="#/tc/${x}"><span class="ic">🛠️</span><div><b>統測數學(${x})</b><span>${TC.filter(q=>q.p===x).length} 題・${{A:'護理、家政、幼保、影視',B:'商管、設計、餐旅、農業、外語',C:'機械、電機電子、化工、土木'}[x]}</span></div></a>`).join('')}</div>`:'';
+  $('#view').innerHTML=`
+  <p class="hint">這裡是官方公布的歷屆考題，每題附詳解。平常的單元練習在上方「單元練習」。</p>
+  <div class="row" style="margin-top:12px">
+    <button class="big daily" id="goDaily1"><span class="ic">🎯</span><div><b>每日一題真題</b><span>${tk?'統測數學('+g+')':'會考數學'}隨機一題</span></div></button>
+    <a class="big" href="#/wrong/e"><span class="ic">📒</span><div><b>歷屆錯題本</b><span>${wn} 題等你再挑戰</span></div></a>
+  </div>
+  ${tk?tc+hk:hk+tc}
+  ${ctaBox()}`;
+  $('#goDaily1').onclick=()=>location.hash='#/daily1';
   bindUnits()}
 
 const hkCard=()=>`<a class="big hk" href="#/hk"><span class="ic">📝</span><div><b>會考數學真題</b><span>111～115 年 ${HK.length} 題・附詳解與全國答對率</span></div></a>`;
 const tcCard=pp=>TC.length?`<a class="big hk" href="#/tc/${pp}"><span class="ic">🛠️</span><div><b>統測數學真題</b><span>111～115 年 數學A・B・C 共 ${TC.length} 題・附詳解</span></div></a>`:'';
 function viewTC(pp){
   if(!TC_CH[pp])pp='C';const all=TC.filter(q=>q.p===pp),chs=Object.keys(TC_CH[pp]),ys=[...new Set(all.map(q=>q.y))];
-  $('#view').innerHTML=`<a class="back" href="#/">← 回首頁</a>
+  $('#view').innerHTML=`<a class="back" href="#/exam">← 歷屆試題</a>
   <h2>🛠️ 統測數學真題<small>111～115 年・四技二專統一入學測驗</small></h2>
   <div class="grades" role="group" aria-label="試卷">${['A','B','C'].map(x=>`<a class="btn" style="${x===pp?'background:var(--ink);color:var(--bg);border-color:var(--ink)':''}" href="#/tc/${x}">數學(${x})</a>`).join('')}</div>
   <p class="hint">工科選數學(C)；商管、設計、餐旅食品、農業、外語選數學(B)；護理、家政、幼保、影視選數學(A)。每題答完可以看一步一步的詳解。題目取自技專校院入學測驗中心公開試題。</p>
@@ -308,7 +333,7 @@ function viewTC(pp){
 
 function viewHK(){
   const chs=Object.keys(HK_CH),ys=[...new Set(HK.map(q=>q.y))];
-  $('#view').innerHTML=`<a class="back" href="#/">← 回首頁</a>
+  $('#view').innerHTML=`<a class="back" href="#/exam">← 歷屆試題</a>
   <h2>📝 會考數學真題<small>111～115 年・選擇題 ${HK.length} 題</small></h2>
   <p class="hint">每題答完會告訴你全國有多少考生答對，還有一步一步的詳解。題目取自國中教育會考公開試題。</p>
   <h3>先來暖身</h3><div class="units">${unitBtn('r:all','🎲','隨機 10 題','五年真題裡隨機抽')}</div>
@@ -384,14 +409,16 @@ function finish(){
   if($('#review'))$('#review').onclick=()=>startQuiz(wn.map(x=>Object.assign({},x)),{back:meta.back,fromWrong:true});
 }
 
-function viewWrong(){
-  if(!S.wrong.length){$('#view').innerHTML=`<a class="back" href="#/">← 回首頁</a><h2>📒 錯題本</h2><div class="empty">目前沒有錯題，太厲害了！</div>`;return}
-  $('#view').innerHTML=`<a class="back" href="#/">← 回首頁</a><h2>📒 錯題本<small>${S.wrong.length} 題</small></h2>
+/* 錯題本分兩本：單元練習（#/wrong）、歷屆試題（#/wrong/e） */
+function viewWrong(ex){
+  const mine=S.wrong.filter(w=>isExamItem(w)===ex),back=ex?'#/exam':'#/',title=ex?'📒 歷屆錯題本':'📒 單元錯題本',self=ex?'#/wrong/e':'#/wrong';
+  if(!mine.length){$('#view').innerHTML=`<a class="back" href="${back}">← 回上一頁</a><h2>${title}</h2><div class="empty">目前沒有錯題，太厲害了！</div>`;return}
+  $('#view').innerHTML=`<a class="back" href="${back}">← 回上一頁</a><h2>${title}<small>${mine.length} 題</small></h2>
   <p class="hint">答錯的題目會自動收進來，再答對一次就會從錯題本拿掉。</p>
-  <div class="btns" style="justify-content:flex-start;margin:12px 0"><button class="btn primary" id="doWrong">挑戰錯題（最多 10 題）</button><button class="btn" id="clrWrong">清空錯題本</button></div>
+  <div class="btns" style="justify-content:flex-start;margin:12px 0"><button class="btn primary" id="doWrong">挑戰錯題（最多 10 題）</button><button class="btn" id="clrWrong">清空這本錯題本</button></div>
   ${ctaBox()}`;
-  $('#doWrong').onclick=()=>startQuiz(S.wrong.slice(0,10).map(x=>Object.assign({},x)),{back:'#/wrong',fromWrong:true});
-  $('#clrWrong').onclick=()=>{const b=$('#clrWrong');if(b.dataset.c){S.wrong=[];save();viewWrong()}else{b.dataset.c=1;b.textContent='再按一次確定清空'}};
+  $('#doWrong').onclick=()=>startQuiz(mine.slice(0,10).map(x=>Object.assign({},x)),{back:self,fromWrong:true});
+  $('#clrWrong').onclick=()=>{const b=$('#clrWrong');if(b.dataset.c){S.wrong=S.wrong.filter(w=>isExamItem(w)!==ex);save();viewWrong(ex)}else{b.dataset.c=1;b.textContent='再按一次確定清空'}};
 }
 
 /* ---------- 路由 ---------- */
@@ -402,7 +429,9 @@ function route(){
   if(p[0]==='tc')return viewTC(p[1]||(isTK(S.grade)?S.grade:'C'));
   if(p[0]==='q'){const u=unitById(p.slice(1).join('/'));if(u){const items=makeSet(u);if(items.length)return startQuiz(items,{unit:u.id,back:u.back})}}
   if(p[0]==='daily')return startQuiz(dailySet(),{back:'#/'});
-  if(p[0]==='wrong')return viewWrong();
+  if(p[0]==='daily1'){const pool=realPool();if(pool.length)return startQuiz([fromHK(pick(pool))],{back:'#/exam'})}
+  if(p[0]==='exam')return viewExam();
+  if(p[0]==='wrong')return viewWrong(p[1]==='e');
   viewHome()}
 window.addEventListener('hashchange',route);
 $('#muteBtn').onclick=()=>{S.mute=!S.mute;save();header()};
