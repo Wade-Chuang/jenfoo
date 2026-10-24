@@ -1,0 +1,11 @@
+<!doctype html>
+<html lang="zh-Hant-TW"><head><meta charset="utf-8"><meta name="referrer" content="no-referrer-when-downgrade"><meta name="robots" content="noindex">
+<title>count</title></head><body>
+<!-- 全站合計：每一頁都用隱藏 iframe 開這一頁，所以這一頁的瀏覽次數＝整個網站的總瀏覽次數（由 total.js 讀回去顯示） -->
+<span id="busuanzi_value_page_pv"></span>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<script>
+(function(){var n=0,t=setInterval(function(){var v=parseInt(document.getElementById('busuanzi_value_page_pv').textContent,10);
+  if(v>0){clearInterval(t);parent.postMessage({brandTotal:v},location.origin)}else if(++n>40)clearInterval(t)},500)})();
+</script>
+</body></html>
