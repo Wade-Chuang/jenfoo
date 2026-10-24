@@ -4,13 +4,13 @@
 <meta charset="utf-8">
 <meta name="referrer" content="no-referrer-when-downgrade">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>正賦線上練習｜國中數學・會考真題 線上作答馬上批改</title>
-<meta name="description" content="正賦文理免費國中數學線上練習：七上到九下 29 個單元題目每次都不一樣，加上 111～115 年會考數學真題，答完馬上批改、看詳解和全國答對率。不用註冊，手機平板都能用。">
+<title>正賦線上練習｜國中・技高數學、會考真題 線上作答馬上批改</title>
+<meta name="description" content="正賦文理免費數學線上練習：國中七上到九下 29 單元、技高數學A・B・C 56 單元，題目每次都不一樣，加上 111～115 年會考數學真題，答完馬上批改、看詳解和全國答對率。不用註冊，手機平板都能用。">
 <link rel="icon" type="image/png" href="../img/logo.png">
 <link rel="canonical" href="https://wade-chuang.github.io/jenfoo/practice/">
 <meta property="og:type" content="website"><meta property="og:site_name" content="正賦文理">
-<meta property="og:title" content="正賦線上練習｜國中數學・會考真題，答完馬上批改">
-<meta property="og:description" content="七上到九下數學單元練習＋111～115 年會考真題，看詳解和全國答對率。免費、不用註冊。">
+<meta property="og:title" content="正賦線上練習｜國中・技高數學、會考真題，答完馬上批改">
+<meta property="og:description" content="國中七上到九下、技高數學A・B・C 單元練習，加上 111～115 年會考真題，看詳解和全國答對率。免費、不用註冊。">
 <meta property="og:image" content="https://wade-chuang.github.io/jenfoo/practice/og.jpg"><meta property="og:url" content="https://wade-chuang.github.io/jenfoo/practice/">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -154,24 +154,29 @@ footer a{font-weight:700}
   </footer>
 </div>
 
-<script src="data/math_units.js?v=1800e248"></script>
+<script src="data/math_units.js?v=fd008793"></script>
 <script src="data/huikao.js?v=4bdc135d"></script>
 <script>
 /* ================= 基本設定 ================= */
 const $=s=>document.querySelector(s);
 const LINE='https://line.me/ti/p/~jenfoo2021';
-const BOOKS={7:['七上','七下'],8:['八上','八下'],9:['九上','九下']};
-const GZH={7:'七',8:'八',9:'九'};
+// 年級：國中 7/8/9；技高依統測試卷 A/B/C（各四冊）
+const BOOKS={7:['七上','七下'],8:['八上','八下'],9:['九上','九下'],
+  A:['數A一','數A二','數A三','數A四'],B:['數B一','數B二','數B三','數B四'],C:['數C一','數C二','數C三','數C四']};
+const GNAME={7:'七年級',8:'八年級',9:'九年級',A:'技高數學A',B:'技高數學B',C:'技高數學C'};
+const isTK=g=>/^[ABC]$/.test(g);
+const bookName=b=>/^數[ABC]/.test(b)?'第'+b.slice(2)+'冊':b;
 const LEVELS=['數學新手','見習解題手','解題手','進階解題手','計算高手','幾何高手','會考戰士','數學學霸','正賦菁英','數學大師'];
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const shuffleArr=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a};
 const today=()=>{const d=new Date();return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate()};
-const MATH=U.filter(u=>/^[七八九][上下]$/.test(u.g));
+const MATH=U.filter(u=>/^[七八九][上下]$|^數[ABC][一二三四]$/.test(u.g));
 
 /* ================= 學習紀錄（只存在這台裝置） ================= */
 const KEY='jenfoo.practice.v1';
-let S={grade:7,xp:0,stars:0,best:{},wrong:[],days:[],mute:false};
+let S={grade:'7',xp:0,stars:0,best:{},wrong:[],days:[],mute:false};
 try{const v=JSON.parse(localStorage.getItem(KEY)||'null');if(v)S=Object.assign(S,v)}catch(e){}
+S.grade=BOOKS[S.grade]?String(S.grade):'7';
 const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
 function streak(){const set=new Set(S.days);let n=0;const d=new Date();if(!set.has(today()))d.setDate(d.getDate()-1);
   for(;;){const k=d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate();if(set.has(k)){n++;d.setDate(d.getDate()-1)}else break}return n}
@@ -219,18 +224,23 @@ function numVariants(ans,signed){
     else if(n>=12&&n<100&&r<.4&&n%10!==Math.floor(n/10))w=+String(n).split('').reverse().join('');
     else w=n+(Math.random()<.5?-1:1)*(1+(Math.random()*2|0));
     const wn=+w;if(wn<0||(wn===0&&n!==0)||wn===n)continue;
-    if(/\\frac\{-?$/.test(before)){const d=+(after.match(/^\}\{(\d+)\}/)||[])[1];if(!d||gcdi(wn,d)!==1)continue}
-    if(/\\sqrt\{$/.test(before)&&(wn<2||[4,9,16,25,36,49,64,81].includes(wn)))continue;
+    if(n===0&&/=\s*$/.test(before))continue;                            // 方程式右邊的 = 0 不動
+    if(/_\{?$/.test(before))continue;                                   // 下標（a_{n}、S_{16}）不動
+    if(wn===1&&/^\s*(?:[a-zA-Z(]|\\sqrt|\\pi)/.test(after))continue;    // 不會寫成 1x、1√3
+    if(/\\frac\{-?$/.test(before)){const d=+(after.match(/^\}\{(\d+)\}/)||[])[1];if(!d||gcdi(wn,d)!==1||(n<d&&wn>=d))continue}  // 真分數的錯誤選項也是真分數
+    if(/\\sqrt\{$/.test(before)&&(wn<2||[4,9,25,49].some(q=>wn%q===0)))continue;   // 錯誤選項也要是最簡根式
     if(/\^\{?\\circ/.test(after)&&wn>=360)continue;
     out.add(before+(thou?fmtThou(wn):isDec?String(w):String(wn))+after)}
   out.delete(ans);return[...out]}
 function fromMath(u,d){
   let it=null;for(let i=0;i<30&&!it;i++){try{it=u.gen(d)}catch(e){it=null}}if(!it)return null;
-  const ans=it.a;let wrong=shuffleArr(numVariants(ans,SIGNED.has(u.id))).slice(0,3);
-  for(let i=0;i<20&&wrong.length<3;i++){let o=null;try{o=u.gen(d)}catch(e){}if(o&&o.a!==ans&&!wrong.includes(o.a))wrong.push(o.a)}
+  const ans=it.a;let wrong=shuffleArr(numVariants(ans,(SIGNED.has(u.id)||/^(c|ta|tb)-(trig2?|vec2|poly|line|seq|trigsum|explog|logapp|det|matrix|deriv|integral|eq|vec3)$/.test(u.id)))).slice(0,3);
+  // 不夠三個，就借同一單元其他題的答案，但要同一種樣子（開頭兩個字一樣），免得選項一眼就能刪
+  const shape=a=>a.slice(0,2);
+  for(let i=0;i<30&&wrong.length<3;i++){let o=null;try{o=u.gen(d)}catch(e){}if(o&&o.a!==ans&&shape(o.a)===shape(ans)&&!wrong.includes(o.a))wrong.push(o.a)}
   if(wrong.length<3)return null;
   const opts=shuffleArr([ans,...wrong]),instr=u.instr&&!/^依題意作答/.test(u.instr)?u.instr:'';
-  return{kind:'math',tag:u.g+'・'+u.name.replace(/（附圖）/,''),instr,q:it.q,opts,ans:opts.indexOf(ans),e:'正確答案：'+ans,fig:it.fig||'',key:it.k||(it.q+'|'+ans)}}
+  return{kind:'math',tag:(/^數[ABC]/.test(u.g)?'技高'+u.g.slice(0,2)+' '+bookName(u.g):u.g)+'・'+u.name.replace(/（附圖）/,''),instr,q:it.q,opts,ans:opts.indexOf(ans),e:'正確答案：'+ans,fig:it.fig||'',key:it.k||(it.q+'|'+ans)}}
 function fromHK(q){return{kind:'hk',hk:q.id,tag:q.y+' 年會考 第 '+q.no+' 題・'+HK_CH[q.ch],ans:q.a,key:'hk'+q.id}}
 const hkById=id=>HK.find(q=>q.id===id);
 
@@ -239,10 +249,10 @@ function makeSet(unit){
   const out=[],plan=[1,1,1,1,2,2,2,2,3,3],seen=new Set();
   for(let i=0,tries=0;i<10&&tries<60;tries++){const it=fromMath(unit.src,plan[i]);if(!it||seen.has(it.key))continue;seen.add(it.key);out.push(it);i++}
   return out}
-/* 每日挑戰：這個年級的數學單元 9 題＋最後 1 題會考真題 */
-function dailySet(){const us=MATH.filter(u=>BOOKS[S.grade].includes(u.g)),items=[];
-  for(let k=0;k<20&&items.length<9;k++){const it=fromMath(pick(us),1+(Math.random()*3|0));if(it&&!items.some(x=>x.key===it.key))items.push(it)}
-  return items.concat(fromHK(pick(HK)))}
+/* 每日挑戰：國中＝這個年級的單元 9 題＋最後 1 題會考真題；技高＝這份試卷的單元 10 題 */
+function dailySet(){const us=MATH.filter(u=>BOOKS[S.grade].includes(u.g)),items=[],n=isTK(S.grade)?10:9;
+  for(let k=0;k<30&&items.length<n;k++){const it=fromMath(pick(us),1+(Math.random()*3|0));if(it&&!items.some(x=>x.key===it.key))items.push(it)}
+  return isTK(S.grade)?items:items.concat(fromHK(pick(HK)))}
 
 /* ================= 畫面 ================= */
 function header(){$('#stStreak').textContent=streak();$('#stStars').textContent=S.stars;$('#muteBtn').textContent=S.mute?'🔇':'🔊'}
@@ -256,17 +266,20 @@ function viewHome(){
   $('#view').innerHTML=`
   <section class="lvl" aria-label="等級"><div class="lvl-row"><span>Lv.${lv}　${LEVELS[lv-1]}</span><span>${into} / 400 XP</span></div><div class="bar"><i style="width:${into/4}%"></i></div></section>
   <h2>我是幾年級？</h2>
-  <div class="grades" role="group" aria-label="年級">${[7,8,9].map(n=>`<button data-g="${n}" aria-pressed="${n===g}">${GZH[n]}年級</button>`).join('')}</div>
+  <div class="grades" role="group" aria-label="年級">${['7','8','9'].map(n=>`<button data-g="${n}" aria-pressed="${n===g}">${GNAME[n]}</button>`).join('')}</div>
+  <h3>高職（技高）</h3>
+  <div class="grades" role="group" aria-label="技高數學">${['A','B','C'].map(n=>`<button data-g="${n}" aria-pressed="${n===g}">${GNAME[n]}</button>`).join('')}</div>
+  ${isTK(g)?'<p class="hint">工科（機械、電機電子、化工、土木）選數學C；商管、設計、餐旅食品、農業、外語選數學B；護理、家政、幼保、影視選數學A。</p>':''}
   <h2>今天也來練一下</h2>
   <div class="row">
-    <button class="big daily" id="goDaily"><span class="ic">🎯</span><div><b>每日挑戰</b><span>${GZH[g]}年級單元 9 題＋會考真題 1 題</span></div></button>
+    <button class="big daily" id="goDaily"><span class="ic">🎯</span><div><b>每日挑戰</b><span>${isTK(g)?GNAME[g]+'各冊混合 10 題':GNAME[g]+'單元 9 題＋會考真題 1 題'}</span></div></button>
     <a class="big hk" href="#/hk"><span class="ic">📝</span><div><b>會考數學真題</b><span>111～115 年 ${HK.length} 題・附詳解與全國答對率</span></div></a>
     <button class="big" id="goWrong"><span class="ic">📒</span><div><b>錯題本</b><span>${S.wrong.length} 題等你再挑戰</span></div></button>
   </div>
-  <h2>數學單元練習<small>${GZH[g]}年級・題目每次都不一樣</small></h2>
-  <div class="cols">${BOOKS[g].map(b=>{const us=MATH.filter(u=>u.g===b);return`<div><h3>${b}</h3><div class="units">${us.map((u,i)=>unitBtn('m:'+u.id,i+1,u.name.replace(/（附圖）/,''),/附圖/.test(u.name)?'附圖題・每次 10 題':'每次 10 題・由易到難')).join('')}</div></div>`}).join('')}</div>
+  <h2>數學單元練習<small>${GNAME[g]}・題目每次都不一樣</small></h2>
+  <div class="cols">${BOOKS[g].map(b=>{const us=MATH.filter(u=>u.g===b);return`<div><h3>${bookName(b)}</h3><div class="units">${us.map((u,i)=>unitBtn('m:'+u.id,i+1,u.name.replace(/（附圖）/,''),/附圖/.test(u.name)?'附圖題・每次 10 題':'每次 10 題・由易到難')).join('')}</div></div>`}).join('')}</div>
   ${ctaBox()}`;
-  document.querySelectorAll('.grades button').forEach(b=>b.onclick=()=>{S.grade=+b.dataset.g;save();viewHome()});
+  document.querySelectorAll('.grades button').forEach(b=>b.onclick=()=>{S.grade=b.dataset.g;save();viewHome()});
   $('#goDaily').onclick=()=>location.hash='#/daily';$('#goWrong').onclick=()=>location.hash='#/wrong';
   bindUnits()}
 

@@ -2509,3 +2509,59 @@ unit({id:'h3-normal',g:'數乙 下',name:'常態分布與信賴區間的概念',
  ['h3-int','h3b-int','數乙 上','多項式函數的積分與面積'],
  ['h3-rv','h3b-rv','數乙 下','隨機變數、二項分布與幾何分布']].forEach(([from,id,g,name])=>{const src=U.find(u=>u.id===from);if(src)unit({...src,id,g,name})});
 
+/* ---------- 技高 數學A、數學B（統測範圍；多數題型沿用數C／高中，另寫統計、方程式） ---------- */
+unit({id:'ta-stat',g:'數A四',name:'統計（平均數、中位數、標準差）',instr:'依題意作答。',h:[18,24,30],gen(d){
+  const med=a=>{const s=a.slice().sort((x,y)=>x-y),n=s.length;return n%2?F(s[(n-1)/2]):F(s[n/2-1]+s[n/2],2)};
+  if(d===1){const n=pick([5,6,7,8]),a=Array.from({length:n},()=>ri(40,99)),sum=a.reduce((x,y)=>x+y,0),t=ri(0,2);
+    const list=a.map(x=>`$${x}$`).join('、');
+    if(t===0)return{q:`某組 $${n}$ 位同學的數學成績為 ${list}，求平均數`,a:`$${ftex(F(sum,n))}$ 分`};
+    if(t===1)return{q:`資料 ${list} 的中位數是多少？`,a:`$${ftex(med(a))}$`};
+    return{q:`資料 ${list} 的全距是多少？`,a:`$${Math.max(...a)-Math.min(...a)}$`}}
+  if(d===2){if(R()<.5){const w=[ri(1,4),ri(2,4),ri(2,5)];if(gcd(gcd(w[0],w[1]),w[2])!==1)return null;const s=[ri(55,98),ri(55,98),ri(55,98)],W=w[0]+w[1]+w[2],v=F(w[0]*s[0]+w[1]*s[1]+w[2]*s[2],W);
+      return{q:`某科成績的計算方式：平時、期中、期末的比重為 $${w[0]} : ${w[1]} : ${w[2]}$。小明三項分別得 $${s[0]}$、$${s[1]}$、$${s[2]}$ 分，求他的加權平均`,a:`$${ftex(v)}$ 分`}}
+    const n=pick([4,5]),m=ri(60,80),a=Array.from({length:n},()=>ri(m-15,m+15)),tot=a.reduce((x,y)=>x+y,0),x=ri(50,99),nm=F(tot+x,n+1);
+    if(tot%n)return null;
+    return{q:`某組 $${n}$ 人的平均成績為 $${tot/n}$ 分，加入一位 $${x}$ 分的同學後，這 $${n+1}$ 人的平均成績是多少？`,a:`$${ftex(nm)}$ 分`}}
+  // 難：母體標準差（資料設計成離差平方和好算）、線性變換
+  if(R()<.5){const m=ri(5,60),dev=pick([[-2,0,2],[-3,-1,1,3],[-4,-2,0,2,4],[-1,0,1],[-2,-1,0,1,2],[-6,-2,2,6],[-3,0,3]]),n=dev.length,ss=dev.reduce((s,v)=>s+v*v,0),a=shuffle(dev.map(v=>m+v));
+    // 標準差 = √(ss/n) = √(ss·n)/n，化成最簡根式並有理化
+    const [k0,r]=sqrtSimp(ss*n),g=gcd(k0,n),k=k0/g,dn=n/g;
+    const sd=dn===1?rad(k,r):`\\frac{${rad(k,r)}}{${dn}}`;
+    return{q:`求資料 ${a.map(x=>`$${x}$`).join('、')} 的（母體）標準差`,a:`$${sd}$`}}
+  const mu=ri(50,80),sg=ri(4,12),k=pick([2,3,-2,10]),b=ri(-20,20);
+  return{q:`一組資料的平均數為 $${mu}$、標準差為 $${sg}$。若每筆資料 $x$ 都換成 $y = ${lin(k,b)}$，求新資料的平均數與標準差`,a:`平均數 $${k*mu+b}$，標準差 $${Math.abs(k)*sg}$`};
+}});
+unit({id:'tb-eq',g:'數B三',name:'方程式（判別式、根與係數、高次方程式）',instr:'依題意作答。',h:[18,24,30],gen(d){
+  if(d===1){if(R()<.5){const p=rnz(-9,9),q=rnz(-9,9),b=-(p+q),c=p*q;if(p===q)return null;
+      return{q:`解方程式 $${quad(1,b,c)} = 0$`,a:roots2(Math.min(p,q),Math.max(p,q))}}
+    const a=rnz(-3,3),b=ri(-9,9),c=rnz(-9,9),D=b*b-4*a*c;
+    return{q:`利用判別式判斷方程式 $${quad(a,b,c)} = 0$ 的根`,a:D>0?'兩相異實根':D===0?'兩相等實根（重根）':'沒有實根（兩共軛虛根）'}}
+  if(d===2){const p=rnz(-6,6),q=rnz(-6,6),a=pick([1,1,2]),b=-a*(p+q),c=a*p*q,S=F(-b,a),Pr=F(c,a),t=ri(0,3);
+    const lab=['$\\alpha + \\beta$ 與 $\\alpha\\beta$','$\\alpha^2 + \\beta^2$','$\\frac{1}{\\alpha} + \\frac{1}{\\beta}$','$(\\alpha - \\beta)^2$'][t];
+    if(t===2&&c===0)return null;
+    const v=[null,fsub(fmul(S,S),fmul(F(2),Pr)),fdiv(S,Pr),fsub(fmul(S,S),fmul(F(4),Pr))][t];
+    return{q:`設 $\\alpha$、$\\beta$ 為方程式 $${quad(a,b,c)} = 0$ 的兩根，求${lab}`,a:t===0?`$\\alpha + \\beta = ${ftex(S)}$，$\\alpha\\beta = ${ftex(Pr)}$`:`$${ftex(v)}$`}}
+  if(R()<.5){const r=[rnz(-4,4),rnz(-4,4),rnz(-4,4)].sort((x,y)=>x-y);if(r[0]===r[1]||r[1]===r[2])return null;
+    const b=-(r[0]+r[1]+r[2]),c=r[0]*r[1]+r[0]*r[2]+r[1]*r[2],e=-r[0]*r[1]*r[2];
+    return{q:`解方程式 $${poly([[1,'x^3'],[b,'x^2'],[c,'x'],[e,'']])} = 0$`,a:`$x = ${r[0]}$、$${r[1]}$、$${r[2]}$`}}
+  const p=rnz(-6,6),q=rnz(-6,6),k=-(p+q),c=p*q;if(p===q||k===0)return null;
+  return{q:`已知 $x = ${p}$ 是方程式 $x^2 + kx ${c<0?'- '+(-c):'+ '+c} = 0$ 的一根，求 $k$ 與另一根`,a:`$k = ${k}$，另一根 $x = ${q}$`};
+}});
+[['ta-stat','tb-stat','數B四','統計（平均數、中位數、標準差）']].forEach(([from,id,g,name])=>{const src=U.find(u=>u.id===from);if(src)unit({...src,id,g,name})});
+/* 照統測數學A、B 的章序排；同一章可能用到兩個題型 */
+[['c-dist','ta-dist','數A一','坐標系：距離、中點與分點'],['quad-func','ta-func','數A一','函數圖形（二次函數的頂點與最值）'],['c-line','ta-line','數A一','直線方程式'],
+ ['c-poly','ta-poly','數A一','式的運算：多項式與餘式定理'],['c-fracrad','ta-fracrad','數A一','式的運算：分式與根式'],
+ ['h-trig','ta-trig','數A二','三角函數：三角比與正弦、餘弦定理'],['c-trig','ta-trig2','數A二','三角函數：廣義角'],['c-circle','ta-circle','數A二','圓與直線'],['c-seq','ta-seq','數A二','數列與級數'],
+ ['c-ineq','ta-ineq','數A三','不等式：一元二次與絕對值不等式'],['h3-lp','ta-lp','數A三','不等式的應用：線性規劃'],['c-explog','ta-explog','數A三','指數與對數'],['c-logapp','ta-logapp','數A三','指數、對數的應用'],
+ ['c-perm','ta-perm','數A四','排列組合'],['c-prob','ta-prob','數A四','機率'],
+ ['c-dist','tb-dist','數B一','坐標系：距離、中點與分點'],['quad-func','tb-func','數B一','函數圖形（二次函數的頂點與最值）'],['c-line','tb-line','數B一','直線方程式'],
+ ['c-poly','tb-poly','數B一','式的運算：多項式與餘式定理'],['c-fracrad','tb-fracrad','數B一','式的運算：分式與根式'],
+ ['c-trig','tb-trig','數B二','三角函數：廣義角'],['c-radian','tb-radian','數B二','三角函數：弧度與扇形'],['c-vec2','tb-vec2','數B二','平面向量'],['c-circle','tb-circle','數B二','圓與直線'],['c-seq','tb-seq','數B二','數列與級數'],
+ ['h3-lp','tb-lp','數B三','二元一次不等式及其應用（線性規劃）'],['c-explog','tb-explog','數B三','指數與對數'],['c-logapp','tb-logapp','數B三','指數、對數的應用'],
+ ['c-trilaw','tb-trilaw','數B四','三角函數的應用：正弦、餘弦定理與面積'],['c-trigsum','tb-trigsum','數B四','三角函數的應用：和差角與二倍角'],['c-perm','tb-perm','數B四','排列組合'],['c-prob','tb-prob','數B四','機率']
+].forEach(([from,id,g,name])=>{const src=U.find(u=>u.id===from);if(src)unit({...src,id,g,name})});
+/* 數A、數B 單元照冊次、統測章序排（新寫的統計、方程式插在正確位置） */
+(()=>{const ORDER=['ta-dist','ta-func','ta-line','ta-poly','ta-fracrad','ta-trig','ta-trig2','ta-circle','ta-seq','ta-ineq','ta-lp','ta-explog','ta-logapp','ta-perm','ta-prob','ta-stat',
+  'tb-dist','tb-func','tb-line','tb-poly','tb-fracrad','tb-trig','tb-radian','tb-vec2','tb-circle','tb-seq','tb-eq','tb-lp','tb-explog','tb-logapp','tb-trilaw','tb-trigsum','tb-perm','tb-prob','tb-stat'];
+  const pulled=ORDER.map(id=>U.splice(U.findIndex(u=>u.id===id),1)[0]);U.push(...pulled)})();
+
