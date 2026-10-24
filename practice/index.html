@@ -158,7 +158,7 @@ footer a{font-weight:700}
   </footer>
 </div>
 
-<script src="data/math_units.js?v=fd008793"></script>
+<script src="data/math_units.js?v=499814ac"></script>
 <script src="data/huikao.js?v=4bdc135d"></script>
 <script src="data/tongce.js?v=0b39e58d"></script>
 <script>
@@ -249,7 +249,7 @@ function fromMath(u,d){
   for(let i=0;i<30&&wrong.length<3;i++){let o=null;try{o=u.gen(d)}catch(e){}if(o&&o.a!==ans&&shape(o.a)===shape(ans)&&!wrong.includes(o.a))wrong.push(o.a)}
   if(wrong.length<3)return null;
   const opts=shuffleArr([ans,...wrong]),instr=u.instr&&!/^依題意作答/.test(u.instr)?u.instr:'';
-  return{kind:'math',tag:(/^數[ABC]/.test(u.g)?'技高'+u.g.slice(0,2)+' '+bookName(u.g):u.g)+'・'+u.name.replace(/（附圖）/,''),instr,q:it.q,opts,ans:opts.indexOf(ans),e:'正確答案：'+ans,fig:it.fig||'',key:it.k||(it.q+'|'+ans)}}
+  return{kind:'math',tag:(/^數[ABC]/.test(u.g)?'技高'+u.g.slice(0,2)+' '+bookName(u.g):u.g)+'・'+u.name.replace(/（附圖）/,''),instr,q:it.q,opts,ans:opts.indexOf(ans),e:'正確答案：'+ans,ex:it.e||'',fig:it.fig||'',key:it.k||(it.q+'|'+ans)}}
 // 會考與統測真題共用同一套作答畫面（統測沒有公布各題答對率）
 function fromHK(q){return{kind:'hk',hk:q.id,tag:q.p?`${q.y} 年統測數學(${q.p}) 第 ${q.no} 題・${TC_CH[q.p][q.ch]}`:q.y+' 年會考 第 '+q.no+' 題・'+HK_CH[q.ch],ans:q.a,key:'hk'+q.id}}
 const hkById=id=>HK.find(q=>q.id===id)||TC.find(q=>q.id===id);
@@ -381,11 +381,11 @@ function answer(k){
   if(hk&&hk.rate==null)extra=`<p class="rate">正確答案 <b>(${'ABCD'[hk.a]})</b></p>`;
   else if(hk){const p=Math.round(hk.rate*100);
     extra=`<p class="rate">正確答案 <b>(${'ABCD'[hk.a]})</b>・全國答對率 <b>${p}%</b>　${ok?(p<40?'這題全國不到四成答對，你很強！':p<60?'這題算難，答對很棒！':''):(p<40?'這題全國只有 '+p+'% 答對，看完詳解就會了。':'')}</p>`}
-  $('#fb').innerHTML=`<div class="fb ${ok?'ok':'no'}"><div>${ok?pick(['答對了！','漂亮！','完全正確！','穩！']):'差一點！'}</div>${hk?extra:`<p>${it.e}</p>`}</div>
+  $('#fb').innerHTML=`<div class="fb ${ok?'ok':'no'}"><div>${ok?pick(['答對了！','漂亮！','完全正確！','穩！']):'差一點！'}</div>${hk?extra:`<p>${it.e}</p>`}</div>${!hk&&it.ex?`<div class="sol" style="padding:10px 14px"><b style="color:var(--brass)">解析</b><p style="margin:4px 0 0">${it.ex.split('\\n').join('<br>')}</p></div>`:''}
     ${hk?solHTML(hk):''}<button class="next" id="nextBtn">${Q.i+1<Q.items.length?'下一題 →':'看成績 →'}</button>`;
   typeset($('#fb'));
   $('#nextBtn').onclick=next;
-  if(ok&&!hk)Q.auto=setTimeout(next,1400);
+  if(ok&&!hk&&!it.ex)Q.auto=setTimeout(next,1400);
 }
 function next(){clearTimeout(Q.auto);if(!Q)return;Q.i++;if(Q.i<Q.items.length)drawQ();else finish()}
 function finish(){
