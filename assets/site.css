@@ -45,6 +45,7 @@ code{font-family:var(--mono);background:var(--brass-soft);padding:1px 6px;border
 .brand img{border-radius:8px}
 .brand small{font:500 12px var(--sans);color:var(--ink-2);margin-left:2px}
 .top nav{display:flex;gap:4px;margin-left:auto}
+.top-cta{display:flex;gap:8px;align-items:center}
 .top nav a{padding:8px 12px;border-radius:8px;text-decoration:none;font-weight:500;font-size:15px;color:var(--ink-2)}
 .top nav a:hover{color:var(--ink);background:var(--paper)}
 .top nav a[aria-current="page"]{color:var(--ink);font-weight:700;box-shadow:inset 0 -2px 0 var(--brass)}
@@ -52,7 +53,7 @@ code{font-family:var(--mono);background:var(--brass-soft);padding:1px 6px;border
   .top .wrap{flex-wrap:wrap;height:auto;padding-top:10px;padding-bottom:0;gap:10px}
   .top nav{order:3;width:100%;margin:0;overflow-x:auto;scrollbar-width:none;padding-bottom:6px}
   .top nav a{white-space:nowrap;font-size:14px;padding:6px 10px}
-  .top .btn-line{margin-left:auto}
+  .top-cta{margin-left:auto}
 }
 
 /* 區塊節奏 */
@@ -72,6 +73,10 @@ code{font-family:var(--mono);background:var(--brass-soft);padding:1px 6px;border
 .hero h1 em{white-space:nowrap;font-style:normal;color:var(--brass);background:linear-gradient(transparent 70%,var(--brass-soft) 0)}
 .hero .lead{margin-top:22px;max-width:560px}
 .cta{display:flex;flex-wrap:wrap;gap:12px;margin-top:32px}
+.quick{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:26px;padding-top:18px;border-top:1px solid var(--line);max-width:560px}
+.quick span{font-size:13px;font-weight:700;color:var(--ink-2);margin-right:4px}
+.quick a{font-size:14px;font-weight:500;text-decoration:none;padding:6px 12px;border-radius:999px;background:var(--surface);border:1px solid var(--line)}
+.quick a:hover{border-color:var(--brass);color:var(--brass)}
 .hero-photo{margin:0;position:relative}
 .hero-photo img{border-radius:20px;aspect-ratio:4/4.2;object-fit:cover;box-shadow:var(--shadow)}
 .hero-photo figcaption{margin-top:14px;font-size:13px;line-height:1.5;color:var(--ink-2);display:flex;align-items:baseline;gap:10px}
