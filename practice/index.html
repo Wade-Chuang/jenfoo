@@ -4,13 +4,13 @@
 <meta charset="utf-8">
 <meta name="referrer" content="no-referrer-when-downgrade">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>正賦線上練習｜國中・技高數學、會考統測真題 線上作答馬上批改</title>
-<meta name="description" content="正賦文理免費數學線上練習：國中七上到九下 34 單元、技高數學A・B・C 56 單元，題目每次都不一樣，加上 111～115 年會考數學、統測數學A・B・C 真題，答完馬上批改、看詳解和全國答對率。不用註冊，手機平板都能用。">
+<title>正賦線上練習｜國中・高中・技高數學、會考統測真題 線上作答馬上批改</title>
+<meta name="description" content="正賦文理免費數學線上練習：國中七上到九下 34 單元、高中高一到高三數甲數乙 43 單元、技高數學A・B・C 56 單元，題目每次都不一樣，加上 111～115 年會考數學、統測數學A・B・C 真題，答完馬上批改、看詳解和全國答對率。不用註冊，手機平板都能用。">
 <link rel="icon" type="image/png" href="../img/logo.png">
 <link rel="canonical" href="https://wade-chuang.github.io/jenfoo/practice/">
 <meta property="og:type" content="website"><meta property="og:site_name" content="正賦文理">
-<meta property="og:title" content="正賦線上練習｜國中・技高數學、會考統測真題，答完馬上批改">
-<meta property="og:description" content="國中七上到九下、技高數學A・B・C 單元練習，加上 111～115 年會考、統測數學A・B・C 真題，看詳解。免費、不用註冊。">
+<meta property="og:title" content="正賦線上練習｜國中・高中・技高數學、會考統測真題，答完馬上批改">
+<meta property="og:description" content="國中七上到九下、高中高一到高三、技高數學A・B・C 單元練習，加上 111～115 年會考、統測數學A・B・C 真題，看詳解。免費、不用註冊。">
 <meta property="og:image" content="https://wade-chuang.github.io/jenfoo/practice/og.jpg"><meta property="og:url" content="https://wade-chuang.github.io/jenfoo/practice/">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -280,7 +280,7 @@ footer a{font-weight:700}
   </footer>
 </div>
 
-<script src="data/math_units.js?v=4c17f36f"></script>
+<script src="data/math_units.js?v=c9e36851"></script>
 <script src="data/huikao.js?v=4bdc135d"></script>
 <script src="data/tongce.js?v=0b39e58d"></script>
 <script>
@@ -289,15 +289,17 @@ const $=s=>document.querySelector(s);
 const LINE='https://line.me/ti/p/~jenfoo2021';
 // 年級：國中 7/8/9；技高依統測試卷 A/B/C（各四冊）
 const BOOKS={7:['七上','七下'],8:['八上','八下'],9:['九上','九下'],
-  A:['數A一','數A二','數A三','數A四'],B:['數B一','數B二','數B三','數B四'],C:['數C一','數C二','數C三','數C四']};
-const GNAME={7:'七年級',8:'八年級',9:'九年級',A:'技高數學A',B:'技高數學B',C:'技高數學C'};
+  A:['數A一','數A二','數A三','數A四'],B:['數B一','數B二','數B三','數B四'],C:['數C一','數C二','數C三','數C四'],
+  H1:['高一上','高一下'],HA:['數A 二上','數A 二下'],HB:['數B 二上','數B 二下'],HJ:['數甲 上','數甲 下'],HY:['數乙 上','數乙 下']};
+const GNAME={7:'七年級',8:'八年級',9:'九年級',A:'技高數學A',B:'技高數學B',C:'技高數學C',H1:'高一',HA:'高二數A',HB:'高二數B',HJ:'高三數甲',HY:'高三數乙'};
+const isHS=g=>/^H/.test(g);
 const isTK=g=>/^[ABC]$/.test(g);
-const bookName=b=>/^數[ABC]/.test(b)?'第'+b.slice(2)+'冊':b;
+const bookName=b=>/^數[AB] 二/.test(b)?'高二'+b.slice(-1)+'（數'+b[1]+'）':/^數[甲乙] /.test(b)?'高三'+b.slice(-1)+'（'+b.slice(0,2)+'）':/^數[ABC]/.test(b)?'第'+b.slice(2)+'冊':b;
 const LEVELS=['數學新手','見習解題手','解題手','進階解題手','計算高手','幾何高手','會考戰士','數學學霸','正賦菁英','數學大師'];
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const shuffleArr=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a};
 const today=()=>{const d=new Date();return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate()};
-const MATH=U.filter(u=>/^[七八九][上下]$|^數[ABC][一二三四]$/.test(u.g));
+const MATH=U.filter(u=>/^[七八九][上下]$|^數[ABC][一二三四]$|^高一[上下]$|^數[AB] 二[上下]$|^數[甲乙] [上下]$/.test(u.g));
 
 /* ================= 學習紀錄（只存在這台裝置） ================= */
 const KEY='jenfoo.practice.v1';
@@ -365,13 +367,13 @@ function numVariants(ans,signed){
   out.delete(ans);return[...out]}
 function fromMath(u,d){
   let it=null;for(let i=0;i<30&&!it;i++){try{it=u.gen(d)}catch(e){it=null}}if(!it)return null;
-  const ans=it.a;let wrong=shuffleArr(numVariants(ans,(SIGNED.has(u.id)||/^(c|ta|tb)-(trig2?|vec2|poly|line|seq|trigsum|explog|logapp|det|matrix|deriv|integral|eq|vec3)$/.test(u.id)))).slice(0,3);
+  const ans=it.a;let wrong=shuffleArr(numVariants(ans,(SIGNED.has(u.id)||/^(h-(root|polydiv|line|trigfn|log|vec2|vec3|mat)|ha-(ratio|plane|sys3|harm)|hb-(vec2|mat|log)|h3-(limit|diff|ext)|h3b-(limit|deriv|ext))$/.test(u.id)||/^(c|ta|tb)-(trig2?|vec2|poly|line|seq|trigsum|explog|logapp|det|matrix|deriv|integral|eq|vec3)$/.test(u.id)))).slice(0,3);
   // 不夠三個，就借同一單元其他題的答案，但要同一種樣子（開頭兩個字一樣），免得選項一眼就能刪
   const shape=a=>a.slice(0,2);
   for(let i=0;i<30&&wrong.length<3;i++){let o=null;try{o=u.gen(d)}catch(e){}if(o&&o.a!==ans&&shape(o.a)===shape(ans)&&!wrong.includes(o.a))wrong.push(o.a)}
   if(wrong.length<3)return null;
   const opts=shuffleArr([ans,...wrong]),instr=u.instr&&!/^依題意作答/.test(u.instr)?u.instr:'';
-  return{kind:'math',tag:(/^數[ABC]/.test(u.g)?'技高'+u.g.slice(0,2)+' '+bookName(u.g):u.g)+'・'+u.name.replace(/（附圖）/,''),instr,q:it.q,opts,ans:opts.indexOf(ans),e:'正確答案：'+ans,ex:it.e||'',fig:it.fig||'',key:it.k||(it.q+'|'+ans)}}
+  return{kind:'math',tag:(/^(高一|數[AB] 二|數[甲乙] )/.test(u.g)?bookName(u.g):/^數[ABC]/.test(u.g)?'技高'+u.g.slice(0,2)+' '+bookName(u.g):u.g)+'・'+u.name.replace(/（附圖）/,''),instr,q:it.q,opts,ans:opts.indexOf(ans),e:'正確答案：'+ans,ex:it.e||'',fig:it.fig||'',key:it.k||(it.q+'|'+ans)}}
 // 會考與統測真題共用同一套作答畫面（統測沒有公布各題答對率）
 function fromHK(q){return{kind:'hk',hk:q.id,tag:q.p?`${q.y} 年統測數學(${q.p}) 第 ${q.no} 題・${TC_CH[q.p][q.ch]}`:q.y+' 年會考 第 '+q.no+' 題・'+HK_CH[q.ch],ans:q.a,key:'hk'+q.id}}
 const hkById=id=>HK.find(q=>q.id===id)||TC.find(q=>q.id===id);
@@ -395,7 +397,7 @@ function header(){const h=location.hash,inGame=/^#\/(game|adv|top)/.test(h),inEx
   $('#stStreak').textContent=streak();$('#stStars').textContent=S.stars;$('#muteBtn').textContent=S.mute?'🔇':'🔊'}
 function starStr(n){return'<span class="stars">'+'★'.repeat(n)+'<span class="off">'+'★'.repeat(3-n)+'</span></span>'}
 const unitBtn=(id,i,name,sub)=>`<button class="unit" data-id="${id}"><span class="n">${i}</span><div><b>${esc(name)}</b><small>${sub}</small></div>${starStr(S.best[id]||0)}</button>`;
-const ctaBox=()=>`<section class="cta"><div><b>練到卡住了？</b><p>國中數學、會考衝刺，不懂的題目拍照傳給莊老師。</p></div><a class="btn line" href="${LINE}" target="_blank" rel="noopener">加 LINE 問老師</a></section>`;
+const ctaBox=()=>`<section class="cta"><div><b>練到卡住了？</b><p>國中、高中、技高數學，不懂的題目拍照傳給莊老師。</p></div><a class="btn line" href="${LINE}" target="_blank" rel="noopener">加 LINE 問老師</a></section>`;
 function bindUnits(){document.querySelectorAll('.unit').forEach(b=>b.onclick=()=>location.hash='#/q/'+encodeURIComponent(b.dataset.id))}
 
 function viewHome(){
@@ -404,6 +406,9 @@ function viewHome(){
   <section class="lvl" aria-label="等級"><div class="lvl-row"><span>Lv.${lv}　${LEVELS[lv-1]}</span><span>${into} / 400 XP</span></div><div class="bar"><i style="width:${into/4}%"></i></div></section>
   <h2>我是幾年級？</h2>
   <div class="grades" role="group" aria-label="年級">${['7','8','9'].map(n=>`<button data-g="${n}" aria-pressed="${n===g}">${GNAME[n]}</button>`).join('')}</div>
+  <h3>高中</h3>
+  <div class="grades" role="group" aria-label="高中數學">${['H1','HA','HB','HJ','HY'].map(n=>`<button data-g="${n}" aria-pressed="${n===g}">${GNAME[n]}</button>`).join('')}</div>
+  ${isHS(g)?'<p class="hint">高二起分流：自然組選數A、社會組選數B；高三自然組選數甲、社會組選數乙。</p>':''}
   <h3>高職（技高）</h3>
   <div class="grades" role="group" aria-label="技高數學">${['A','B','C'].map(n=>`<button data-g="${n}" aria-pressed="${n===g}">${GNAME[n]}</button>`).join('')}</div>
   ${isTK(g)?'<p class="hint">工科（機械、電機電子、化工、土木）選數學C；商管、設計、餐旅食品、農業、外語選數學B；護理、家政、幼保、影視選數學A。</p>':''}
@@ -505,7 +510,7 @@ function answer(k){
   if(hk&&hk.rate==null)extra=`<p class="rate">正確答案 <b>(${'ABCD'[hk.a]})</b></p>`;
   else if(hk){const p=Math.round(hk.rate*100);
     extra=`<p class="rate">正確答案 <b>(${'ABCD'[hk.a]})</b>・全國答對率 <b>${p}%</b>　${ok?(p<40?'這題全國不到四成答對，你很強！':p<60?'這題算難，答對很棒！':''):(p<40?'這題全國只有 '+p+'% 答對，看完詳解就會了。':'')}</p>`}
-  $('#fb').innerHTML=`<div class="fb ${ok?'ok':'no'}"><div>${ok?pick(['答對了！','漂亮！','完全正確！','穩！']):'差一點！'}</div>${hk?extra:`<p>${it.e}</p>`}</div>${!hk&&it.ex?`<div class="sol" style="padding:10px 14px"><b style="color:var(--brass)">解析</b><p style="margin:4px 0 0">${it.ex.split('\\n').join('<br>')}</p></div>`:''}
+  $('#fb').innerHTML=`<div class="fb ${ok?'ok':'no'}"><div>${ok?pick(['答對了！','漂亮！','完全正確！','穩！']):'差一點！'}</div>${hk?extra:`<p>${it.e}</p>`}</div>${!hk&&it.ex?`<div class="sol" style="padding:10px 14px"><b style="color:var(--brass)">解析</b><p style="margin:4px 0 0">${it.ex.split(String.fromCharCode(10)).join('<br>')}</p></div>`:''}
     ${hk?solHTML(hk):''}<button class="next" id="nextBtn">${Q.i+1<Q.items.length?'下一題 →':'看成績 →'}</button>`;
   typeset($('#fb'));
   $('#nextBtn').onclick=next;
@@ -553,7 +558,7 @@ function viewWrong(ex){
 /* ================= 闖關對戰（移植自啟賦小學堂：闖關模式＋陀螺大對戰，只用數學題） ================= */
 const replayAnim=(el,c)=>{if(!el)return;el.classList.remove(c);void el.offsetWidth;el.classList.add(c)};
 /* 招生掛勾：打倒魔王、闖完整冊、拿到冠軍時出現 */
-const classCta=()=>`<section class="cta"><div><b>正賦的正課，就是這樣一個單元一個單元帶你過關</b><p>${isTK(S.grade)?'技高數學照課本一冊一冊上，觀念、計算、統測真題一路練到考前。':'國中數學照課本一冊一冊上，段考、會考一關一關打穿。'}想來教室上一堂看看，用 LINE 跟莊老師約試聽。</p></div><a class="btn line" href="${LINE}" target="_blank" rel="noopener">LINE 預約試聽</a></section>`;
+const classCta=()=>`<section class="cta"><div><b>正賦的正課，就是這樣一個單元一個單元帶你過關</b><p>${isTK(S.grade)?'技高數學照課本一冊一冊上，觀念、計算、統測真題一路練到考前。':isHS(S.grade)?'高中數學照課本一冊一冊上，段考、學測、分科一關一關打穿。':'國中數學照課本一冊一冊上，段考、會考一關一關打穿。'}想來教室上一堂看看，用 LINE 跟莊老師約試聽。</p></div><a class="btn line" href="${LINE}" target="_blank" rel="noopener">LINE 預約試聽</a></section>`;
 /* 依數學單元出指定難度的題目（plan＝每題難度） */
 function mathSet(u,plan){const out=[],seen=new Set();
   for(let i=0,t=0;i<plan.length&&t<plan.length*6;t++){const it=fromMath(u,plan[i]);if(!it||seen.has(it.key))continue;seen.add(it.key);out.push(it);i++}
@@ -566,7 +571,7 @@ function viewGame(){
   const bossTot=BOOKS[g].reduce((s,b,i)=>s+advLevels(g,i).levels.filter(l=>l.type==='b').length,0);
   $('#view').innerHTML=`
   <h2>🎮 闖關對戰<small>${GNAME[g]}・用數學題目打魔王、幫陀螺充能</small></h2>
-  <div class="grades" role="group" aria-label="年級">${['7','8','9','A','B','C'].map(n=>`<button data-g="${n}" aria-pressed="${n===g}" style="padding:6px 12px;font-size:14px">${GNAME[n]}</button>`).join('')}</div>
+  <div class="grades" role="group" aria-label="年級">${['7','8','9','H1','HA','HB','HJ','HY','A','B','C'].map(n=>`<button data-g="${n}" aria-pressed="${n===g}" style="padding:6px 12px;font-size:14px">${GNAME[n]}</button>`).join('')}</div>
   <div class="gcards">
     <a class="gcard" href="#/adv"><span class="ic">🗺️</span><b>數學闖關</b>
       <p>每一冊一張地圖，一個單元一關，每 4 關有一隻數學魔王。3 顆愛心，答錯扣 1 顆。</p>
@@ -603,6 +608,17 @@ const ADV={
   '數C二':{name:'數列迷宮',ic:'🌀',marks:['🌀','🧱','🔢','🕯️','🗝️','📜','🚪','🔦'],boss:'🦁',bossName:'餘式人面獅',badge:'🗝️',bg:'linear-gradient(180deg,#F7F0E3 0%,#E6D2AE 55%,#C9A86E 100%)',pc:'#7A5418'},
   '數C三':{name:'矩陣要塞',ic:'🏯',marks:['🏯','⚙️','🔩','🧮','🛡️','📡','🔋','🧲'],boss:'🤖',bossName:'行列式機甲',badge:'⚙️',bg:'linear-gradient(180deg,#1C2733 0%,#2F4254 55%,#4E6A82 100%)',pc:'#7FD1E8',night:true},
   '數C四':{name:'微積分天空城',ic:'☁️',marks:['☁️','🎈','🪁','📈','🌤️','🛩️','🌈','⭐'],boss:'🦅',bossName:'導數雷鷹',badge:'🌈',bg:'linear-gradient(180deg,#EAF4FF 0%,#C7DFFA 55%,#9CC3EE 100%)',pc:'#2B5DA8'}};
+Object.assign(ADV,{
+  '高一上':{name:'多項式峽谷',ic:'🏜️',marks:['🏜️','🌵','🦂','📐','🪨','🐪','☀️','🧭'],boss:'🦖',bossName:'餘式暴龍',badge:'🌵',bg:'linear-gradient(180deg,#FFF4E2 0%,#F3D9A8 55%,#E2B46A 100%)',pc:'#8A4F12'},
+  '高一下':{name:'排列組合城',ic:'🎰',marks:['🎰','🎲','🃏','🔢','🎟️','🏮','🎯','🧩'],boss:'🐙',bossName:'機率章魚',badge:'🎲',bg:'linear-gradient(180deg,#F3ECFF 0%,#D8C7F5 55%,#B39BE6 100%)',pc:'#4E2E8F'},
+  '數A 二上':{name:'三角函數浪潮',ic:'🌊',marks:['🌊','🏄','🐚','📈','🌙','⛵','🐢','🌅'],boss:'🐳',bossName:'正弦巨鯨',badge:'🏄',bg:'linear-gradient(180deg,#E0F4FB 0%,#A5D8EC 55%,#5BB2D6 100%)',pc:'#0F5C7A'},
+  '數A 二下':{name:'空間向量站',ic:'🛰️',marks:['🛰️','🚀','🪐','🌌','📡','☄️','🌍','⭐'],boss:'👽',bossName:'外積外星人',badge:'🚀',bg:'linear-gradient(180deg,#141B3A 0%,#26336B 55%,#4253A3 100%)',pc:'#9FD3FF',night:true},
+  '數B 二上':{name:'成長模型農場',ic:'🌱',marks:['🌱','🌾','🐔','📈','🚜','🌻','🐄','🍎'],boss:'🐗',bossName:'指數山豬',badge:'🌻',bg:'linear-gradient(180deg,#F1F9E6 0%,#CDE8AE 55%,#9CCB72 100%)',pc:'#3E6B16'},
+  '數B 二下':{name:'圓錐曲線星域',ic:'🌠',marks:['🌠','🪐','🌙','✨','🔭','☄️','🌌','⭐'],boss:'🦄',bossName:'橢圓獨角獸',badge:'🌠',bg:'linear-gradient(180deg,#221A3D 0%,#3D2E6E 55%,#6550A8 100%)',pc:'#F5C6FF',night:true},
+  '數甲 上':{name:'極限冰川',ic:'🧊',marks:['🧊','🏔️','❄️','📉','🐧','🌨️','⛷️','🦭'],boss:'🐻‍❄️',bossName:'導數北極熊',badge:'🧊',bg:'linear-gradient(180deg,#F2FAFF 0%,#CFE6F5 55%,#97C4E3 100%)',pc:'#1D5D8A'},
+  '數甲 下':{name:'積分王城',ic:'🏰',marks:['🏰','👑','🗡️','🛡️','📜','🐎','🏹','💠'],boss:'🐲',bossName:'積分巨龍',badge:'👑',bg:'linear-gradient(180deg,#2A1E12 0%,#5A3B1E 55%,#94642E 100%)',pc:'#FFD27A',night:true},
+  '數乙 上':{name:'切線山道',ic:'🚵',marks:['🚵','⛰️','📈','🌲','🦅','🪵','🏕️','🧗'],boss:'🦍',bossName:'極值金剛',badge:'⛰️',bg:'linear-gradient(180deg,#EEF5EA 0%,#C9DDBC 55%,#93B67F 100%)',pc:'#35592A'},
+  '數乙 下':{name:'統計賭城',ic:'🎲',marks:['🎲','📊','🃏','💰','🎯','🔔','🎪','📈'],boss:'🦊',bossName:'常態狐狸',badge:'📊',bg:'linear-gradient(180deg,#FFF0E6 0%,#F7CDAE 55%,#E89A69 100%)',pc:'#8C3B12'}});
 const ADV_DEF={name:'數學秘境',ic:'🗺️',marks:['📐','📏','🔢','🧮'],boss:'👾',bossName:'數學魔王',badge:'🏅',bg:'linear-gradient(180deg,#EEF1F5 0%,#CDD6E2 100%)',pc:'#16223a'};
 const advTheme=b=>ADV[b]||ADV_DEF;
 function advLevels(g,bi){
@@ -1062,7 +1078,7 @@ function viewTop(){
     <p class="hint" style="margin:0">${easy?'自動模式：選好方向後按「🚀 自動發射」，發射器會自己拉繩（拿不到完美發射加成）。':'拉繩模式：倒數「3、2、1、發射！」後，手指在發射器上<b>快速往下滑</b>（電腦按住空白鍵再放開），力道停在綠色<b>完美區</b>就是「完美發射」！'}</p></section>
   <section class="tbox"><h3>⑥ 用哪一冊的題目充能？</h3>
     <div class="srcs">${books.map(b=>`<button data-s="${b}" aria-pressed="${R.src===b}">📘 ${bookName(b)}</button>`).join('')}<button data-s="mix" aria-pressed="${R.src==='mix'}">🎲 整個年級混合</button></div>
-    <div class="grades" role="group" aria-label="年級" style="gap:6px">${['7','8','9','A','B','C'].map(n=>`<button data-g="${n}" aria-pressed="${n===g}" style="padding:4px 10px;font-size:13px;border-radius:10px">${GNAME[n]}</button>`).join('')}</div></section>
+    <div class="grades" role="group" aria-label="年級" style="gap:6px">${['7','8','9','H1','HA','HB','HJ','HY','A','B','C'].map(n=>`<button data-g="${n}" aria-pressed="${n===g}" style="padding:4px 10px;font-size:13px;border-radius:10px">${GNAME[n]}</button>`).join('')}</div></section>
   <button class="tgo" id="tGo">⚡ 開始充能（${CHARGE_SEC} 秒・10 題・${DTXT[TOPP[R.opp].d]}）</button>
   </div>`;
   const big=$('#tBig');let a=0;const wid=w?w.id:null;paintThumb(big,t,0,wid);

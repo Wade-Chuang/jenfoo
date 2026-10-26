@@ -1402,136 +1402,271 @@ function h_inv(M){const [[a,b],[c,dd]]=M,D=a*dd-b*c;let N=[[dd,-b],[-c,a]],den=D
   const g=gcd(gcd(gcd(N[0][0],N[0][1]),gcd(N[1][0],N[1][1])),den)||1;den/=g;N=N.map(r=>r.map(x=>x/g+0));return den===1?h_bm(N):`\\frac{1}{${den}}${h_bm(N)}`}
 /* cos θ 若為特殊值，回傳角度 */
 function h_angOf(cv){for(const t of[0,30,45,60,90,120,135,150,180]){const [a,b,m,c]=h_T[t][1];if(Math.abs((a+b*Math.sqrt(m))/c-cv)<1e-9)return t}return null}
-function h_expo(d){const r=pick([2,3]),n=d===2?2:3,ks=r===2?[1,2,3,4,5]:[1,2,3,4];let E=F(0),tex='';
+function h_expo(d){const r=pick([2,3]),n=d===2?2:3,ks=r===2?[1,2,3,4,5]:[1,2,3,4];let E=F(0),tex='';const conv=[];let es='';
   for(let i=0;i<n;i++){const k=pick(ks),e=F(rnz(-5,5),pick([2,3,4]));if(e.d===1)return null;const op=i===0?1:(R()<.6?1:-1);
     E=op>0?fadd(E,fmul(F(k),e)):fsub(E,fmul(F(k),e));
-    tex+=(i===0?'':op>0?' \\times ':' \\div ')+`${r**k}^{${ftex(e)}}`}
+    tex+=(i===0?'':op>0?' \\times ':' \\div ')+`${r**k}^{${ftex(e)}}`;
+    const ke=fmul(F(k),e);conv.push(k===1?`${r}^{${ftex(e)}}`:`${r**k}^{${ftex(e)}} = (${r}^{${k}})^{${ftex(e)}} = ${r}^{${ftex(ke)}}`);
+    es+=i===0?ftex(ke):(op>0?' + ':' - ')+h_pf(ke)}
   if(E.d!==1||E.n===0||Math.abs(E.n)>(r===2?9:6))return null;
-  return{q:`$${tex}$`,a:`$${ftex(h_pw(r,E.n))}$`};
+  const ans=`$${ftex(h_pw(r,E.n))}$`;
+  return{q:`$${tex}$`,a:ans,e:h_ln([`把每一項都化成以 $${r}$ 為底：$${conv.join('$，$')}$。`,`同底數相乘，指數相加；相除，指數相減：指數 $= ${es} = ${E.n}$。`,
+    `所以原式 $= ${r}^{${E.n}}${E.n<0?` = \\frac{1}{${r}^{${-E.n}}}`:''} = ${ftex(h_pw(r,E.n))}$。`],ans)};
 }
+
+/* ---------- 高中逐步詳解共用 ---------- */
+const h_ln=(L,ans)=>[...L.filter(Boolean).map((s,i)=>'①②③④⑤⑥⑦⑧⑨⑩'[i]+' '+s),`所以答案是 ${ans}。`].join('\n');
+const h_dv=(n,m)=>{if(m<0){n=-n;m=-m}if(m===1)return`${n}`;const raw=n<0?`-\\frac{${-n}}{${m}}`:`\\frac{${n}}{${m}}`,s=ftex(F(n,m));return s===raw?raw:`${raw} = ${s}`};
+const h_rt=n=>{const [a,m]=sqrtSimp(n);return m===1?`\\sqrt{${n}} = ${a}`:a>1?`\\sqrt{${n}} = ${rad(a,m)}`:`\\sqrt{${n}}`};
+const h_pp=x=>x<0?`(${x})`:`${x}`;
+const h_pf=f=>f.n<0?`\\left(${ftex(f)}\\right)`:ftex(f);
+const h_xf=f=>f.d===1?P(f.n):`\\left(${ftex(f)}\\right)`;
+const h_psub=(c,xt)=>{const n=c.length-1;let s='';if(/^\d/.test(xt))xt=`(${xt})`;  // 代入正數也加括號，免得 -1^{3} 看成 -(1^3)
+  c.forEach((k,i)=>{if(k===0)return;const j=n-i,ab=Math.abs(k),pw=j===0?'':j===1?xt:`${xt}^{${j}}`,body=j===0?`${ab}`:ab===1?pw:`${ab} \\times ${pw}`;s+=s===''?(k<0?'-':'')+body:(k<0?' - ':' + ')+body});return s||'0'};
+const h_fsum=fs=>{let s='';fs.forEach((f,i)=>{s+=i===0?ftex(f):f.n<0?` - ${ftex(F(-f.n,f.d))}`:` + ${ftex(f)}`});return s||'0'};
+const h_fpoly=ts=>{let s='';for(const [f,v] of ts){if(f.n===0)continue;const ab=F(Math.abs(f.n),f.d),body=v&&ab.n===1&&ab.d===1?v:ftex(ab)+v;s+=s===''?(f.n<0?'-':'')+body:(f.n<0?' - ':' + ')+body}return s||'0'};
+const h_qexp=op=>op==='<'||op==='\\leqq'?`要「${op==='<'?'小於':'小於或等於'} $0$」，取兩根之間${op==='\\leqq'?'（含兩根）':''}`:`要「${op==='>'?'大於':'大於或等於'} $0$」，取兩根的外側${op==='\\geqq'?'（含兩根）':''}`;
 
 /* ---------- 高一上 ---------- */
 unit({id:'h-abs',g:'高一上',name:'絕對值方程式與不等式',instr:'解下列方程式或不等式。',h:[18,24,30],gen(d){
-  if(d===1){const a=rnz(-9,9),c=ri(1,9),f=ri(0,2),L=h_abs(lin(1,-a));
-    if(f===0)return{q:`$${L} = ${c}$`,a:roots2(a+c,a-c)};
-    if(f===1)return{q:`$${L} < ${c}$`,a:`$${a-c} < x < ${a+c}$`};
-    return{q:`$${L} \\geqq ${c}$`,a:`$x \\leqq ${a-c}$ 或 $x \\geqq ${a+c}$`}}
-  if(d===2){const a=ri(2,5)*(R()<.25?-1:1),b=rnz(-12,12),c=ri(1,12);if(a<0&&b<0)return null;const L=h_abs(a<0?poly([[b,''],[a,'x']]):lin(a,b));
+  if(d===1){const a=rnz(-9,9),c=ri(1,9),f=ri(0,2),L=h_abs(lin(1,-a)),I=lin(1,-a);
+    if(f===0){const ans=roots2(a+c,a-c);return{q:`$${L} = ${c}$`,a:ans,e:h_ln([`絕對值等於 $${c}$，代表裡面是 $${c}$ 或 $-${c}$：$${I} = ${c}$ 或 $${I} = -${c}$。`,
+      `$x = ${c} + ${P(a)} = ${a+c}$，或 $x = -${c} + ${P(a)} = ${a-c}$。`],ans)}}
+    if(f===1){const ans=`$${a-c} < x < ${a+c}$`;return{q:`$${L} < ${c}$`,a:ans,e:h_ln([`$\\left|X\\right| < ${c}$ 等價於 $-${c} < X < ${c}$，所以 $-${c} < ${I} < ${c}$。`,
+      `三邊同加 $${P(a)}$：$-${c} + ${P(a)} < x < ${c} + ${P(a)}$，即 $${a-c} < x < ${a+c}$。`],ans)}}
+    const ans=`$x \\leqq ${a-c}$ 或 $x \\geqq ${a+c}$`;
+    return{q:`$${L} \\geqq ${c}$`,a:ans,e:h_ln([`$\\left|X\\right| \\geqq ${c}$ 等價於 $X \\leqq -${c}$ 或 $X \\geqq ${c}$。`,
+      `$${I} \\leqq -${c}$ 得 $x \\leqq ${a-c}$；$${I} \\geqq ${c}$ 得 $x \\geqq ${a+c}$。`],ans)}}
+  if(d===2){const a=ri(2,5)*(R()<.25?-1:1),b=rnz(-12,12),c=ri(1,12);if(a<0&&b<0)return null;const I=a<0?poly([[b,''],[a,'x']]):lin(a,b),L=h_abs(I);
     let r1=F(-c-b,a),r2=F(c-b,a);if(h_flt(r2,r1))[r1,r2]=[r2,r1];
-    if(R()<.35)return{q:`$${L} = ${c}$`,a:`$x = ${ftex(r1)}$ 或 $x = ${ftex(r2)}$`};
-    const op=pick(OPS);return{q:`$${L} ${op} ${c}$`,a:h_q2(ftex(r1),ftex(r2),op)}}
+    const ax=`${a}x`,s1=`$${I} = ${c}$ ⇒ $${ax} = ${c-b}$ ⇒ $x = ${h_dv(c-b,a)}$`,s2=`$${I} = -${c}$ ⇒ $${ax} = ${-c-b}$ ⇒ $x = ${h_dv(-c-b,a)}$`;
+    if(R()<.35){const ans=`$x = ${ftex(r1)}$ 或 $x = ${ftex(r2)}$`;return{q:`$${L} = ${c}$`,a:ans,e:h_ln([`絕對值等於 $${c}$，裡面是 $${c}$ 或 $-${c}$。`,`${s1}。`,`${s2}。`],ans)}}
+    const op=pick(OPS),ans=h_q2(ftex(r1),ftex(r2),op);
+    return{q:`$${L} ${op} ${c}$`,a:ans,e:h_ln([`先找分界點，也就是 $${L} = ${c}$ 的兩個解。`,`${s1}；${s2}。`,
+      `$${L}$ 表示 $${I}$ 到 $0$ 的距離，${op==='<'||op==='\\leqq'?`要${op==='<'?'小於':'小於或等於'} $${c}$，$x$ 落在兩個分界點之間${op==='\\leqq'?'（含端點）':''}`:`要${op==='>'?'大於':'大於或等於'} $${c}$，$x$ 落在兩個分界點的外側${op==='\\geqq'?'（含端點）':''}`}。`],ans)}}
   const f=ri(0,2);
   if(f===0){const a=ri(1,4),b=rnz(-9,9),c=ri(1,5),e=c+ri(1,6);
-    return{q:`$${c} \\leqq ${h_abs(lin(a,b))} < ${e}$`,a:`$${ftex(F(-e-b,a))} < x \\leqq ${ftex(F(-c-b,a))}$ 或 $${ftex(F(c-b,a))} \\leqq x < ${ftex(F(e-b,a))}$`}}
+    const ans=`$${ftex(F(-e-b,a))} < x \\leqq ${ftex(F(-c-b,a))}$ 或 $${ftex(F(c-b,a))} \\leqq x < ${ftex(F(e-b,a))}$`,I=lin(a,b),ax=a===1?'x':`${a}x`;
+    return{q:`$${c} \\leqq ${h_abs(lin(a,b))} < ${e}$`,a:ans,e:h_ln([`拆成兩個條件：$${h_abs(I)} < ${e}$ 且 $${h_abs(I)} \\geqq ${c}$，最後取交集。`,
+      `$${h_abs(I)} < ${e}$：$-${e} < ${I} < ${e}$，同減 $${P(b)}$ 得 $${-e-b} < ${ax} < ${e-b}$，所以 $${ftex(F(-e-b,a))} < x < ${ftex(F(e-b,a))}$。`,
+      `$${h_abs(I)} \\geqq ${c}$：$${I} \\leqq -${c}$ 或 $${I} \\geqq ${c}$，得 $x \\leqq ${h_dv(-c-b,a)}$ 或 $x \\geqq ${h_dv(c-b,a)}$。`,
+      `兩者取交集，左右各留下一段。`],ans)}}
   if(f===1){const p=ri(-8,6),q=p+ri(1,7),c=q-p+ri(1,8),lo=F(p+q-c,2),hi=F(p+q+c,2),L=`${h_abs(lin(1,-p))} + ${h_abs(lin(1,-q))}`;
-    if(R()<.5)return{q:`$${L} = ${c}$`,a:`$x = ${ftex(lo)}$ 或 $x = ${ftex(hi)}$`};
-    return{q:`$${L} < ${c}$`,a:`$${ftex(lo)} < x < ${ftex(hi)}$`}}
+    const st=[`分界點 $x = ${p}$、$x = ${q}$，把數線分成三段去掉絕對值。`,
+      `$x \\geqq ${q}$ 時，原式 $= ${lin(2,-(p+q))}$；$x < ${p}$ 時，原式 $= ${lin(-2,p+q)}$；$${p} \\leqq x < ${q}$ 時，原式 $= ${q} - ${P(p)} = ${q-p}$（定值）。`];
+    if(R()<.5){const ans=`$x = ${ftex(lo)}$ 或 $x = ${ftex(hi)}$`;return{q:`$${L} = ${c}$`,a:ans,e:h_ln([...st,
+      `中間段的值 $${q-p} \\neq ${c}$，無解；右段 $${lin(2,-(p+q))} = ${c}$ 得 $x = ${h_dv(p+q+c,2)}$；左段 $${lin(-2,p+q)} = ${c}$ 得 $x = ${h_dv(p+q-c,2)}$。`,
+      `兩個解都落在各自的範圍內。`],ans)}}
+    const ans=`$${ftex(lo)} < x < ${ftex(hi)}$`;
+    return{q:`$${L} < ${c}$`,a:ans,e:h_ln([...st,`中間段 $${q-p} < ${c}$ 恆成立；右段 $${lin(2,-(p+q))} < ${c}$ 得 $x < ${h_dv(p+q+c,2)}$；左段 $${lin(-2,p+q)} < ${c}$ 得 $x > ${h_dv(p+q-c,2)}$。`,
+      `三段合起來是一個區間。`],ans)}}
   const a=ri(1,4),c=rnz(-3,3),b=rnz(-9,9),e=rnz(-9,9);if(a===Math.abs(c))return null;
   const cand=[F(e-b,a-c),F(-e-b,a+c)].filter(x=>c*x.n+e*x.d>=0);if(!cand.length)return null;
   if(cand.length===2&&cand[0].n===cand[1].n&&cand[0].d===cand[1].d)cand.pop();
   cand.sort((u,v)=>u.n*v.d-v.n*u.d);
-  return{q:`$${h_abs(lin(a,b))} = ${lin(c,e)}$`,a:cand.map(x=>`$x = ${ftex(x)}$`).join(' 或 ')};
+  const ans=cand.map(x=>`$x = ${ftex(x)}$`).join(' 或 '),I=lin(a,b),R2=lin(c,e),x1=F(e-b,a-c),x2=F(-e-b,a+c);
+  const chk=x=>{const v=fadd(fmul(F(c),x),F(e));return`$x = ${ftex(x)}$ 時 $${R2} = ${ftex(v)}$，${v.n>=0?'合':'是負的，不合'}`};
+  return{q:`$${h_abs(lin(a,b))} = ${lin(c,e)}$`,a:ans,e:h_ln([`絕對值不會是負的，所以右邊必須 $${R2} \\geqq 0$，解完要檢驗。`,
+    `情況一 $${I} = ${R2}$：$${poly([[a-c,'x']])} = ${e-b}$，$x = ${h_dv(e-b,a-c)}$。`,
+    `情況二 $${I} = -(${R2})$：$${poly([[a+c,'x']])} = ${-e-b}$，$x = ${h_dv(-e-b,a+c)}$。`,
+    `檢驗：${chk(x1)}；${chk(x2)}。`],ans)};
 }});
 
 unit({id:'h-root',g:'高一上',name:'根式與指數律',instr:'化簡下列各式（分母須有理化）。',h:[16,22,28],gen(d){
   if(d===1){
     if(R()<.6){const t=ri(2,5),q=ri(2,4),p=rnz(-3,3);if(gcd(p,q)!==1)return null;const B=t**q;if(B>625||t**Math.abs(p)>1000)return null;
-      return{q:`$${B}^{${p<0?'-':''}\\frac{${Math.abs(p)}}{${q}}}$`,a:`$${ftex(h_pw(t,p))}$`}}
-    const m=pick([2,3,5,6,7,10]),k=ri(1,3),c=ri(1,12);
-    return{q:`$\\frac{${c}}{${rad(k,m)}}$`,a:`$${h_surd(0,c,m,k*m)}$`}}
+      const ans=`$${ftex(h_pw(t,p))}$`,ex=`${p<0?'-':''}\\frac{${Math.abs(p)}}{${q}}`;
+      return{q:`$${B}^{${p<0?'-':''}\\frac{${Math.abs(p)}}{${q}}}$`,a:ans,e:h_ln([`先把底數寫成次方：$${B} = ${t}^{${q}}$。`,
+        `$${B}^{${ex}} = (${t}^{${q}})^{${ex}} = ${t}^{${q} \\times ${ex}} = ${t}^{${p}}$。`,
+        `$${t}^{${p}}${p<0?` = \\frac{1}{${t}^{${-p}}}`:''} = ${ftex(h_pw(t,p))}$。`],ans)}}
+    const m=pick([2,3,5,6,7,10]),k=ri(1,3),c=ri(1,12),ans=`$${h_surd(0,c,m,k*m)}$`;
+    return{q:`$\\frac{${c}}{${rad(k,m)}}$`,a:ans,e:h_ln([`分母有理化：分子、分母同乘 $\\sqrt{${m}}$。`,
+      `$\\frac{${c}}{${rad(k,m)}} = \\frac{${c} \\times \\sqrt{${m}}}{${rad(k,m)} \\times \\sqrt{${m}}} = \\frac{${rad(c,m)}}{${k*m}}$。`,`約分得 $${h_surd(0,c,m,k*m)}$。`],ans)}}
   if(d===2){
     if(R()<.5){const p=ri(1,5),m=pick([2,3,5,6,7,10,11,13]),c=ri(1,12),s=sgn();if(p*p===m)return null;
-      return{q:`$\\frac{${c}}{${p} ${s>0?'+':'-'} \\sqrt{${m}}}$`,a:`$${h_surd(c*p,-s*c,m,p*p-m)}$`}}
+      const ans=`$${h_surd(c*p,-s*c,m,p*p-m)}$`,cj=`${p} ${s>0?'-':'+'} \\sqrt{${m}}`;
+      return{q:`$\\frac{${c}}{${p} ${s>0?'+':'-'} \\sqrt{${m}}}$`,a:ans,e:h_ln([`分母有理化：分子、分母同乘共軛 $${cj}$。`,
+        `分母 $(${p} ${s>0?'+':'-'} \\sqrt{${m}})(${cj}) = ${p}^2 - ${m} = ${p*p-m}$。`,
+        `分子 $${c}(${cj}) = ${c*p} ${s>0?'-':'+'} ${rad(c,m)}$。`,
+        `所以原式 $= \\frac{${c*p} ${s>0?'-':'+'} ${rad(c,m)}}{${p*p-m}} = ${h_surd(c*p,-s*c,m,p*p-m)}$。`],ans)}}
     return h_expo(2)}
   const f=ri(0,2);
   if(f===0)return h_expo(3);
   if(f===1){
     if(R()<.5){const a=ri(2,15),b=ri(2,15);if(isSq(a)||isSq(b)||a===b||sqrtSimp(a)[1]===sqrtSimp(b)[1])return null;
-      return{q:`$\\frac{\\sqrt{${a}} + \\sqrt{${b}}}{\\sqrt{${a}} - \\sqrt{${b}}}$`,a:`$${h_surd(a+b,2,a*b,a-b)}$`}}
+      const ans=`$${h_surd(a+b,2,a*b,a-b)}$`;
+      return{q:`$\\frac{\\sqrt{${a}} + \\sqrt{${b}}}{\\sqrt{${a}} - \\sqrt{${b}}}$`,a:ans,e:h_ln([`分子、分母同乘 $\\sqrt{${a}} + \\sqrt{${b}}$。`,
+        `分母 $(\\sqrt{${a}})^2 - (\\sqrt{${b}})^2 = ${a} - ${b} = ${a-b}$。`,
+        `分子 $(\\sqrt{${a}} + \\sqrt{${b}})^2 = ${a} + ${b} + 2\\sqrt{${a*b}} = ${a+b} + ${h_surd(0,2,a*b,1)}$。`,
+        `所以原式 $= \\frac{${a+b} + ${h_surd(0,2,a*b,1)}}{${a-b}} = ${h_surd(a+b,2,a*b,a-b)}$。`],ans)}}
     const p=ri(1,5),m=pick([2,3,5,6,7,10]);if(p*p===m)return null;
-    return{q:`$\\frac{${p} + \\sqrt{${m}}}{${p} - \\sqrt{${m}}}$`,a:`$${h_surd(p*p+m,2*p,m,p*p-m)}$`}}
-  const n=ri(3,8),k=ri(0,2),ask=['x + x^{-1}','x^2 + x^{-2}','x^{\\frac{3}{2}} + x^{-\\frac{3}{2}}'][k],v=[n*n-2,(n*n-2)**2-2,n**3-3*n][k];
-  return{q:`已知 $x^{\\frac{1}{2}} + x^{-\\frac{1}{2}} = ${n}$，求 $${ask}$ 的值`,a:`$${h_cm(v)}$`};
+    const ans=`$${h_surd(p*p+m,2*p,m,p*p-m)}$`;
+    return{q:`$\\frac{${p} + \\sqrt{${m}}}{${p} - \\sqrt{${m}}}$`,a:ans,e:h_ln([`分子、分母同乘 $${p} + \\sqrt{${m}}$。`,
+      `分母 $${p}^2 - ${m} = ${p*p-m}$。`,`分子 $(${p} + \\sqrt{${m}})^2 = ${p*p} + ${rad(2*p,m)} + ${m} = ${p*p+m} + ${rad(2*p,m)}$。`,
+      `所以原式 $= \\frac{${p*p+m} + ${rad(2*p,m)}}{${p*p-m}} = ${h_surd(p*p+m,2*p,m,p*p-m)}$。`],ans)}}
+  const n=ri(3,8),k=ri(0,2),ask=['x + x^{-1}','x^2 + x^{-2}','x^{\\frac{3}{2}} + x^{-\\frac{3}{2}}'][k],v=[n*n-2,(n*n-2)**2-2,n**3-3*n][k],ans=`$${h_cm(v)}$`;
+  const s1=`兩邊平方：$(x^{\\frac{1}{2}} + x^{-\\frac{1}{2}})^2 = x + 2 + x^{-1} = ${n*n}$，所以 $x + x^{-1} = ${n*n} - 2 = ${n*n-2}$。`;
+  const L=k===0?[s1]:k===1?[s1,`再平方：$(x + x^{-1})^2 = x^2 + 2 + x^{-2} = ${(n*n-2)**2}$，所以 $x^2 + x^{-2} = ${(n*n-2)**2} - 2 = ${h_cm(v)}$。`]
+    :[`立方和公式：$(x^{\\frac{1}{2}} + x^{-\\frac{1}{2}})^3 = x^{\\frac{3}{2}} + x^{-\\frac{3}{2}} + 3(x^{\\frac{1}{2}} + x^{-\\frac{1}{2}})$。`,
+      `代入：$${n}^3 = x^{\\frac{3}{2}} + x^{-\\frac{3}{2}} + 3 \\times ${n}$。`,`所以 $x^{\\frac{3}{2}} + x^{-\\frac{3}{2}} = ${n**3} - ${3*n} = ${v}$。`];
+  return{q:`已知 $x^{\\frac{1}{2}} + x^{-\\frac{1}{2}} = ${n}$，求 $${ask}$ 的值`,a:ans,e:h_ln(L,ans)};
 }});
 
 unit({id:'h-polydiv',g:'高一上',name:'多項式除法與餘式定理',instr:'依題意作答。',h:[22,28,34],gen(d){
-  if(d===1){const f=[ri(1,3),rnz(-6,6),ri(-9,9),rnz(-9,9)],a=rnz(-3,3);
-    return{q:`求 $f(x) = ${h_ptex(f)}$ 除以 $${lin(1,-a)}$ 的餘式`,a:`$${h_peval(f,a)}$`}}
+  if(d===1){const f=[ri(1,3),rnz(-6,6),ri(-9,9),rnz(-9,9)],a=rnz(-3,3),ans=`$${h_peval(f,a)}$`;
+    return{q:`求 $f(x) = ${h_ptex(f)}$ 除以 $${lin(1,-a)}$ 的餘式`,a:ans,e:h_ln([`餘式定理：$f(x)$ 除以 $${lin(1,-a)}$ 的餘式等於 $f(${a})$。`,
+      `$f(${a}) = ${h_psub(f,P(a))} = ${h_peval(f,a)}$。`],ans)}}
   if(d===2){const t=ri(0,2);
     if(t===0){const Q=[ri(1,3),ri(-6,6),ri(-9,9)],a=rnz(-4,4),r=ri(-9,9),f=h_pmul(Q,[1,-a]);f[3]+=r;
-      return{q:`求 $${h_ptex(f)}$ 除以 $${lin(1,-a)}$ 的商式與餘式`,a:`商式 $${quad(...Q)}$，餘式 $${r}$`}}
-    if(t===1){const a=rnz(-3,3),p=ri(-6,6),k=rnz(-9,9);
+      const ans=`商式 $${quad(...Q)}$，餘式 $${r}$`,b=[f[0]];for(let i=1;i<4;i++)b.push(f[i]+a*b[i-1]);
+      return{q:`求 $${h_ptex(f)}$ 除以 $${lin(1,-a)}$ 的商式與餘式`,a:ans,e:h_ln([`用綜合除法，除式 $${lin(1,-a)}$ 取 $${a}$；被除式係數依序是 $${f.join('$、$')}$。`,
+        `第一個係數照抄 $${b[0]}$；之後每次「上一個結果 $\\times ${P(a)}$ 再加下一個係數」：$${[1,2,3].map(i=>`${f[i]} + ${P(b[i-1])} \\times ${P(a)} = ${b[i]}`).join('$，$')}$。`,
+        `前三個數 $${b[0]}$、$${b[1]}$、$${b[2]}$ 是商式的係數，最後一個 $${b[3]}$ 是餘式。`],ans)}}
+    if(t===1){const a=rnz(-3,3),p=ri(-6,6),k=rnz(-9,9),ans=`$k = ${k}$`;
       if(R()<.5){const b=ri(-9,9),c=-(a**3+k*a*a+b*a);if(c===0)return null;
-        return{q:`已知 $x^3 + kx^2${h_tail([[b,'x'],[c,'']])}$ 有因式 $${lin(1,-a)}$，求 $k$`,a:`$k = ${k}$`}}
+        return{q:`已知 $x^3 + kx^2${h_tail([[b,'x'],[c,'']])}$ 有因式 $${lin(1,-a)}$，求 $k$`,a:ans,e:h_ln([`因式定理：$${lin(1,-a)}$ 是因式，所以 $f(${a}) = 0$。`,
+          `$${P(a)}^3 + k \\times ${P(a)}^2 + ${P(b)} \\times ${P(a)} + ${P(c)} = 0$，即 $${poly([[a**3,''],[a*a,'k'],[b*a,''],[c,'']])} = 0$。`,
+          `$${poly([[a*a,'k']])} = ${-(a**3+b*a+c)}$，$k = ${k}$。`],ans)}}
       const c=-(a**3+p*a*a+k*a);if(c===0)return null;
-      return{q:`已知 $${poly([[1,'x^3'],[p,'x^2']])} + kx${h_tail([[c,'']])}$ 有因式 $${lin(1,-a)}$，求 $k$`,a:`$k = ${k}$`}}
-    const A=pick([2,3]),B=rnz(-A*2+1,A*2-1);if(gcd(A,B)!==1)return null;const f=[ri(1,4),rnz(-6,6),ri(-9,9),rnz(-9,9)];
-    return{q:`求 $f(x) = ${h_ptex(f)}$ 除以 $${lin(A,-B)}$ 的餘式`,a:`$${ftex(h_pevalF(f,F(B,A)))}$`}}
+      return{q:`已知 $${poly([[1,'x^3'],[p,'x^2']])} + kx${h_tail([[c,'']])}$ 有因式 $${lin(1,-a)}$，求 $k$`,a:ans,e:h_ln([`因式定理：$${lin(1,-a)}$ 是因式，所以 $f(${a}) = 0$。`,
+        `$${P(a)}^3 + ${P(p)} \\times ${P(a)}^2 + k \\times ${P(a)} + ${P(c)} = 0$，即 $${poly([[a**3,''],[p*a*a,''],[a,'k'],[c,'']])} = 0$。`,
+        `$${poly([[a,'k']])} = ${-(a**3+p*a*a+c)}$，$k = ${k}$。`],ans)}}
+    const A=pick([2,3]),B=rnz(-A*2+1,A*2-1);if(gcd(A,B)!==1)return null;const f=[ri(1,4),rnz(-6,6),ri(-9,9),rnz(-9,9)],x=F(B,A),v=h_pevalF(f,x),ans=`$${ftex(v)}$`;
+    const ts=f.map((c,i)=>fmul(F(c),F(x.n**(3-i),x.d**(3-i))));
+    return{q:`求 $f(x) = ${h_ptex(f)}$ 除以 $${lin(A,-B)}$ 的餘式`,a:ans,e:h_ln([`令 $${lin(A,-B)} = 0$ 得 $x = ${ftex(x)}$；由餘式定理，餘式等於 $f\\left(${ftex(x)}\\right)$。`,
+      `$f\\left(${ftex(x)}\\right) = ${h_psub(f,h_xf(x))}$。`,`$= ${h_fsum(ts.filter(t=>t.n!==0))} = ${ftex(v)}$。`],ans)}}
   const t=ri(0,2);
-  if(t===0){const r=rnz(-6,6),s=ri(-9,9),a=rnz(-4,4),b=rnz(-4,4);if(a>=b)return null;
-    return{q:`多項式 $f(x)$ 除以 $${lin(1,-a)}$ 的餘式為 $${r*a+s}$，除以 $${lin(1,-b)}$ 的餘式為 $${r*b+s}$，求 $f(x)$ 除以 $${quad(1,-(a+b),a*b)}$ 的餘式`,a:`$${lin(r,s)}$`}}
+  if(t===0){const r=rnz(-6,6),s=ri(-9,9),a=rnz(-4,4),b=rnz(-4,4);if(a>=b)return null;const ans=`$${lin(r,s)}$`;
+    return{q:`多項式 $f(x)$ 除以 $${lin(1,-a)}$ 的餘式為 $${r*a+s}$，除以 $${lin(1,-b)}$ 的餘式為 $${r*b+s}$，求 $f(x)$ 除以 $${quad(1,-(a+b),a*b)}$ 的餘式`,a:ans,e:h_ln([
+      `除式 $${quad(1,-(a+b),a*b)} = (${lin(1,-a)})(${lin(1,-b)})$ 是二次式，餘式最多一次，設 $f(x) = (${lin(1,-a)})(${lin(1,-b)})Q(x) + mx + n$。`,
+      `由餘式定理：$f(${a}) = ${poly([[a,'m'],[1,'n']])} = ${r*a+s}$，$f(${b}) = ${poly([[b,'m'],[1,'n']])} = ${r*b+s}$。`,
+      `兩式相減：$${poly([[a-b,'m']])} =${r*a+s-(r*b+s)}$，$m = ${r}$；代回得 $n = ${r*a+s} - ${P(a)} \\times ${P(r)} = ${s}$。`],ans)}}
   if(t===1){const Q=[ri(1,3),rnz(-5,5),ri(-6,6)],Dv=[1,rnz(-4,4),rnz(-5,5)],r1=ri(-6,6),r0=ri(-9,9),f=h_pmul(Dv,Q);f[3]+=r1;f[4]+=r0;
-    return{q:`求 $${h_ptex(f)}$ 除以 $${quad(...Dv)}$ 的商式與餘式`,a:`商式 $${quad(...Q)}$，餘式 $${lin(r1,r0)}$`}}
-  const p=rnz(-4,4),q=rnz(-4,4),r=rnz(-5,5);if(p>=q)return null;const A=-(p+q+r),B=p*q+q*r+r*p,C=-p*q*r;
-  return{q:`已知 $x^3 + ax^2 + bx ${C<0?'-':'+'} ${Math.abs(C)}$ 可被 $${quad(1,-(p+q),p*q)}$ 整除，求 $a$、$b$`,a:`$a = ${A}$，$b = ${B}$`};
+    const ans=`商式 $${quad(...Q)}$，餘式 $${lin(r1,r0)}$`,cur=[...f],L=[`用長除法，每次用目前的最高次項除以 $x^2$ 決定商的一項。`],pw=['x^2','x',''];
+    for(let i=0;i<3;i++){const qi=cur[i];for(let j=0;j<3;j++)cur[i+j]-=qi*Dv[j];
+      const rest=h_ptex(cur.slice(i+1));L.push(`商的${['第一','第二','第三'][i]}項 $${poly([[qi,pw[i]]])||'0'}$，乘回除式相減後剩 $${rest}$。`)}
+    L.push(`剩下 $${lin(r1,r0)}$ 的次數小於除式，就是餘式；商式是 $${quad(...Q)}$。`);
+    return{q:`求 $${h_ptex(f)}$ 除以 $${quad(...Dv)}$ 的商式與餘式`,a:ans,e:h_ln(L,ans)}}
+  const p=rnz(-4,4),q=rnz(-4,4),r=rnz(-5,5);if(p>=q)return null;const A=-(p+q+r),B=p*q+q*r+r*p,C=-p*q*r,ans=`$a = ${A}$，$b = ${B}$`;
+  return{q:`已知 $x^3 + ax^2 + bx ${C<0?'-':'+'} ${Math.abs(C)}$ 可被 $${quad(1,-(p+q),p*q)}$ 整除，求 $a$、$b$`,a:ans,e:h_ln([
+    `三次式被二次式整除，商是首項係數 $1$ 的一次式，設 $x^3 + ax^2 + bx ${C<0?'-':'+'} ${Math.abs(C)} = (${quad(1,-(p+q),p*q)})(x - t)$。`,
+    `比較常數項：$${p*q} \\times (-t) = ${C}$，得 $t = ${r}$。`,
+    `展開 $(${quad(1,-(p+q),p*q)})(${lin(1,-r)})$ 比較係數：$a = ${-(p+q)} + ${P(-r)} = ${A}$，$b = ${p*q} + ${P(-(p+q))} \\times ${P(-r)} = ${B}$。`],ans)};
 }});
 
 unit({id:'h-quadineq',g:'高一上',name:'一元二次不等式',instr:'解下列一元二次不等式。',h:[18,22,28],gen(d){
   const op=pick(OPS);
   if(d===1){const p=ri(-9,8),q=p+ri(1,9);const fs=q===0?h_fx(q)+h_fx(p):(R()<.5?h_fx(p)+h_fx(q):(p===0?h_fx(p)+h_fx(q):h_fx(q)+h_fx(p)));
-    return{q:`$${fs} ${op} 0$`,a:h_q2(p,q,op)}}
+    const ans=h_q2(p,q,op);
+    return{q:`$${fs} ${op} 0$`,a:ans,e:h_ln([`左邊等於 $0$ 的兩根是 $x = ${p}$ 與 $x = ${q}$（小的是 $${p}$）。`,
+      `$y = ${fs}$ 是開口向上的拋物線，${h_qexp(op)}。`],ans)}}
   if(d===2){const p=ri(-9,8),q=p+ri(1,9),a=pick([1,1,-1,2]);
-    if(R()<.7)return{q:`$${quad(a,-a*(p+q),a*p*q)} ${op} 0$`,a:h_q2(p,q,a>0?op:FLIP[op])};
-    const k=rnz(-9,9);return{q:`$${quad(1,-(p+q),p*q+k)} ${op} ${k}$`,a:h_q2(p,q,op)}}
+    if(R()<.7){const ans=h_q2(p,q,a>0?op:FLIP[op]),o2=a>0?op:FLIP[op];
+      return{q:`$${quad(a,-a*(p+q),a*p*q)} ${op} 0$`,a:ans,e:h_ln([`因式分解：$${quad(a,-a*(p+q),a*p*q)} = ${a===1?'':a===-1?'-':a}${h_fx(p)}${h_fx(q)}$。`,
+        a===1?'':a<0?`兩邊同乘 $-1$，不等號要反向：$${h_fx(p)}${h_fx(q)} ${o2} 0$。`:`兩邊同除以 $${a}$（正數，不等號不變）：$${h_fx(p)}${h_fx(q)} ${o2} 0$。`,
+        `兩根 $x = ${p}$、$x = ${q}$，${h_qexp(o2)}。`],ans)}}
+    const k=rnz(-9,9),ans=h_q2(p,q,op);
+    return{q:`$${quad(1,-(p+q),p*q+k)} ${op} ${k}$`,a:ans,e:h_ln([`把右邊的 $${k}$ 移到左邊：$${quad(1,-(p+q),p*q)} ${op} 0$。`,
+      `因式分解：$${h_fx(p)}${h_fx(q)} ${op} 0$，兩根 $x = ${p}$、$x = ${q}$。`,`開口向上，${h_qexp(op)}。`],ans)}}
   const t=ri(0,9);
   if(t<5){const a=ri(1,4),c=ri(1,4),b=rnz(-9,9),e=rnz(-9,9);if(a*c===1||gcd(a,b)!==1||gcd(c,e)!==1)return null;
     let r1=F(-b,a),r2=F(-e,c);if(r1.n===r2.n&&r1.d===r2.d)return null;if(h_flt(r2,r1))[r1,r2]=[r2,r1];const s=R()<.25?-1:1;
-    return{q:`$${quad(s*a*c,s*(a*e+b*c),s*b*e)} ${op} 0$`,a:h_q2(ftex(r1),ftex(r2),s>0?op:FLIP[op])}}
+    const o2=s>0?op:FLIP[op],ans=h_q2(ftex(r1),ftex(r2),o2);
+    return{q:`$${quad(s*a*c,s*(a*e+b*c),s*b*e)} ${op} 0$`,a:ans,e:h_ln([`十字交乘因式分解：$${quad(s*a*c,s*(a*e+b*c),s*b*e)} = ${s<0?'-':''}(${lin(a,b)})(${lin(c,e)})$。`,
+      s<0?`兩邊同乘 $-1$，不等號反向：$(${lin(a,b)})(${lin(c,e)}) ${o2} 0$。`:'',
+      `兩根 $x = ${ftex(F(-b,a))}$、$x = ${ftex(F(-e,c))}$，由小到大是 $${ftex(r1)}$、$${ftex(r2)}$。`,
+      `首項係數為正，開口向上，${h_qexp(o2)}。`],ans)}}
   if(t<8){const a=pick([1,1,2]),b=rnz(-9,9),c=rnz(-9,9),D=b*b-4*a*c;if(D<=0||isSq(D))return null;
-    return{q:`$${quad(a,b,c)} ${op} 0$`,a:h_q2(h_surd(-b,-1,D,2*a),h_surd(-b,1,D,2*a),op)}}
+    const lo=h_surd(-b,-1,D,2*a),hi=h_surd(-b,1,D,2*a),ans=h_q2(lo,hi,op);
+    return{q:`$${quad(a,b,c)} ${op} 0$`,a:ans,e:h_ln([`判別式 $D = ${P(b)}^2 - 4 \\times ${a} \\times ${P(c)} = ${D} > 0$，不是完全平方數，用公式解求兩根。`,
+      `$x = \\frac{${-b} \\pm \\sqrt{${D}}}{${2*a}}$，即 $x = ${lo}$ 或 $x = ${hi}$。`,`開口向上，${h_qexp(op)}。`],ans)}}
   const h=rnz(-7,7);
-  if(t===8){if(op==='<')return null;const a={'\\leqq':`$x = ${h}$`,'>':`$x \\neq ${h}$ 的所有實數`,'\\geqq':'所有實數'}[op];return{q:`$${quad(1,-2*h,h*h)} ${op} 0$`,a}}
-  const k=ri(1,9),o=pick(['>','\\geqq']);return{q:`$${quad(1,-2*h,h*h+k)} ${o} 0$`,a:'所有實數'};
+  if(t===8){if(op==='<')return null;const a={'\\leqq':`$x = ${h}$`,'>':`$x \\neq ${h}$ 的所有實數`,'\\geqq':'所有實數'}[op];
+    return{q:`$${quad(1,-2*h,h*h)} ${op} 0$`,a,e:h_ln([`配方：$${quad(1,-2*h,h*h)} = ${h_sq('x',h)}$，平方一定 $\\geqq 0$，只有 $x = ${h}$ 時等於 $0$。`,
+      op==='\\leqq'?`要 $\\leqq 0$，只能等於 $0$，所以只有 $x = ${h}$。`:op==='>'?`要 $> 0$，只要排除等於 $0$ 的 $x = ${h}$。`:`$\\geqq 0$ 對所有實數都成立。`],a)}}
+  const k=ri(1,9),o=pick(['>','\\geqq']);
+  return{q:`$${quad(1,-2*h,h*h+k)} ${o} 0$`,a:'所有實數',e:h_ln([`配方：$${quad(1,-2*h,h*h+k)} = ${h_sq('x',h)} + ${k}$。`,
+    `$${h_sq('x',h)} \\geqq 0$，所以左邊 $\\geqq ${k} > 0$，不等式恆成立。`],'所有實數')};
 }});
 
 unit({id:'h-line',g:'高一上',name:'直線方程式',instr:'依題意作答（直線方程式寫成 ax + by + c = 0）。',h:[20,24,30],gen(d){
   if(d===1){const x1=ri(-6,6),y1=ri(-6,6),x2=ri(-6,6),y2=ri(-6,6),f=ri(0,3);if(x1===x2&&y1===y2)return null;
-    if(f===0){if(x1===x2)return null;return{q:`求通過 $A${pt(x1,y1)}$、$B${pt(x2,y2)}$ 兩點的直線斜率`,a:`$${ftex(F(y2-y1,x2-x1))}$`}}
-    if(f===1)return{q:`求通過 $A${pt(x1,y1)}$、$B${pt(x2,y2)}$ 兩點的直線方程式`,a:`$${h_leq(y2-y1,x1-x2,(x2-x1)*y1-(y2-y1)*x1)}$`};
-    if(f===2){const m=R()<.5?F(rnz(-5,5)):F(rnz(-5,5),pick([2,3,4]));return{q:`求通過點 $${pt(x1,y1)}$ 且斜率為 $${ftex(m)}$ 的直線方程式`,a:`$${h_leq(m.n,-m.d,m.d*y1-m.n*x1)}$`}}
-    const [a,b,c]=h_norm(rnz(-6,6),rnz(-6,6),ri(-9,9));return{q:`求直線 $${h_leq(a,b,c)}$ 的斜率`,a:`$${ftex(F(-a,b))}$`}}
+    if(f===0){if(x1===x2)return null;const ans=`$${ftex(F(y2-y1,x2-x1))}$`;
+      return{q:`求通過 $A${pt(x1,y1)}$、$B${pt(x2,y2)}$ 兩點的直線斜率`,a:ans,e:h_ln([`斜率 $m = \\frac{y_2 - y_1}{x_2 - x_1}$。`,
+        `$m = \\frac{${y2} - ${P(y1)}}{${x2} - ${P(x1)}} = ${h_dv(y2-y1,x2-x1)}$。`],ans)}}
+    if(f===1){const ans=`$${h_leq(y2-y1,x1-x2,(x2-x1)*y1-(y2-y1)*x1)}$`;
+      return{q:`求通過 $A${pt(x1,y1)}$、$B${pt(x2,y2)}$ 兩點的直線方程式`,a:ans,e:h_ln([x1===x2?`兩點的 $x$ 坐標都是 $${x1}$，是一條鉛直線 $x = ${x1}$。`:`斜率 $m = \\frac{${y2} - ${P(y1)}}{${x2} - ${P(x1)}} = ${h_dv(y2-y1,x2-x1)}$。`,
+        x1===x2?'':`點斜式：$${lin(1,-y1,'y')} = ${ftex(F(y2-y1,x2-x1))}(${lin(1,-x1)})$。`,
+        `${x1===x2?'':'去分母、'}移項整理成 $ax + by + c = 0$：$${h_leq(y2-y1,x1-x2,(x2-x1)*y1-(y2-y1)*x1)}$。`],ans)}}
+    if(f===2){const m=R()<.5?F(rnz(-5,5)):F(rnz(-5,5),pick([2,3,4])),ans=`$${h_leq(m.n,-m.d,m.d*y1-m.n*x1)}$`;
+      return{q:`求通過點 $${pt(x1,y1)}$ 且斜率為 $${ftex(m)}$ 的直線方程式`,a:ans,e:h_ln([`點斜式：$y - y_1 = m(x - x_1)$。`,
+        `代入：$${lin(1,-y1,'y')} = ${ftex(m)}(${lin(1,-x1)})$。`,`${m.d>1?`兩邊同乘 $${m.d}$，`:''}移項整理：$${h_leq(m.n,-m.d,m.d*y1-m.n*x1)}$。`],ans)}}
+    const [a,b,c]=h_norm(rnz(-6,6),rnz(-6,6),ri(-9,9)),ans=`$${ftex(F(-a,b))}$`;
+    return{q:`求直線 $${h_leq(a,b,c)}$ 的斜率`,a:ans,e:h_ln([`直線 $ax + by + c = 0$ 的斜率是 $-\\frac{a}{b}$。`,
+      `這裡 $a = ${a}$、$b = ${b}$，斜率 $= ${h_dv(-a,b)}$。`],ans)}}
   if(d===2){const [a,b,c]=h_norm(rnz(-6,6),rnz(-6,6),ri(-12,12)),x0=ri(-6,6),y0=ri(-6,6),L=h_leq(a,b,c),f=ri(0,2),n=a*x0+b*y0+c;if(n===0)return null;
-    if(f===0)return{q:`求通過點 $${pt(x0,y0)}$ 且與直線 $${L}$ 平行的直線方程式`,a:`$${h_leq(a,b,-(a*x0+b*y0))}$`};
-    if(f===1)return{q:`求通過點 $${pt(x0,y0)}$ 且與直線 $${L}$ 垂直的直線方程式`,a:`$${h_leq(b,-a,-(b*x0-a*y0))}$`};
-    return{q:`求點 $${pt(x0,y0)}$ 到直線 $${L}$ 的距離`,a:`$${h_surd(0,Math.abs(n),a*a+b*b,a*a+b*b)}$`}}
+    if(f===0){const ans=`$${h_leq(a,b,-(a*x0+b*y0))}$`;
+      return{q:`求通過點 $${pt(x0,y0)}$ 且與直線 $${L}$ 平行的直線方程式`,a:ans,e:h_ln([`平行線的 $x$、$y$ 係數相同，設為 $${poly([[a,'x'],[b,'y']])} + k = 0$。`,
+        `代入 $${pt(x0,y0)}$：$${a} \\times ${P(x0)} + ${P(b)} \\times ${P(y0)} + k = 0$，$k = ${-(a*x0+b*y0)}$。`,`整理得 $${h_leq(a,b,-(a*x0+b*y0))}$。`],ans)}}
+    if(f===1){const ans=`$${h_leq(b,-a,-(b*x0-a*y0))}$`;
+      return{q:`求通過點 $${pt(x0,y0)}$ 且與直線 $${L}$ 垂直的直線方程式`,a:ans,e:h_ln([`與 $ax + by + c = 0$ 垂直的直線可設為 $bx - ay + k = 0$，即 $${poly([[b,'x'],[-a,'y']])} + k = 0$。`,
+        `代入 $${pt(x0,y0)}$：$${b} \\times ${P(x0)} + ${P(-a)} \\times ${P(y0)} + k = 0$，$k = ${-(b*x0-a*y0)}$。`,`整理得 $${h_leq(b,-a,-(b*x0-a*y0))}$。`],ans)}}
+    const S=a*a+b*b,ans=`$${h_surd(0,Math.abs(n),S,S)}$`;
+    return{q:`求點 $${pt(x0,y0)}$ 到直線 $${L}$ 的距離`,a:ans,e:h_ln([`點到直線距離公式：$d = \\frac{\\left|ax_0 + by_0 + c\\right|}{\\sqrt{a^2 + b^2}}$。`,
+      `分子 $\\left|${a} \\times ${P(x0)} + ${P(b)} \\times ${P(y0)} + ${P(c)}\\right| = \\left|${n}\\right| = ${Math.abs(n)}$；分母 $\\sqrt{${a}^2 + ${P(b)}^2} = \\sqrt{${S}}$。`,
+      `$d = \\frac{${Math.abs(n)}}{\\sqrt{${S}}} = ${h_surd(0,Math.abs(n),S,S)}$${isSq(S)?'':'（分母有理化）'}。`],ans)}}
   const f=ri(0,2);
   if(f===0){const [a,b]=h_norm(rnz(-5,5),rnz(-5,5),0),c1=ri(-12,12),c2=ri(-12,12),k=ri(1,3);if(c1===c2)return null;
-    return{q:`求兩平行線 $${poly([[a,'x'],[b,'y'],[c1,'']])} = 0$ 與 $${poly([[k*a,'x'],[k*b,'y'],[k*c2,'']])} = 0$ 的距離`,a:`$${h_surd(0,Math.abs(c1-c2),a*a+b*b,a*a+b*b)}$`}}
+    const S=a*a+b*b,ans=`$${h_surd(0,Math.abs(c1-c2),S,S)}$`;
+    return{q:`求兩平行線 $${poly([[a,'x'],[b,'y'],[c1,'']])} = 0$ 與 $${poly([[k*a,'x'],[k*b,'y'],[k*c2,'']])} = 0$ 的距離`,a:ans,e:h_ln([
+      k===1?'':`先把第二式同除以 $${k}$，讓 $x$、$y$ 係數相同：$${poly([[a,'x'],[b,'y'],[c2,'']])} = 0$。`,
+      `平行線距離公式：$d = \\frac{\\left|c_1 - c_2\\right|}{\\sqrt{a^2 + b^2}} = \\frac{\\left|${c1} - ${P(c2)}\\right|}{\\sqrt{${a}^2 + ${P(b)}^2}} = \\frac{${Math.abs(c1-c2)}}{\\sqrt{${S}}}$。`,
+      `化簡得 $${h_surd(0,Math.abs(c1-c2),S,S)}$。`],ans)}}
   if(f===1){const x1=ri(-6,6),y1=ri(-6,6),x2=ri(-6,6),y2=ri(-6,6);if(x1===x2&&y1===y2)return null;
-    return{q:`求 $A${pt(x1,y1)}$、$B${pt(x2,y2)}$ 兩點連線段的垂直平分線方程式`,a:`$${h_leq(2*(x2-x1),2*(y2-y1),-(x2*x2-x1*x1+y2*y2-y1*y1))}$`}}
+    const ans=`$${h_leq(2*(x2-x1),2*(y2-y1),-(x2*x2-x1*x1+y2*y2-y1*y1))}$`,mx=ftex(F(x1+x2,2)),my=ftex(F(y1+y2,2));
+    return{q:`求 $A${pt(x1,y1)}$、$B${pt(x2,y2)}$ 兩點連線段的垂直平分線方程式`,a:ans,e:h_ln([`垂直平分線通過 $${seg('AB')}$ 的中點 $M${pt(mx,my)}$。`,
+      `它和 $${seg('AB')}$ 垂直，所以 $\\overrightarrow{AB} = ${pt(x2-x1,y2-y1)}$ 是它的法向量。`,
+      `方程式 $${x2-x1}(x - x_M) + ${P(y2-y1)}(y - y_M) = 0$，兩邊乘 $2$ 去分母並整理得 $${h_leq(2*(x2-x1),2*(y2-y1),-(x2*x2-x1*x1+y2*y2-y1*y1))}$。`],ans)}}
   const [a,b,c]=h_norm(rnz(-4,4),rnz(-4,4),ri(-10,10)),x0=ri(-6,6),y0=ri(-6,6),t=F(a*x0+b*y0+c,a*a+b*b);if(t.n===0)return null;
   const fx=fsub(F(x0),fmul(t,F(a))),fy=fsub(F(y0),fmul(t,F(b)));if(fx.d>10||fy.d>10)return null;
-  return{q:`求點 $P${pt(x0,y0)}$ 在直線 $${h_leq(a,b,c)}$ 上的投影點（垂足）坐標`,a:`$${pt(ftex(fx),ftex(fy))}$`};
+  const ans=`$${pt(ftex(fx),ftex(fy))}$`;
+  return{q:`求點 $P${pt(x0,y0)}$ 在直線 $${h_leq(a,b,c)}$ 上的投影點（垂足）坐標`,a:ans,e:h_ln([`直線的法向量 $\\overrightarrow{n} = ${pt(a,b)}$，垂足 $H = P - t\\overrightarrow{n} = (x_0 - at,\\ y_0 - bt)$，其中 $a = ${a}$、$b = ${b}$。`,
+    `$H$ 在直線上，代入得 $t = \\frac{ax_0 + by_0 + c}{a^2 + b^2} = ${h_dv(a*x0+b*y0+c,a*a+b*b)}$。`,
+    `$x = ${x0} - ${P(a)} \\times ${h_pf(t)} = ${ftex(fx)}$，$y = ${y0} - ${P(b)} \\times ${h_pf(t)} = ${ftex(fy)}$。`],ans)};
 }});
 
 unit({id:'h-circle',g:'高一上',name:'圓的方程式',instr:'依題意作答。',h:[20,24,30],gen(d){
   if(d===1){const h=ri(-7,7),k=ri(-7,7),r2=R()<.6?ri(1,9)**2:ri(2,30);
-    if(R()<.5)return{q:`求圓 $${h_cstd(h,k,r2)}$ 的圓心與半徑`,a:`圓心 $${pt(h,k)}$，半徑 $${radOf(r2)}$`};
-    return{q:`求圓心為 $${pt(h,k)}$、半徑為 $${radOf(r2)}$ 的圓方程式`,a:`$${h_cstd(h,k,r2)}$`}}
+    if(R()<.5){const ans=`圓心 $${pt(h,k)}$，半徑 $${radOf(r2)}$`;
+      return{q:`求圓 $${h_cstd(h,k,r2)}$ 的圓心與半徑`,a:ans,e:h_ln([`對照標準式 $(x - h)^2 + (y - k)^2 = r^2$，圓心是 $(h, k)$。`,
+        `這題 $h = ${h}$、$k = ${k}$，圓心 $${pt(h,k)}$。`,`$r^2 = ${r2}$，半徑 $r = ${h_rt(r2)}$。`],ans)}}
+    const ans=`$${h_cstd(h,k,r2)}$`;
+    return{q:`求圓心為 $${pt(h,k)}$、半徑為 $${radOf(r2)}$ 的圓方程式`,a:ans,e:h_ln([`圓的標準式：$(x - h)^2 + (y - k)^2 = r^2$。`,
+      `圓心 $${pt(h,k)}$，$r^2 = (${radOf(r2)})^2 = ${r2}$。`,`代入得 $${h_cstd(h,k,r2)}$。`],ans)}}
   if(d===2){const h=rnz(-6,6),k=rnz(-6,6),r2=ri(1,40);
-    if(R()<.55)return{q:`求圓 $${h_cgen(h,k,r2)}$ 的圓心與半徑`,a:`圓心 $${pt(h,k)}$，半徑 $${radOf(r2)}$`};
+    if(R()<.55){const C=h*h+k*k-r2,ans=`圓心 $${pt(h,k)}$，半徑 $${radOf(r2)}$`;
+      return{q:`求圓 $${h_cgen(h,k,r2)}$ 的圓心與半徑`,a:ans,e:h_ln([`配方：$${poly([[1,'x^2'],[-2*h,'x']])} = ${h_sq('x',h)} - ${h*h}$，$${poly([[1,'y^2'],[-2*k,'y']])} = ${h_sq('y',k)} - ${k*k}$。`,
+        `原式變成 $${h_cstd(h,k,'')}${h*h} + ${k*k} - ${P(C)}$，即 $${h_cstd(h,k,r2)}$。`,`圓心 $${pt(h,k)}$，半徑 $r = ${h_rt(r2)}$。`],ans)}}
     const px=ri(-7,7),py=ri(-7,7),q2=(px-h)**2+(py-k)**2;if(q2===0)return null;
-    return{q:`求以 $${pt(h,k)}$ 為圓心且通過點 $${pt(px,py)}$ 的圓方程式`,a:`$${h_cstd(h,k,q2)}$`}}
+    const ans=`$${h_cstd(h,k,q2)}$`;
+    return{q:`求以 $${pt(h,k)}$ 為圓心且通過點 $${pt(px,py)}$ 的圓方程式`,a:ans,e:h_ln([`半徑就是圓心到該點的距離，先算 $r^2$。`,
+      `$r^2 = (${px} - ${P(h)})^2 + (${py} - ${P(k)})^2 = ${(px-h)**2} + ${(py-k)**2} = ${q2}$。`,`代入標準式得 $${h_cstd(h,k,q2)}$。`],ans)}}
   const f=ri(0,2);
-  if(f===0){const x1=ri(-6,6),y1=ri(-6,6),u=rnz(-4,4),v=ri(-4,4);
-    return{q:`求以 $A${pt(x1,y1)}$、$B${pt(x1+2*u,y1+2*v)}$ 為直徑兩端點的圓方程式`,a:`$${h_cstd(x1+u,y1+v,u*u+v*v)}$`}}
+  if(f===0){const x1=ri(-6,6),y1=ri(-6,6),u=rnz(-4,4),v=ri(-4,4),ans=`$${h_cstd(x1+u,y1+v,u*u+v*v)}$`;
+    return{q:`求以 $A${pt(x1,y1)}$、$B${pt(x1+2*u,y1+2*v)}$ 為直徑兩端點的圓方程式`,a:ans,e:h_ln([`圓心是直徑的中點：$\\left(\\frac{${x1} + ${P(x1+2*u)}}{2}, \\frac{${y1} + ${P(y1+2*v)}}{2}\\right) = ${pt(x1+u,y1+v)}$。`,
+      `半徑是圓心到 $A$ 的距離：$r^2 = (${x1+u} - ${P(x1)})^2 + (${y1+v} - ${P(y1)})^2 = ${u*u} + ${v*v} = ${u*u+v*v}$。`,`圓方程式 $${h_cstd(x1+u,y1+v,u*u+v*v)}$。`],ans)}}
   if(f===1){const h=ri(-5,5),k=ri(-5,5),[a,b,c]=h_norm(rnz(-4,4),rnz(-4,4),ri(-10,10)),n=a*h+b*k+c;if(n===0)return null;
-    return{q:`求圓心為 $${pt(h,k)}$ 且與直線 $${h_leq(a,b,c)}$ 相切的圓方程式`,a:`$${h_cstd(h,k,ftex(F(n*n,a*a+b*b)))}$`}}
+    const S=a*a+b*b,ans=`$${h_cstd(h,k,ftex(F(n*n,S)))}$`;
+    return{q:`求圓心為 $${pt(h,k)}$ 且與直線 $${h_leq(a,b,c)}$ 相切的圓方程式`,a:ans,e:h_ln([`相切時，半徑等於圓心到直線的距離。`,
+      `$r = \\frac{\\left|${a} \\times ${P(h)} + ${P(b)} \\times ${P(k)} + ${P(c)}\\right|}{\\sqrt{${a}^2 + ${P(b)}^2}} = \\frac{${Math.abs(n)}}{\\sqrt{${S}}}$。`,
+      `$r^2 = \\frac{${n*n}}{${S}}${ftex(F(n*n,S))===`\\frac{${n*n}}{${S}}`?'':` = ${ftex(F(n*n,S))}`}$，代入標準式得 $${h_cstd(h,k,ftex(F(n*n,S)))}$。`],ans)}}
   const h=rnz(-5,5),k=rnz(-5,5);let r2,px,py;
   if(R()<.3){const [a,b,c]=pick(TRI.slice(0,2));r2=c*c;px=h+sgn()*a;py=k+sgn()*b;if(R()<.5)[px,py]=[h+py-k,k+px-h]}
   else{const r=ri(2,6);r2=r*r+ri(-r,r);px=h+ri(-r-2,r+2);py=k+ri(-r-2,r+2)}
-  const val=(px-h)**2+(py-k)**2-r2;
-  return{q:`判斷點 $P${pt(px,py)}$ 與圓 $${h_cgen(h,k,r2)}$ 的位置關係`,a:val<0?'點 $P$ 在圓內':val===0?'點 $P$ 在圓上':'點 $P$ 在圓外'};
+  const val=(px-h)**2+(py-k)**2-r2,ans=val<0?'點 $P$ 在圓內':val===0?'點 $P$ 在圓上':'點 $P$ 在圓外';
+  return{q:`判斷點 $P${pt(px,py)}$ 與圓 $${h_cgen(h,k,r2)}$ 的位置關係`,a:ans,e:h_ln([`配方化成標準式：$${h_cstd(h,k,r2)}$，圓心 $O${pt(h,k)}$，$r^2 = ${r2}$。`,
+    `$${seg('OP')}^2 = (${px} - ${P(h)})^2 + (${py} - ${P(k)})^2 = ${(px-h)**2} + ${(py-k)**2} = ${val+r2}$。`,
+    `$${val+r2} ${val<0?'<':val===0?'=':'>'} ${r2}$，所以 $${seg('OP')}$ ${val<0?'小於':val===0?'等於':'大於'}半徑，${ans}。`],ans)};
 }});
 
 /* ---------- 高一下 ---------- */
@@ -1540,74 +1675,135 @@ const h_s1=n=>n*(n+1)/2, h_s2=n=>n*(n+1)*(2*n+1)/6;
 const h_sbody=t=>{const s=poly(t);return t.filter(x=>x[0]!==0).length>1?`\\left(${s}\\right)`:s};
 unit({id:'h-seq',g:'高一下',name:'數列與級數',instr:'依題意作答。',h:[20,24,30],gen(d){
   if(d===1){const f=ri(0,2);
-    if(f===0){const a1=rnz(-20,30),dd=rnz(-9,9),n=ri(10,50);return{q:`等差數列的首項為 $${a1}$，公差為 $${dd}$，求第 $${n}$ 項`,a:`$${a1+(n-1)*dd}$`}}
-    if(f===1){const a1=rnz(-5,5),r=pick([2,3,-2,-3,4]),n=ri(4,8),v=a1*r**(n-1);if(Math.abs(v)>50000)return null;
-      return{q:`等比數列的首項為 $${a1}$，公比為 $${r}$，求第 $${n}$ 項`,a:`$${h_cm(v)}$`}}
-    const a=rnz(-5,5),b=rnz(-9,9),n=ri(5,30);return{q:`求 $${'\\sum_{k=1}^{'+n+'}'} ${h_sbody([[a,'k'],[b,'']])}$ 的值`,a:`$${h_cm(a*h_s1(n)+b*n)}$`}}
+    if(f===0){const a1=rnz(-20,30),dd=rnz(-9,9),n=ri(10,50),ans=`$${a1+(n-1)*dd}$`;
+      return{q:`等差數列的首項為 $${a1}$，公差為 $${dd}$，求第 $${n}$ 項`,a:ans,e:h_ln([`等差數列第 $n$ 項：$a_n = a_1 + (n - 1)d$。`,
+        `$a_{${n}} = ${a1} + (${n} - 1) \\times ${P(dd)} = ${a1} + ${P((n-1)*dd)} = ${a1+(n-1)*dd}$。`],ans)}}
+    if(f===1){const a1=rnz(-5,5),r=pick([2,3,-2,-3,4]),n=ri(4,8),v=a1*r**(n-1);if(Math.abs(v)>50000)return null;const ans=`$${h_cm(v)}$`;
+      return{q:`等比數列的首項為 $${a1}$，公比為 $${r}$，求第 $${n}$ 項`,a:ans,e:h_ln([`等比數列第 $n$ 項：$a_n = a_1 \\times r^{n - 1}$。`,
+        `$a_{${n}} = ${a1} \\times ${P(r)}^{${n-1}} = ${a1} \\times ${P(r**(n-1))} = ${h_cm(v)}$。`],ans)}}
+    const a=rnz(-5,5),b=rnz(-9,9),n=ri(5,30),ans=`$${h_cm(a*h_s1(n)+b*n)}$`;
+    return{q:`求 $${'\\sum_{k=1}^{'+n+'}'} ${h_sbody([[a,'k'],[b,'']])}$ 的值`,a:ans,e:h_ln([`拆開：$\\sum_{k=1}^{${n}} ${h_sbody([[a,'k'],[b,'']])} = ${a===1?'':a===-1?'-':a}\\sum_{k=1}^{${n}} k + \\sum_{k=1}^{${n}} ${P(b)}$。`,
+      `$\\sum_{k=1}^{${n}} k = \\frac{${n} \\times ${n+1}}{2} = ${h_s1(n)}$，$\\sum_{k=1}^{${n}} ${P(b)} = ${n} \\times ${P(b)} = ${b*n}$。`,
+      `原式 $= ${a} \\times ${h_s1(n)} + ${P(b*n)} = ${h_cm(a*h_s1(n)+b*n)}$。`],ans)}}
   if(d===2){const f=ri(0,2);
-    if(f===0){const a1=rnz(-20,30),dd=rnz(-9,9),n=ri(10,40);return{q:`等差數列的首項為 $${a1}$，公差為 $${dd}$，求前 $${n}$ 項的和`,a:`$${h_cm(n*(2*a1+(n-1)*dd)/2)}$`}}
-    if(f===1){const a1=rnz(-4,4),r=pick([2,3,-2,-3]),n=ri(4,8);
-      return{q:`等比數列的首項為 $${a1}$，公比為 $${r}$，求前 $${n}$ 項的和`,a:`$${h_cm(a1*(r**n-1)/(r-1))}$`}}
-    const a=rnz(-3,3),b=ri(-6,6),c=ri(-9,9),n=ri(5,15);
-    return{q:`求 $\\sum_{k=1}^{${n}} ${h_sbody([[a,'k^2'],[b,'k'],[c,'']])}$ 的值`,a:`$${h_cm(a*h_s2(n)+b*h_s1(n)+c*n)}$`}}
+    if(f===0){const a1=rnz(-20,30),dd=rnz(-9,9),n=ri(10,40),an=a1+(n-1)*dd,ans=`$${h_cm(n*(2*a1+(n-1)*dd)/2)}$`;
+      return{q:`等差數列的首項為 $${a1}$，公差為 $${dd}$，求前 $${n}$ 項的和`,a:ans,e:h_ln([`先求末項：$a_{${n}} = ${a1} + ${n-1} \\times ${P(dd)} = ${an}$。`,
+        `等差級數和 $S_n = \\frac{n(a_1 + a_n)}{2}$。`,`$S_{${n}} = \\frac{${n} \\times (${a1} + ${P(an)})}{2} = \\frac{${n} \\times ${P(a1+an)}}{2} = ${h_cm(n*(a1+an)/2)}$。`],ans)}}
+    if(f===1){const a1=rnz(-4,4),r=pick([2,3,-2,-3]),n=ri(4,8),ans=`$${h_cm(a1*(r**n-1)/(r-1))}$`;
+      return{q:`等比數列的首項為 $${a1}$，公比為 $${r}$，求前 $${n}$ 項的和`,a:ans,e:h_ln([`等比級數和 $S_n = \\frac{a_1(r^n - 1)}{r - 1}$。`,
+        `$${P(r)}^{${n}} = ${r**n}$，所以 $S_{${n}} = \\frac{${a1} \\times (${r**n} - 1)}{${r} - 1} = \\frac{${a1*(r**n-1)}}{${r-1}} = ${h_cm(a1*(r**n-1)/(r-1))}$。`],ans)}}
+    const a=rnz(-3,3),b=ri(-6,6),c=ri(-9,9),n=ri(5,15),ans=`$${h_cm(a*h_s2(n)+b*h_s1(n)+c*n)}$`;
+    return{q:`求 $\\sum_{k=1}^{${n}} ${h_sbody([[a,'k^2'],[b,'k'],[c,'']])}$ 的值`,a:ans,e:h_ln([`公式：$\\sum_{k=1}^{n} k^2 = \\frac{n(n+1)(2n+1)}{6}$，$\\sum_{k=1}^{n} k = \\frac{n(n+1)}{2}$，$\\sum_{k=1}^{n} c = nc$。`,
+      `$n = ${n}$：$\\sum k^2 = \\frac{${n} \\times ${n+1} \\times ${2*n+1}}{6} = ${h_s2(n)}$，$\\sum k = ${h_s1(n)}$。`,
+      `原式 $= ${a} \\times ${h_s2(n)} + ${P(b)} \\times ${h_s1(n)} + ${P(c)} \\times ${n} = ${a*h_s2(n)} + ${P(b*h_s1(n))} + ${P(c*n)} = ${h_cm(a*h_s2(n)+b*h_s1(n)+c*n)}$。`],ans)}}
   const f=ri(0,3);
   if(f===0){const p=ri(1,3),q=ri(-3,3),r=ri(1,3),s=ri(-3,3),n=ri(5,20);if(q===0&&s===0)return null;
-    const A=p*r,B=p*s+q*r,C=q*s;return{q:`求 $\\sum_{k=1}^{${n}} ${h_fk(p,q)}${h_fk(r,s)}$ 的值`,a:`$${h_cm(A*h_s2(n)+B*h_s1(n)+C*n)}$`}}
+    const A=p*r,B=p*s+q*r,C=q*s,ans=`$${h_cm(A*h_s2(n)+B*h_s1(n)+C*n)}$`;
+    return{q:`求 $\\sum_{k=1}^{${n}} ${h_fk(p,q)}${h_fk(r,s)}$ 的值`,a:ans,e:h_ln([`先展開：$${h_fk(p,q)}${h_fk(r,s)} = ${poly([[A,'k^2'],[B,'k'],[C,'']])}$。`,
+      `$\\sum_{k=1}^{${n}} k^2 = \\frac{${n} \\times ${n+1} \\times ${2*n+1}}{6} = ${h_s2(n)}$，$\\sum_{k=1}^{${n}} k = \\frac{${n} \\times ${n+1}}{2} = ${h_s1(n)}$。`,
+      `原式 $= ${A} \\times ${h_s2(n)} + ${P(B)} \\times ${h_s1(n)} + ${P(C)} \\times ${n} = ${h_cm(A*h_s2(n)+B*h_s1(n)+C*n)}$。`],ans)}}
   if(f===1){const [p,q,g]=pick([[1,0,1],[1,1,1],[2,-1,2],[1,0,2],[3,-2,3],[2,1,2]]),n=ri(8,30);let S=F(0);
-    for(let k=1;k<=n;k++)S=fadd(S,F(1,(p*k+q)*(p*k+q+g)));
-    return{q:`求 $\\sum_{k=1}^{${n}} \\frac{1}{${h_fk(p,q)}${h_fk(p,q+g)}}$ 的值`,a:`$${ftex(S)}$`}}
+    for(let k=1;k<=n;k++)S=fadd(S,F(1,(p*k+q)*(p*k+q+g)));const ans=`$${ftex(S)}$`,u=x=>x===1?'1':`\\frac{1}{${x}}`,gf=g===1?'':`\\frac{1}{${g}}`;
+    return{q:`求 $\\sum_{k=1}^{${n}} \\frac{1}{${h_fk(p,q)}${h_fk(p,q+g)}}$ 的值`,a:ans,e:h_ln([`分項對消：$\\frac{1}{${h_fk(p,q)}${h_fk(p,q+g)}} = ${gf}\\left(\\frac{1}{${h_fk(p,q).replace(/^\((.*)\)$/,'$1')}} - \\frac{1}{${h_fk(p,q+g).replace(/^\((.*)\)$/,'$1')}}\\right)$。`,
+      g===p?`逐項相加時中間全部消去，只剩頭尾：$${gf}\\left(${u(p+q)} - \\frac{1}{${p*n+q+g}}\\right)$。`
+        :`相差兩項的對消，頭留兩項、尾留兩項：$${gf}\\left(${u(p+q)} + ${u(2*p+q)} - \\frac{1}{${p*n+q+1}} - \\frac{1}{${p*n+q+2}}\\right)$。`,
+      `計算得 $${ftex(S)}$。`],ans)}}
   if(f===2){const a=rnz(-5,5),b=rnz(-9,9);
-    if(R()<.5)return{q:`數列 $\\langle a_n \\rangle$ 的前 $n$ 項和 $S_n = ${poly([[a,'n^2'],[b,'n']])}$，求一般項 $a_n$`,a:`$a_n = ${lin(2*a,b-a,'n')}$`};
-    const c=rnz(-9,9),m=ri(5,20);return{q:`數列 $\\langle a_n \\rangle$ 的前 $n$ 項和 $S_n = ${poly([[a,'n^2'],[b,'n'],[c,'']])}$，求 $a_{${m}}$`,a:`$${a*(2*m-1)+b}$`}}
-  if(R()<.5){const n=ri(5,20);return{q:`求 $\\sum_{k=1}^{${n}} k^3$ 的值`,a:`$${h_cm(h_s1(n)**2)}$`}}
-  const m=ri(3,10),n=m+ri(5,15);return{q:`求 $\\sum_{k=${m}}^{${n}} k^2$ 的值`,a:`$${h_cm(h_s2(n)-h_s2(m-1))}$`};
+    if(R()<.5){const ans=`$a_n = ${lin(2*a,b-a,'n')}$`;
+      return{q:`數列 $\\langle a_n \\rangle$ 的前 $n$ 項和 $S_n = ${poly([[a,'n^2'],[b,'n']])}$，求一般項 $a_n$`,a:ans,e:h_ln([`$n \\geqq 2$ 時，$a_n = S_n - S_{n-1}$。`,
+        `$S_n - S_{n-1} = ${a===1?'':a===-1?'-':a}[n^2 - (n-1)^2] + ${P(b)}[n - (n-1)] = ${a===1?'':a===-1?'-':a}(2n - 1) + ${P(b)} = ${lin(2*a,b-a,'n')}$。`,
+        `再檢查 $n = 1$：$a_1 = S_1 = ${a+b}$，代入 $${lin(2*a,b-a,'n')}$ 也得 $${a+b}$，所以通式成立。`],ans)}}
+    const c=rnz(-9,9),m=ri(5,20),ans=`$${a*(2*m-1)+b}$`,Sn=x=>a*x*x+b*x+c;
+    return{q:`數列 $\\langle a_n \\rangle$ 的前 $n$ 項和 $S_n = ${poly([[a,'n^2'],[b,'n'],[c,'']])}$，求 $a_{${m}}$`,a:ans,e:h_ln([`$a_{${m}} = S_{${m}} - S_{${m-1}}$。`,
+      `$S_{${m}} = ${Sn(m)}$，$S_{${m-1}} = ${Sn(m-1)}$。`,`$a_{${m}} = ${Sn(m)} - ${P(Sn(m-1))} = ${a*(2*m-1)+b}$。`],ans)}}
+  if(R()<.5){const n=ri(5,20),ans=`$${h_cm(h_s1(n)**2)}$`;return{q:`求 $\\sum_{k=1}^{${n}} k^3$ 的值`,a:ans,e:h_ln([`公式：$\\sum_{k=1}^{n} k^3 = \\left[\\frac{n(n+1)}{2}\\right]^2$。`,
+    `$\\left[\\frac{${n} \\times ${n+1}}{2}\\right]^2 = ${h_s1(n)}^2 = ${h_cm(h_s1(n)**2)}$。`],ans)}}
+  const m=ri(3,10),n=m+ri(5,15),ans=`$${h_cm(h_s2(n)-h_s2(m-1))}$`;
+  return{q:`求 $\\sum_{k=${m}}^{${n}} k^2$ 的值`,a:ans,e:h_ln([`從 $${m}$ 加到 $${n}$ ＝（從 $1$ 加到 $${n}$）－（從 $1$ 加到 $${m-1}$）。`,
+    `$\\sum_{k=1}^{${n}} k^2 = \\frac{${n} \\times ${n+1} \\times ${2*n+1}}{6} = ${h_cm(h_s2(n))}$，$\\sum_{k=1}^{${m-1}} k^2 = \\frac{${m-1} \\times ${m} \\times ${2*m-1}}{6} = ${h_s2(m-1)}$。`,
+    `相減：$${h_cm(h_s2(n))} - ${h_s2(m-1)} = ${h_cm(h_s2(n)-h_s2(m-1))}$。`],ans)};
 }});
 
 unit({id:'h-comb',g:'高一下',name:'排列與組合',instr:'依題意作答。',h:[18,22,28],gen(d){
   if(d===1){const f=ri(0,2);
-    if(f===0){const n=ri(4,10),k=ri(2,Math.min(4,n));return{q:`求 $P^{${n}}_{${k}}$ 的值`,a:`$${h_cm(h_P(n,k))}$`}}
-    if(f===1){const n=ri(5,15),k=ri(2,Math.min(5,n-1));return{q:`求 $C^{${n}}_{${k}}$ 的值`,a:`$${h_cm(h_C(n,k))}$`}}
+    const Pt=(n,k)=>Array.from({length:k},(_,i)=>n-i).join(' \\times '),Ct=(n,k)=>`\\frac{${Pt(n,k)}}{${Pt(k,k)}}`;
+    if(f===0){const n=ri(4,10),k=ri(2,Math.min(4,n)),ans=`$${h_cm(h_P(n,k))}$`;return{q:`求 $P^{${n}}_{${k}}$ 的值`,a:ans,e:h_ln([`$P^{n}_{k}$ 是從 $n$ 開始往下連乘 $k$ 個數。`,
+      `$P^{${n}}_{${k}} = ${Pt(n,k)} = ${h_cm(h_P(n,k))}$。`],ans)}}
+    if(f===1){const n=ri(5,15),k=ri(2,Math.min(5,n-1)),ans=`$${h_cm(h_C(n,k))}$`;return{q:`求 $C^{${n}}_{${k}}$ 的值`,a:ans,e:h_ln([`$C^{n}_{k} = \\frac{P^{n}_{k}}{k!}$：分子從 $n$ 往下乘 $k$ 個數，分母是 $k!$。`,
+      `$C^{${n}}_{${k}} = ${Ct(n,k)} = \\frac{${h_cm(h_P(n,k))}}{${h_fact(k)}} = ${h_cm(h_C(n,k))}$。`],ans)}}
     const n=ri(5,10),k=ri(2,Math.min(4,n-1));
-    return R()<.5?{q:`從 $${n}$ 人中選出 $${k}$ 人排成一列，共有幾種排法？`,a:`$${h_cm(h_P(n,k))}$ 種`}:{q:`從 $${n}$ 人中選出 $${k}$ 人組成一組（不排順序），共有幾種選法？`,a:`$${h_cm(h_C(n,k))}$ 種`}}
+    if(R()<.5){const ans=`$${h_cm(h_P(n,k))}$ 種`;return{q:`從 $${n}$ 人中選出 $${k}$ 人排成一列，共有幾種排法？`,a:ans,e:h_ln([`選出來還要排順序，是排列 $P^{${n}}_{${k}}$。`,
+      `第 $1$ 位有 $${n}$ 種選擇、第 $2$ 位有 $${n-1}$ 種……共 $${Pt(n,k)} = ${h_cm(h_P(n,k))}$ 種。`],ans)}}
+    const ans=`$${h_cm(h_C(n,k))}$ 種`;return{q:`從 $${n}$ 人中選出 $${k}$ 人組成一組（不排順序），共有幾種選法？`,a:ans,e:h_ln([`只選人、不排順序，是組合 $C^{${n}}_{${k}}$。`,
+      `$C^{${n}}_{${k}} = ${Ct(n,k)} = ${h_cm(h_C(n,k))}$。`],ans)}}
   if(d===2){const f=ri(0,2);
-    if(f===0){const m=ri(4,9),w=ri(3,8),a=ri(1,3),b=ri(1,3);
-      return{q:`某班有男生 $${m}$ 人、女生 $${w}$ 人，從中選出男生 $${a}$ 人、女生 $${b}$ 人組成委員會，共有幾種選法？`,a:`$${h_cm(h_C(m,a)*h_C(w,b))}$ 種`}}
-    if(f===1){const n=ri(5,8),t=R()<.6?2:3,who=t===2?'甲、乙兩人':'甲、乙、丙三人';
-      return{q:`$${n}$ 個人排成一列，若${who}必須相鄰，共有幾種排法？`,a:`$${h_cm(h_fact(t)*h_fact(n-t+1))}$ 種`}}
+    if(f===0){const m=ri(4,9),w=ri(3,8),a=ri(1,3),b=ri(1,3),ans=`$${h_cm(h_C(m,a)*h_C(w,b))}$ 種`;
+      return{q:`某班有男生 $${m}$ 人、女生 $${w}$ 人，從中選出男生 $${a}$ 人、女生 $${b}$ 人組成委員會，共有幾種選法？`,a:ans,e:h_ln([`男生、女生分開選，再用乘法原理相乘。`,
+        `男生 $C^{${m}}_{${a}} = ${h_C(m,a)}$ 種，女生 $C^{${w}}_{${b}} = ${h_C(w,b)}$ 種。`,`共 $${h_C(m,a)} \\times ${h_C(w,b)} = ${h_cm(h_C(m,a)*h_C(w,b))}$ 種。`],ans)}}
+    if(f===1){const n=ri(5,8),t=R()<.6?2:3,who=t===2?'甲、乙兩人':'甲、乙、丙三人',ans=`$${h_cm(h_fact(t)*h_fact(n-t+1))}$ 種`;
+      return{q:`$${n}$ 個人排成一列，若${who}必須相鄰，共有幾種排法？`,a:ans,e:h_ln([`把${who}綁成一包，看成 $1$ 個人，和其他 $${n-t}$ 人一起排，共 $${n-t+1}$ 個單位：$${n-t+1}! = ${h_fact(n-t+1)}$ 種。`,
+        `包裡的 $${t}$ 人可以互換位置：$${t}! = ${h_fact(t)}$ 種。`,`共 $${h_fact(n-t+1)} \\times ${h_fact(t)} = ${h_cm(h_fact(t)*h_fact(n-t+1))}$ 種。`],ans)}}
     const L=['A','B','C','D'],cs=[ri(1,4),ri(1,4),ri(1,3)];if(R()<.4)cs.push(ri(1,2));const n=cs.reduce((s,x)=>s+x,0);if(n<5||n>10||cs.every(x=>x===1))return null;
-    const letters=cs.flatMap((c,i)=>Array(c).fill(L[i])).join('、');
-    return{q:`將 ${letters} 這 $${n}$ 個字母排成一列，共有幾種排法？`,a:`$${h_cm(h_fact(n)/cs.reduce((s,x)=>s*h_fact(x),1))}$ 種`}}
+    const letters=cs.flatMap((c,i)=>Array(c).fill(L[i])).join('、'),den=cs.reduce((s,x)=>s*h_fact(x),1),ans=`$${h_cm(h_fact(n)/den)}$ 種`;
+    return{q:`將 ${letters} 這 $${n}$ 個字母排成一列，共有幾種排法？`,a:ans,e:h_ln([`有相同物的排列：$\\frac{n!}{\\text{各相同字母個數的階乘相乘}}$。`,
+      `${cs.map((c,i)=>`${L[i]} 有 $${c}$ 個`).join('、')}，共 $${n}$ 個。`,
+      `$\\frac{${n}!}{${cs.map(c=>c+'!').join(' \\times ')}} = \\frac{${h_cm(h_fact(n))}}{${den}} = ${h_cm(h_fact(n)/den)}$。`],ans)}}
   const f=ri(0,2);
-  if(f===0){const b=ri(3,6),g=ri(2,Math.min(4,b+1));
-    return{q:`男生 $${b}$ 人、女生 $${g}$ 人排成一列，若女生彼此都不相鄰，共有幾種排法？`,a:`$${h_cm(h_fact(b)*h_P(b+1,g))}$ 種`}}
-  if(f===1){const m=ri(4,9),w=ri(2,7),k=ri(3,5);if(m<k)return null;
-    return{q:`從男生 $${m}$ 人、女生 $${w}$ 人中選出 $${k}$ 人，若至少要有 $1$ 位女生，共有幾種選法？`,a:`$${h_cm(h_C(m+w,k)-h_C(m,k))}$ 種`}}
-  const m=ri(3,7),n=ri(2,6),p=ri(1,m-1),q=ri(1,n-1);
-  return{q:`棋盤式街道東西向有 $${m}$ 段、南北向有 $${n}$ 段。從西南角 $A$ 走捷徑（只往東或往北）到東北角 $B$，且必須經過「往東 $${p}$ 段、往北 $${q}$ 段」的路口 $C$，共有幾種走法？`,a:`$${h_cm(h_C(p+q,p)*h_C(m-p+n-q,m-p))}$ 種`};
+  if(f===0){const b=ri(3,6),g=ri(2,Math.min(4,b+1)),ans=`$${h_cm(h_fact(b)*h_P(b+1,g))}$ 種`;
+    return{q:`男生 $${b}$ 人、女生 $${g}$ 人排成一列，若女生彼此都不相鄰，共有幾種排法？`,a:ans,e:h_ln([`先排男生：$${b}! = ${h_fact(b)}$ 種。`,
+      `$${b}$ 個男生之間和兩端共有 $${b+1}$ 個空位，女生插進不同空位就不會相鄰：$P^{${b+1}}_{${g}} = ${h_P(b+1,g)}$ 種。`,
+      `共 $${h_fact(b)} \\times ${h_P(b+1,g)} = ${h_cm(h_fact(b)*h_P(b+1,g))}$ 種。`],ans)}}
+  if(f===1){const m=ri(4,9),w=ri(2,7),k=ri(3,5);if(m<k)return null;const ans=`$${h_cm(h_C(m+w,k)-h_C(m,k))}$ 種`;
+    return{q:`從男生 $${m}$ 人、女生 $${w}$ 人中選出 $${k}$ 人，若至少要有 $1$ 位女生，共有幾種選法？`,a:ans,e:h_ln([`「至少 $1$ 位女生」＝全部選法 － 全是男生的選法。`,
+      `全部：$C^{${m+w}}_{${k}} = ${h_cm(h_C(m+w,k))}$；全是男生：$C^{${m}}_{${k}} = ${h_C(m,k)}$。`,`相減：$${h_cm(h_C(m+w,k))} - ${h_C(m,k)} = ${h_cm(h_C(m+w,k)-h_C(m,k))}$ 種。`],ans)}}
+  const m=ri(3,7),n=ri(2,6),p=ri(1,m-1),q=ri(1,n-1),c1=h_C(p+q,p),c2=h_C(m-p+n-q,m-p),ans=`$${h_cm(c1*c2)}$ 種`;
+  return{q:`棋盤式街道東西向有 $${m}$ 段、南北向有 $${n}$ 段。從西南角 $A$ 走捷徑（只往東或往北）到東北角 $B$，且必須經過「往東 $${p}$ 段、往北 $${q}$ 段」的路口 $C$，共有幾種走法？`,a:ans,e:h_ln([
+    `$A \\to C$：往東 $${p}$ 段、往北 $${q}$ 段，共 $${p+q}$ 步選哪幾步往東：$C^{${p+q}}_{${p}} = ${c1}$ 種。`,
+    `$C \\to B$：還要往東 $${m-p}$ 段、往北 $${n-q}$ 段：$C^{${m-p+n-q}}_{${m-p}} = ${c2}$ 種。`,`乘法原理：$${c1} \\times ${c2} = ${h_cm(c1*c2)}$ 種。`],ans)};
 }});
 
 unit({id:'h-prob',g:'高一下',name:'古典機率',instr:'依題意作答（答案化為最簡分數）。',h:[18,22,28],gen(d){
   if(d===1){const f=ri(0,2);
-    if(f===0){const ev=pick([['偶數',3],['奇數',3],['質數',3],[' $3$ 的倍數',2],[' $6$ 的因數',4],['大於 $4$ 的點數',2],['小於 $3$ 的點數',2],['不大於 $5$ 的點數',5]]);
-      return{q:`擲一顆公正的骰子一次，求出現${ev[0]}的機率`,a:`$${ftex(F(ev[1],6))}$`}}
-    if(f===1){const ev=pick([['恰好出現一個正面',2,4],['兩枚都是正面',1,4],['至少出現一個正面',3,4],['恰好出現兩個正面',3,8],['至少出現一個反面',7,8],['三枚都同一面',2,8]]);
-      return{q:`同時擲${ev[2]===4?'兩':'三'}枚公正的硬幣，求${ev[0]}的機率`,a:`$${ftex(F(ev[1],ev[2]))}$`}}
-    const r=ri(2,9),w=ri(2,9),b=ri(1,6),t=r+w+b,ev=pick([['紅球',r],['白球',w],['藍球',b],['紅球或藍球',r+b],['不是白球',r+b]]);
-    return{q:`袋中有紅球 $${r}$ 顆、白球 $${w}$ 顆、藍球 $${b}$ 顆，任取一球，求取到${ev[0]}的機率`,a:`$${ftex(F(ev[1],t))}$`}}
+    if(f===0){const ev=pick([['偶數',3,'2、4、6'],['奇數',3,'1、3、5'],['質數',3,'2、3、5'],[' $3$ 的倍數',2,'3、6'],[' $6$ 的因數',4,'1、2、3、6'],['大於 $4$ 的點數',2,'5、6'],['小於 $3$ 的點數',2,'1、2'],['不大於 $5$ 的點數',5,'1、2、3、4、5']]);
+      const ans=`$${ftex(F(ev[1],6))}$`;
+      return{q:`擲一顆公正的骰子一次，求出現${ev[0]}的機率`,a:ans,e:h_ln([`樣本空間有 $1$～$6$ 共 $6$ 種等可能結果。`,
+        `符合的點數：${ev[2]}，共 $${ev[1]}$ 種。`,`機率 $= ${h_dv(ev[1],6)}$。`],ans)}}
+    if(f===1){const ev=pick([['恰好出現一個正面',2,4,'（正,反）、（反,正）'],['兩枚都是正面',1,4,'（正,正）'],['至少出現一個正面',3,4,'（正,正）、（正,反）、（反,正）'],['恰好出現兩個正面',3,8,'（正,正,反）、（正,反,正）、（反,正,正）'],['至少出現一個反面',7,8,'除了（正,正,正）以外的 $7$ 種'],['三枚都同一面',2,8,'（正,正,正）、（反,反,反）']]);
+      const ans=`$${ftex(F(ev[1],ev[2]))}$`;
+      return{q:`同時擲${ev[2]===4?'兩':'三'}枚公正的硬幣，求${ev[0]}的機率`,a:ans,e:h_ln([`每枚硬幣有正、反 $2$ 種，共 $${ev[2]===4?'2^2':'2^3'} = ${ev[2]}$ 種等可能結果。`,
+        `符合的情形：${ev[3]}，共 $${ev[1]}$ 種。`,`機率 $= ${h_dv(ev[1],ev[2])}$。`],ans)}}
+    const r=ri(2,9),w=ri(2,9),b=ri(1,6),t=r+w+b,ev=pick([['紅球',r,`紅球 $${r}$ 顆`],['白球',w,`白球 $${w}$ 顆`],['藍球',b,`藍球 $${b}$ 顆`],['紅球或藍球',r+b,`紅球加藍球 $${r} + ${b} = ${r+b}$ 顆`],['不是白球',r+b,`不是白球就是紅球或藍球，$${r} + ${b} = ${r+b}$ 顆`]]);
+    const ans=`$${ftex(F(ev[1],t))}$`;
+    return{q:`袋中有紅球 $${r}$ 顆、白球 $${w}$ 顆、藍球 $${b}$ 顆，任取一球，求取到${ev[0]}的機率`,a:ans,e:h_ln([`總共 $${r} + ${w} + ${b} = ${t}$ 顆球，每顆被取到的機會相同。`,
+      `符合的有：${ev[2]}。`,`機率 $= ${h_dv(ev[1],t)}$。`],ans)}}
   if(d===2){
-    if(R()<.55){const r=ri(2,8),w=ri(2,8),t=r+w,T=h_C(t,2),ev=pick([['兩球都是紅球',h_C(r,2)],['兩球都是白球',h_C(w,2)],['一紅一白',r*w],['兩球同色',h_C(r,2)+h_C(w,2)]]);
-      return{q:`袋中有紅球 $${r}$ 顆、白球 $${w}$ 顆，從中同時取出 $2$ 球，求${ev[0]}的機率`,a:`$${ftex(F(ev[1],T))}$`}}
+    if(R()<.55){const r=ri(2,8),w=ri(2,8),t=r+w,T=h_C(t,2),ev=pick([['兩球都是紅球',h_C(r,2),`C^{${r}}_{2} = ${h_C(r,2)}`],['兩球都是白球',h_C(w,2),`C^{${w}}_{2} = ${h_C(w,2)}`],['一紅一白',r*w,`C^{${r}}_{1} \\times C^{${w}}_{1} = ${r} \\times ${w} = ${r*w}`],['兩球同色',h_C(r,2)+h_C(w,2),`C^{${r}}_{2} + C^{${w}}_{2} = ${h_C(r,2)} + ${h_C(w,2)} = ${h_C(r,2)+h_C(w,2)}`]]);
+      const ans=`$${ftex(F(ev[1],T))}$`;
+      return{q:`袋中有紅球 $${r}$ 顆、白球 $${w}$ 顆，從中同時取出 $2$ 球，求${ev[0]}的機率`,a:ans,e:h_ln([`從 $${t}$ 顆球取 $2$ 顆：$C^{${t}}_{2} = ${T}$ 種。`,
+        `${ev[0]}：$${ev[2]}$ 種。`,`機率 $= ${h_dv(ev[1],T)}$。`],ans)}}
     const k=ri(3,11),m=ri(1,4),evs=[[`點數和為 $${k}$`,(i,j)=>i+j===k],[`點數和大於 $${k}$`,(i,j)=>i+j>k],['點數乘積為偶數',(i,j)=>i*j%2===0],
       [`兩顆點數相差 $${m}$`,(i,j)=>Math.abs(i-j)===m],[`點數和為 $${m+1}$ 的倍數`,(i,j)=>(i+j)%(m+1)===0]];
-    const [t,fn]=pick(evs);return{q:`同時擲兩顆公正的骰子，求${t}的機率`,a:`$${ftex(twoDice(fn))}$`}}
+    const [t,fn]=pick(evs),ans=`$${ftex(twoDice(fn))}$`,hit=[],per=[];
+    for(let i=1;i<=6;i++){let c=0;for(let j=1;j<=6;j++)if(fn(i,j)){hit.push(`(${i}, ${j})`);c++}per.push(c)}
+    return{q:`同時擲兩顆公正的骰子，求${t}的機率`,a:ans,e:h_ln([`兩顆骰子的點數（第一顆, 第二顆）共 $6 \\times 6 = 36$ 種等可能結果。`,
+      hit.length<=10?`符合的有 $${hit.join('$、$')}$，共 $${hit.length}$ 種。`:`依第一顆的點數 $1$～$6$ 分別數，符合的有 $${per.join('$、$')}$ 種，共 $${per.join(' + ')} = ${hit.length}$ 種。`,
+      `機率 $= ${h_dv(hit.length,36)}$。`],ans)}}
   const f=ri(0,2);
-  if(f===0){const r=ri(3,8),w=ri(3,8),t=r+w,T=h_C(t,3),ev=pick([['恰有 $2$ 顆紅球',h_C(r,2)*w],['至少有 $1$ 顆紅球',T-h_C(w,3)],['三球同色',h_C(r,3)+h_C(w,3)],['恰有 $1$ 顆紅球',r*h_C(w,2)]]);
-    return{q:`袋中有紅球 $${r}$ 顆、白球 $${w}$ 顆，從中同時取出 $3$ 球，求${ev[0]}的機率`,a:`$${ftex(F(ev[1],T))}$`}}
+  if(f===0){const r=ri(3,8),w=ri(3,8),t=r+w,T=h_C(t,3),ev=pick([['恰有 $2$ 顆紅球',h_C(r,2)*w,`C^{${r}}_{2} \\times C^{${w}}_{1} = ${h_C(r,2)} \\times ${w} = ${h_C(r,2)*w}`],['至少有 $1$ 顆紅球',T-h_C(w,3),`全部扣掉三顆都白：${T} - C^{${w}}_{3} = ${T} - ${h_C(w,3)} = ${T-h_C(w,3)}`],['三球同色',h_C(r,3)+h_C(w,3),`C^{${r}}_{3} + C^{${w}}_{3} = ${h_C(r,3)} + ${h_C(w,3)} = ${h_C(r,3)+h_C(w,3)}`],['恰有 $1$ 顆紅球',r*h_C(w,2),`C^{${r}}_{1} \\times C^{${w}}_{2} = ${r} \\times ${h_C(w,2)} = ${r*h_C(w,2)}`]]);
+    const ans=`$${ftex(F(ev[1],T))}$`;
+    return{q:`袋中有紅球 $${r}$ 顆、白球 $${w}$ 顆，從中同時取出 $3$ 球，求${ev[0]}的機率`,a:ans,e:h_ln([`從 $${t}$ 顆球取 $3$ 顆：$C^{${t}}_{3} = ${T}$ 種。`,
+      `${ev[0]}：$${ev[2]}$ 種。`,`機率 $= ${h_dv(ev[1],T)}$。`],ans)}}
   if(f===1){const n=ri(4,7),k=ri(1,n-1);
-    if(R()<.7)return{q:`連續擲一枚公正的硬幣 $${n}$ 次，求恰好出現 $${k}$ 次正面的機率`,a:`$${ftex(F(h_C(n,k),2**n))}$`};
-    let c=0;for(let i=k;i<=n;i++)c+=h_C(n,i);return{q:`連續擲一枚公正的硬幣 $${n}$ 次，求至少出現 $${k}$ 次正面的機率`,a:`$${ftex(F(c,2**n))}$`}}
+    if(R()<.7){const ans=`$${ftex(F(h_C(n,k),2**n))}$`;return{q:`連續擲一枚公正的硬幣 $${n}$ 次，求恰好出現 $${k}$ 次正面的機率`,a:ans,e:h_ln([`擲 $${n}$ 次共有 $2^{${n}} = ${2**n}$ 種等可能結果。`,
+      `從 $${n}$ 次中選 $${k}$ 次是正面：$C^{${n}}_{${k}} = ${h_C(n,k)}$ 種。`,`機率 $= ${h_dv(h_C(n,k),2**n)}$。`],ans)}}
+    let c=0;for(let i=k;i<=n;i++)c+=h_C(n,i);const ans=`$${ftex(F(c,2**n))}$`,rg=[];for(let i=k;i<=n;i++)rg.push(i);
+    return{q:`連續擲一枚公正的硬幣 $${n}$ 次，求至少出現 $${k}$ 次正面的機率`,a:ans,e:h_ln([`擲 $${n}$ 次共有 $2^{${n}} = ${2**n}$ 種等可能結果。`,
+      `至少 $${k}$ 次正面：$${rg.map(i=>`C^{${n}}_{${i}}`).join(' + ')} = ${rg.map(i=>h_C(n,i)).join(' + ')} = ${c}$ 種。`,`機率 $= ${h_dv(c,2**n)}$。`],ans)}}
   const s=ri(4,17);let c=0;for(let i=1;i<=6;i++)for(let j=1;j<=6;j++)for(let k=1;k<=6;k++)if(i+j+k===s)c++;
-  return{q:`同時擲三顆公正的骰子，求點數和為 $${s}$ 的機率`,a:`$${ftex(F(c,216))}$`};
+  const per=[1,2,3,4,5,6].map(i=>{let m=0;for(let j=1;j<=6;j++)for(let k=1;k<=6;k++)if(i+j+k===s)m++;return m}),ans=`$${ftex(F(c,216))}$`;
+  return{q:`同時擲三顆公正的骰子，求點數和為 $${s}$ 的機率`,a:ans,e:h_ln([`三顆骰子共 $6^3 = 216$ 種等可能結果。`,
+    `依第一顆的點數分類：${[1,2,3,4,5,6].filter(i=>per[i-1]).map(i=>`第一顆 $${i}$ 點時，後兩顆的和要是 $${s-i}$，有 $${per[i-1]}$ 種`).join('；')}。`,
+    `共 $${per.filter(x=>x).join(' + ')} = ${c}$ 種，機率 $= ${h_dv(c,216)}$。`],ans)};
 }});
 
 unit({id:'h-trig',g:'高一下',name:'三角比與正弦、餘弦定理',instr:'依題意作答（答案可保留根號）。',h:[20,26,32],gen(d){
@@ -1659,16 +1855,31 @@ unit({id:'h-trig',g:'高一下',name:'三角比與正弦、餘弦定理',instr:'
 /* ---------- 高二上 ---------- */
 unit({id:'h-trigfn',g:'數A 二上',name:'弧度量、三角函數的圖形與和差角公式',instr:'依題意作答。',h:[20,26,32],gen(d){
   if(d===1){const f=ri(0,2);
-    if(f===0){const th=15*rnz(-24,48);if(th%360===0&&R()<.7)return null;return{q:`將 $${deg(th)}$ 化為弧度`,a:`$${h_pi(F(th,180))}$`}}
-    if(f===1){const dn=pick([2,3,4,5,6,9,10,12,18]),n=rnz(-2*dn,3*dn);if(gcd(n,dn)!==1)return null;const v=F(n,dn);
-      return{q:`將 $${h_pi(v)}$ 化為度`,a:`$${deg(180*n/dn)}$`}}
+    if(f===0){const th=15*rnz(-24,48);if(th%360===0&&R()<.7)return null;const ans=`$${h_pi(F(th,180))}$`;
+      return{q:`將 $${deg(th)}$ 化為弧度`,a:ans,e:h_ln([`$180^{\\circ} = \\pi$，所以 $1^{\\circ} = \\frac{\\pi}{180}$。`,
+        `$${deg(th)} = ${th} \\times \\frac{\\pi}{180} = ${h_pi(F(th,180))}$。`],ans)}}
+    if(f===1){const dn=pick([2,3,4,5,6,9,10,12,18]),n=rnz(-2*dn,3*dn);if(gcd(n,dn)!==1)return null;const v=F(n,dn),ans=`$${deg(180*n/dn)}$`;
+      return{q:`將 $${h_pi(v)}$ 化為度`,a:ans,e:h_ln([`$\\pi = 180^{\\circ}$，把 $\\pi$ 換成 $180^{\\circ}$ 即可。`,
+        `$${h_pi(v)} = ${n===1?'':n===-1?'-':n}${n===1||n===-1?'':' \\times '}\\frac{180^{\\circ}}{${dn}} = ${deg(180*n/dn)}$。`],ans)}}
     const fn=ri(0,2),a=rnz(-5,5),b=pick([F(1),F(2),F(3),F(4),F(1,2),F(1,3),F(2,3)]),c=pick([F(0),F(1,6),F(1,4),F(1,3),F(1,2),F(-1,3),F(-1,6),F(-1,4)]),k=ri(-5,5);
     const bx=b.d===1?(b.n===1?'x':`${b.n}x`):`\\frac{${b.n===1?'':b.n}x}{${b.d}}`,arg=c.n===0?bx:`\\left(${bx} ${c.n<0?'-':'+'} ${h_pi(F(Math.abs(c.n),c.d))}\\right)`;
     const pre=a===1?'':a===-1?'-':String(a),fx=`y = ${pre}${h_FN[fn]} ${arg}${k===0?'':k>0?` + ${k}`:` - ${-k}`}`,per=h_pi(fn===2?F(b.d,b.n):F(2*b.d,b.n));
-    if(fn===2)return{q:`求函數 $${fx}$ 的週期`,a:`週期 $${per}$`};
-    return{q:`求函數 $${fx}$ 的週期、最大值與最小值`,a:`週期 $${per}$，最大值 $${Math.abs(a)+k}$，最小值 $${k-Math.abs(a)}$`}}
+    const bt=ftex(b),pst=fn===2?`\\frac{\\pi}{${b.d===1&&b.n===1?'1':bt}}`:`\\frac{2\\pi}{${b.d===1&&b.n===1?'1':bt}}`;
+    if(fn===2){const ans=`週期 $${per}$`;return{q:`求函數 $${fx}$ 的週期`,a:ans,e:h_ln([`$y = \\tan x$ 的週期是 $\\pi$；$y = \\tan(bx + c)$ 的週期是 $\\frac{\\pi}{\\left|b\\right|}$，係數 $${a}$ 和加上的常數不影響週期。`,
+      `這裡 $b = ${bt}$，週期 $= ${pst} = ${per}$。`],ans)}}
+    const A=Math.abs(a),ans=`週期 $${per}$，最大值 $${A+k}$，最小值 $${k-A}$`;
+    return{q:`求函數 $${fx}$ 的週期、最大值與最小值`,a:ans,e:h_ln([`$y = ${h_FN[fn]} x$ 的週期是 $2\\pi$；$y = ${h_FN[fn]}(bx + c)$ 的週期是 $\\frac{2\\pi}{\\left|b\\right|}$。這裡 $b = ${bt}$，週期 $= ${pst} = ${per}$。`,
+      `$${h_FN[fn]}$ 的值介於 $-1$ 到 $1$，乘上 $${a}$ 後介於 $-${A}$ 到 $${A}$。`,
+      `再加上 $${k}$：最大值 $${A} + ${P(k)} = ${A+k}$，最小值 $-${A} + ${P(k)} = ${k-A}$。`],ans)}}
   if(d===2){const f=ri(0,3);
-    if(f===0){const th=pick([15,75,105,165,195,255,285,345]),fn=ri(0,2);return{q:`求 $${h_FN[fn]} ${deg(th)}$ 的值`,a:`$${h_15(th,fn)}$`}}
+    if(f===0){const th=pick([15,75,105,165,195,255,285,345]),fn=ri(0,2),ans=`$${h_15(th,fn)}$`,FN=h_FN[fn];
+      const ref=th<90?th:th<180?180-th:th<270?th-180:360-th,qd=th<90?1:th<180?2:th<270?3:4,pos=fn===0?qd<=2:fn===1?(qd===1||qd===4):(qd===1||qd===3);
+      const pl=ref===75,base=fn===0?`\\sin(45^{\\circ} ${pl?'+':'-'} 30^{\\circ}) = \\sin 45^{\\circ}\\cos 30^{\\circ} ${pl?'+':'-'} \\cos 45^{\\circ}\\sin 30^{\\circ} = \\frac{\\sqrt{2}}{2} \\times \\frac{\\sqrt{3}}{2} ${pl?'+':'-'} \\frac{\\sqrt{2}}{2} \\times \\frac{1}{2}`
+        :fn===1?`\\cos(45^{\\circ} ${pl?'+':'-'} 30^{\\circ}) = \\cos 45^{\\circ}\\cos 30^{\\circ} ${pl?'-':'+'} \\sin 45^{\\circ}\\sin 30^{\\circ} = \\frac{\\sqrt{2}}{2} \\times \\frac{\\sqrt{3}}{2} ${pl?'-':'+'} \\frac{\\sqrt{2}}{2} \\times \\frac{1}{2}`
+        :`\\tan(45^{\\circ} ${pl?'+':'-'} 30^{\\circ}) = \\frac{1 ${pl?'+':'-'} \\frac{\\sqrt{3}}{3}}{1 ${pl?'-':'+'} \\frac{\\sqrt{3}}{3}} = \\frac{3 ${pl?'+':'-'} \\sqrt{3}}{3 ${pl?'-':'+'} \\sqrt{3}}`;
+      return{q:`求 $${FN} ${deg(th)}$ 的值`,a:ans,e:h_ln([th<90?'':`$${deg(th)}$ 在第 ${'一二三四'[qd-1]} 象限，參考角 $${deg(ref)}$，$${FN}$ 在此象限為${pos?'正':'負'}：$${FN} ${deg(th)} = ${pos?'':'-'}${FN} ${deg(ref)}$。`,
+        `$${deg(ref)} = 45^{\\circ} ${pl?'+':'-'} 30^{\\circ}$，用和差角公式：$${base} = ${h_15(ref,fn)}$${fn===2?'（分母有理化）':''}。`,
+        th<90?'':`加上符號得 $${FN} ${deg(th)} = ${h_15(th,fn)}$。`],ans)}}
     const plus=R()<.5,T=pick(f===3?[30,45,60,120,135,150]:[30,45,60,90,120,135,150]);let A,B;
     if(plus){A=ri(10,80);B=T-A;if(B<=0||B===A)return null}else{B=ri(10,70);A=B+T}
     if(f===3&&(A===90||A===270||B===90))return null;
@@ -1676,114 +1887,213 @@ unit({id:'h-trigfn',g:'數A 二上',name:'弧度量、三角函數的圖形與�
     if(f===1)q=`\\sin ${deg(A)}\\cos ${deg(B)} ${plus?'+':'-'} \\cos ${deg(A)}\\sin ${deg(B)}`;
     else if(f===2)q=`\\cos ${deg(A)}\\cos ${deg(B)} ${plus?'-':'+'} \\sin ${deg(A)}\\sin ${deg(B)}`;
     else q=`\\frac{\\tan ${deg(A)} ${plus?'+':'-'} \\tan ${deg(B)}}{1 ${plus?'-':'+'} \\tan ${deg(A)}\\tan ${deg(B)}}`;
-    return{q:`求 $${q}$ 的值`,a:`$${h_tv(h_T[T][f-1])}$`}}
+    const ans=`$${h_tv(h_T[T][f-1])}$`,fnm=['','\\sin','\\cos','\\tan'][f],rule=['','正弦的和差角公式 $\\sin(A \\pm B) = \\sin A\\cos B \\pm \\cos A\\sin B$','餘弦的和差角公式 $\\cos(A \\pm B) = \\cos A\\cos B \\mp \\sin A\\sin B$','正切的和差角公式 $\\tan(A \\pm B) = \\frac{\\tan A \\pm \\tan B}{1 \\mp \\tan A\\tan B}$'][f];
+    return{q:`求 $${q}$ 的值`,a:ans,e:h_ln([`這是${rule}倒過來用。`,
+      `原式 $= ${fnm}(${deg(A)} ${plus?'+':'-'} ${deg(B)}) = ${fnm} ${deg(T)}$。`,`$${fnm} ${deg(T)} = ${h_tv(h_T[T][f-1])}$。`],ans)}}
   const f=ri(0,2);
   if(f===0){const [p,q,c]=triple(1),useSin=R()<.5,quadr=ri(2,4),sS=quadr<=2?1:-1,sC=quadr===2||quadr===3?-1:1;
     const s=F(sS*(useSin?p:q),c),co=F(sC*(useSin?q:p),c),rng=['','','\\frac{\\pi}{2} < \\theta < \\pi','\\pi < \\theta < \\frac{3\\pi}{2}','\\frac{3\\pi}{2} < \\theta < 2\\pi'][quadr];
-    return{q:`已知 $${useSin?'\\sin':'\\cos'}\\theta = ${ftex(useSin?s:co)}$，且 $${rng}$，求 $\\sin 2\\theta$ 與 $\\cos 2\\theta$`,a:`$\\sin 2\\theta = ${ftex(fmul(F(2),fmul(s,co)))}$，$\\cos 2\\theta = ${ftex(fsub(fmul(co,co),fmul(s,s)))}$`}}
+    const s2=fmul(F(2),fmul(s,co)),c2=fsub(fmul(co,co),fmul(s,s)),ans=`$\\sin 2\\theta = ${ftex(s2)}$，$\\cos 2\\theta = ${ftex(c2)}$`,kn=useSin?s:co,un=useSin?co:s;
+    return{q:`已知 $${useSin?'\\sin':'\\cos'}\\theta = ${ftex(useSin?s:co)}$，且 $${rng}$，求 $\\sin 2\\theta$ 與 $\\cos 2\\theta$`,a:ans,e:h_ln([
+      `由 $\\sin^2\\theta + \\cos^2\\theta = 1$：$${useSin?'\\cos':'\\sin'}^2\\theta = 1 - ${h_xf(kn)}^2 = ${ftex(fsub(F(1),fmul(kn,kn)))}$。`,
+      `$\\theta$ 在第 ${'一二三四'[quadr-1]} 象限，$${useSin?'\\cos':'\\sin'}\\theta$ 為${un.n>0?'正':'負'}，所以 $${useSin?'\\cos':'\\sin'}\\theta = ${ftex(un)}$。`,
+      `$\\sin 2\\theta = 2\\sin\\theta\\cos\\theta = 2 \\times ${h_pf(s)} \\times ${h_pf(co)} = ${ftex(s2)}$。`,
+      `$\\cos 2\\theta = \\cos^2\\theta - \\sin^2\\theta = ${ftex(fmul(co,co))} - ${ftex(fmul(s,s))} = ${ftex(c2)}$。`],ans)}}
   if(f===1){const TS=[F(1,2),F(1,3),F(2,3),F(3,4),F(1,4),F(2),F(3),F(-1,2),F(-1,3),F(-2),F(1,5),F(3,2)],t1=pick(TS),t2=pick(TS),plus=R()<.5;
     const den=plus?fsub(F(1),fmul(t1,t2)):fadd(F(1),fmul(t1,t2));if(den.n===0||(t1.n===t2.n&&t1.d===t2.d))return null;
-    const v=fdiv(plus?fadd(t1,t2):fsub(t1,t2),den);
-    return{q:`已知 $\\tan\\alpha = ${ftex(t1)}$，$\\tan\\beta = ${ftex(t2)}$，求 $\\tan(\\alpha ${plus?'+':'-'} \\beta)$`,a:`$${ftex(v)}$`}}
+    const num=plus?fadd(t1,t2):fsub(t1,t2),v=fdiv(num,den),ans=`$${ftex(v)}$`;
+    return{q:`已知 $\\tan\\alpha = ${ftex(t1)}$，$\\tan\\beta = ${ftex(t2)}$，求 $\\tan(\\alpha ${plus?'+':'-'} \\beta)$`,a:ans,e:h_ln([
+      `$\\tan(\\alpha ${plus?'+':'-'} \\beta) = \\frac{\\tan\\alpha ${plus?'+':'-'} \\tan\\beta}{1 ${plus?'-':'+'} \\tan\\alpha\\tan\\beta}$。`,
+      `分子 $${ftex(t1)} ${plus?'+':'-'} ${h_pf(t2)} = ${ftex(num)}$；分母 $1 ${plus?'-':'+'} ${h_pf(t1)} \\times ${h_pf(t2)} = ${ftex(den)}$。`,
+      `相除：$${h_pf(num)} \\div ${h_pf(den)} = ${ftex(v)}$。`],ans)}}
   const q=ri(2,5),p=rnz(-q,q);if(p*p>=2*q*q||gcd(p,q)!==1&&Math.abs(p)!==q)return null;const t=F(p,q),sc=fdiv(fsub(fmul(t,t),F(1)),F(2));if(sc.n===0)return null;
-  if(R()<.5)return{q:`已知 $\\sin\\theta + \\cos\\theta = ${ftex(t)}$，求 $\\sin\\theta\\cos\\theta$ 與 $\\sin 2\\theta$`,a:`$\\sin\\theta\\cos\\theta = ${ftex(sc)}$，$\\sin 2\\theta = ${ftex(fmul(F(2),sc))}$`};
-  return{q:`已知 $\\sin\\theta + \\cos\\theta = ${ftex(t)}$，求 $\\sin^3\\theta + \\cos^3\\theta$`,a:`$${ftex(fmul(t,fsub(F(1),sc)))}$`};
+  const sq=`兩邊平方：$\\sin^2\\theta + 2\\sin\\theta\\cos\\theta + \\cos^2\\theta = ${h_xf(t)}^2$，即 $1 + 2\\sin\\theta\\cos\\theta = ${ftex(fmul(t,t))}$。`,
+    st=`$\\sin\\theta\\cos\\theta = \\frac{${ftex(fmul(t,t))} - 1}{2} = ${ftex(sc)}$。`;
+  if(R()<.5){const ans=`$\\sin\\theta\\cos\\theta = ${ftex(sc)}$，$\\sin 2\\theta = ${ftex(fmul(F(2),sc))}$`;
+    return{q:`已知 $\\sin\\theta + \\cos\\theta = ${ftex(t)}$，求 $\\sin\\theta\\cos\\theta$ 與 $\\sin 2\\theta$`,a:ans,e:h_ln([sq,st,`$\\sin 2\\theta = 2\\sin\\theta\\cos\\theta = 2 \\times ${h_pf(sc)} = ${ftex(fmul(F(2),sc))}$。`],ans)}}
+  const ans=`$${ftex(fmul(t,fsub(F(1),sc)))}$`;
+  return{q:`已知 $\\sin\\theta + \\cos\\theta = ${ftex(t)}$，求 $\\sin^3\\theta + \\cos^3\\theta$`,a:ans,e:h_ln([sq,st,
+    `立方和公式：$\\sin^3\\theta + \\cos^3\\theta = (\\sin\\theta + \\cos\\theta)(\\sin^2\\theta - \\sin\\theta\\cos\\theta + \\cos^2\\theta) = (\\sin\\theta + \\cos\\theta)(1 - \\sin\\theta\\cos\\theta)$。`,
+    `$= ${h_pf(t)} \\times \\left(1 - ${h_pf(sc)}\\right) = ${h_pf(t)} \\times ${h_pf(fsub(F(1),sc))} = ${ftex(fmul(t,fsub(F(1),sc)))}$。`],ans)};
 }});
 
 unit({id:'h-log',g:'數A 二上',name:'指數與對數函數',instr:'求值或解方程式。',h:[18,24,30],gen(d){
   if(d===1){
     if(R()<.65){
-      if(R()<.25){const q=ri(-3,5);const arg=q<0?'0.'+'0'.repeat(-q-1)+'1':h_cm(10**q);return{q:`求 $\\log ${arg}$ 的值`,a:`$${q}$`}}
+      if(R()<.25){const q=ri(-3,5);const arg=q<0?'0.'+'0'.repeat(-q-1)+'1':h_cm(10**q),ans=`$${q}$`;
+        return{q:`求 $\\log ${arg}$ 的值`,a:ans,e:h_ln([`$\\log$ 是以 $10$ 為底，先把真數寫成 $10$ 的次方：$${arg} = 10^{${q}}$。`,`$\\log 10^{${q}} = ${q}$。`],ans)}}
       const t=pick([2,3,5]),p=pick([1,1,2]),sq=R()<.25,q=sq?pick([1,3,5]):ri(-4,6);if(t**Math.abs(q)>3125||(t===5&&p===2&&R()<.5))return null;
-      const arg=sq?`\\sqrt{${t**q}}`:q>=0?`${t**q}`:`\\frac{1}{${t**(-q)}}`;
-      return{q:`求 $${h_lg(t**p,arg)}$ 的值`,a:`$${ftex(F(q,sq?2*p:p))}$`}}
+      const arg=sq?`\\sqrt{${t**q}}`:q>=0?`${t**q}`:`\\frac{1}{${t**(-q)}}`,ex=sq?ftex(F(q,2)):`${q}`,ans=`$${ftex(F(q,sq?2*p:p))}$`;
+      return{q:`求 $${h_lg(t**p,arg)}$ 的值`,a:ans,e:h_ln([`底數和真數都寫成 $${t}$ 的次方：${p>1?`底數 $${t**p} = ${t}^{${p}}$，`:''}真數 $${arg} = ${t}^{${ex}}$。`,
+        p>1?`公式 $\\log_{a^p} a^q = \\frac{q}{p}$：$\\log_{${t}^{${p}}} ${t}^{${ex}} = ${ex} \\div ${p} = ${ftex(F(q,sq?2*p:p))}$。`:`$\\log_{${t}} ${t}^{${ex}} = ${ex}$。`],ans)}}
     const t=pick([2,3,5]),a=pick([1,1,2,3]),b=ri(-5,5),k=ri(-3,t===2?6:4);if(k===0)return null;
-    const rhs=k>0?`${t**k}`:`\\frac{1}{${t**(-k)}}`;return{q:`解方程式 $${t}^{${lin(a,b)}} = ${rhs}$`,a:`$x = ${ftex(F(k-b,a))}$`}}
+    const rhs=k>0?`${t**k}`:`\\frac{1}{${t**(-k)}}`,ans=`$x = ${ftex(F(k-b,a))}$`;
+    return{q:`解方程式 $${t}^{${lin(a,b)}} = ${rhs}$`,a:ans,e:h_ln([`右邊寫成 $${t}$ 的次方：$${rhs} = ${t}^{${k}}$。`,`底數相同，指數相等：$${lin(a,b)} = ${k}$。`,
+      `$${a===1?'x':a+'x'} = ${k-b}$，$x = ${h_dv(k-b,a)}$。`],ans)}}
   if(d===2){const f=ri(0,2);
     if(f===0){const b=pick([2,3,5,6,10]),e=ri(1,b===10?3:4),M=ri(2,50),N=ri(2,50),pr=M*N;if(pr%(b**e))return null;const K=pr/b**e;if(K<2||K===M||K===N||M===N)return null;
-      return{q:`求 $${h_lg(b,M)} + ${h_lg(b,N)} - ${h_lg(b,K)}$ 的值`,a:`$${e}$`}}
+      const ans=`$${e}$`;
+      return{q:`求 $${h_lg(b,M)} + ${h_lg(b,N)} - ${h_lg(b,K)}$ 的值`,a:ans,e:h_ln([`對數相加變真數相乘、相減變真數相除：原式 $= ${h_lg(b,`\\frac{${M} \\times ${N}}{${K}}`)}$。`,
+        `$\\frac{${M} \\times ${N}}{${K}} = \\frac{${pr}}{${K}} = ${b**e} = ${b}^{${e}}$。`,`$${h_lg(b,`${b}^{${e}}`)} = ${e}$。`],ans)}}
     if(f===1){const t=pick([2,3]),p=ri(1,3),q=rnz(-4,6),A=pick(t===2?[3,5,7,6,11]:[2,5,7,10,11]);if(t**Math.abs(q)>729||t**p===A)return null;
-      const arg=q>0?`${t**q}`:`\\frac{1}{${t**(-q)}}`;
-      if(R()<.5)return{q:`求 $${h_lg(t**p,A)} \\times \\log_{${A}} ${arg}$ 的值`,a:`$${ftex(F(q,p))}$`};
-      const B=pick([13,17,19].concat(A===7?[]:[7]));return{q:`求 $${h_lg(t**p,A)} \\times \\log_{${A}} ${B} \\times \\log_{${B}} ${arg}$ 的值`,a:`$${ftex(F(q,p))}$`}}
+      const arg=q>0?`${t**q}`:`\\frac{1}{${t**(-q)}}`,ans=`$${ftex(F(q,p))}$`,fin=[`換底後 $\\log_{${t**p}} ${arg} = \\frac{\\log ${t}^{${q}}}{\\log ${t}^{${p}}} = \\frac{${q===1?'':q===-1?'-':q}\\log ${t}}{${p===1?'':p}\\log ${t}} =${h_dv(q,p)}$。`];
+      if(R()<.5)return{q:`求 $${h_lg(t**p,A)} \\times \\log_{${A}} ${arg}$ 的值`,a:ans,e:h_ln([`換底公式 $\\log_a b = \\frac{\\log b}{\\log a}$：原式 $= \\frac{\\log ${A}}{\\log ${t**p}} \\times \\frac{\\log ${arg}}{\\log ${A}} = \\frac{\\log ${arg}}{\\log ${t**p}}$（$\\log ${A}$ 約掉）。`,...fin],ans)};
+      const B=pick([13,17,19].concat(A===7?[]:[7]));return{q:`求 $${h_lg(t**p,A)} \\times \\log_{${A}} ${B} \\times \\log_{${B}} ${arg}$ 的值`,a:ans,e:h_ln([
+        `換底公式 $\\log_a b = \\frac{\\log b}{\\log a}$：原式 $= \\frac{\\log ${A}}{\\log ${t**p}} \\times \\frac{\\log ${B}}{\\log ${A}} \\times \\frac{\\log ${arg}}{\\log ${B}} = \\frac{\\log ${arg}}{\\log ${t**p}}$（中間連鎖約掉）。`,...fin],ans)}}
     const t=pick([2,3]),p=ri(1,3),q=rnz(-3,3),a=ri(1,3),b=ri(-4,4),c=ri(0,3),e=ri(-4,4);if(p===q||p*a-q*c===0||t**Math.abs(q)>27||t**p>27)return null;
-    const B2=q>0?`${t**q}`:`\\left(\\frac{1}{${t**(-q)}}\\right)`,ex2=lin(c,e);if(ex2==='0')return null;
-    return{q:`解方程式 $${t**p}^{${lin(a,b)}} = ${B2}^{${ex2}}$`,a:`$x = ${ftex(F(q*e-p*b,p*a-q*c))}$`}}
+    const B2=q>0?`${t**q}`:`\\left(\\frac{1}{${t**(-q)}}\\right)`,ex2=lin(c,e);if(ex2==='0')return null;const ans=`$x = ${ftex(F(q*e-p*b,p*a-q*c))}$`;
+    return{q:`解方程式 $${t**p}^{${lin(a,b)}} = ${B2}^{${ex2}}$`,a:ans,e:h_ln([`兩邊都化成以 $${t}$ 為底：$${t**p} = ${t}^{${p}}$，$${B2} = ${t}^{${q}}$。`,
+      `原式變成 $${t}^{${p}(${lin(a,b)})} = ${t}^{${P(q)}(${ex2})}$，指數相等：$${p}(${lin(a,b)}) = ${P(q)}(${ex2})$。`,
+      `展開：$${lin(p*a,p*b)} = ${lin(q*c,q*e)}$，移項得 $${poly([[p*a-q*c,'x']])} = ${q*e-p*b}$，$x = ${h_dv(q*e-p*b,p*a-q*c)}$。`],ans)}}
   const f=ri(0,2);
   if(f===0){const b=pick([2,3]),k=ri(2,b===2?5:3),i=ri(0,k),u=b**i,v=b**(k-i),x0=ri(-5,8),a=u-x0,c=v-x0;if(a===c)return null;
-    return{q:`解方程式 $\\log_{${b}}(${lin(1,a)}) + \\log_{${b}}(${lin(1,c)}) = ${k}$`,a:`$x = ${x0}$`}}
-  if(f===1){const t=pick([2,3]),i=ri(0,t===2?4:3),p=t**i;let S,Pd,ans;
-    if(R()<.6){const j=ri(0,t===2?4:3);if(j===i)return null;const q=t**j;S=p+q;Pd=p*q;ans=roots2(Math.min(i,j),Math.max(i,j))}
-    else{const n=ri(1,9);S=p-n;Pd=-p*n;if(S===0)return null;ans=`$x = ${i}$`}
+    const x1=-(a+c)-x0,ans=`$x = ${x0}$`;
+    return{q:`解方程式 $\\log_{${b}}(${lin(1,a)}) + \\log_{${b}}(${lin(1,c)}) = ${k}$`,a:ans,e:h_ln([`真數要大於 $0$：$${lin(1,a)} > 0$ 且 $${lin(1,c)} > 0$。`,
+      `對數相加變真數相乘：$(${lin(1,a)})(${lin(1,c)}) = ${b}^{${k}} = ${b**k}$。`,
+      `展開整理：$${quad(1,a+c,a*c-b**k)} = 0$，因式分解 $(${lin(1,-x0)})(${lin(1,-x1)}) = 0$，$x = ${x0}$ 或 $x = ${x1}$。`,
+      `檢驗：$x = ${x1}$ 時 $${lin(1,a)} = ${x1+a}$、$${lin(1,c)} = ${x1+c}$，真數不是正數，不合；$x = ${x0}$ 時兩個真數 $${u}$、$${v}$ 都是正的。`],ans)}}
+  if(f===1){const t=pick([2,3]),i=ri(0,t===2?4:3),p=t**i;let S,Pd,ans,fac,sol;
+    if(R()<.6){const j=ri(0,t===2?4:3);if(j===i)return null;const q=t**j;S=p+q;Pd=p*q;ans=roots2(Math.min(i,j),Math.max(i,j));
+      fac=`(y - ${p})(y - ${q}) = 0`;sol=`$${t}^{x} = ${p}$ 得 $x = ${i}$；$${t}^{x} = ${q}$ 得 $x = ${j}$。`}
+    else{const n=ri(1,9);S=p-n;Pd=-p*n;if(S===0)return null;ans=`$x = ${i}$`;
+      fac=`(y - ${p})(y + ${n}) = 0`;sol=`$y = -${n}$ 不合（$${t}^{x}$ 一定是正的）；$${t}^{x} = ${p}$ 得 $x = ${i}$。`}
     const mid=` ${S>0?'-':'+'} ${Math.abs(S)===1?'':Math.abs(S)+' \\cdot '}${t}^{x}`;
-    return{q:`解方程式 $${t*t}^{x}${mid} ${Pd<0?'-':'+'} ${Math.abs(Pd)} = 0$`,a:ans}}
+    return{q:`解方程式 $${t*t}^{x}${mid} ${Pd<0?'-':'+'} ${Math.abs(Pd)} = 0$`,a:ans,e:h_ln([`$${t*t}^{x} = (${t}^{x})^2$，令 $y = ${t}^{x}$（$y > 0$）。`,
+      `方程式變成 $y^2 ${S>0?'-':'+'} ${Math.abs(S)===1?'':Math.abs(S)}y ${Pd<0?'-':'+'} ${Math.abs(Pd)} = 0$，因式分解 $${fac}$。`,sol],ans)}}
   const t=pick([2,3]),[p,q]=shuffle([1,2,3]).slice(0,2),L=rnz(-3,6),k=F(L*(p+q),p*q);if(k.d!==1||t**Math.abs(L)>729)return null;
-  return{q:`解方程式 $\\log_{${t**p}} x + \\log_{${t**q}} x = ${k.n}$`,a:`$x = ${ftex(h_pw(t,L))}$`};
+  const ans=`$x = ${ftex(h_pw(t,L))}$`;
+  return{q:`解方程式 $\\log_{${t**p}} x + \\log_{${t**q}} x = ${k.n}$`,a:ans,e:h_ln([`令 $u = \\log_{${t}} x$。因為 $${t**p} = ${t}^{${p}}$、$${t**q} = ${t}^{${q}}$，所以 $\\log_{${t**p}} x = \\frac{u}{${p}}$，$\\log_{${t**q}} x = \\frac{u}{${q}}$。`,
+    `$\\frac{u}{${p}} + \\frac{u}{${q}} = ${k.n}$，即 $\\frac{${p+q}u}{${p*q}} = ${k.n}$，$u = \\frac{${k.n} \\times ${p*q}}{${p+q}} = ${L}$。`,
+    `$x = ${t}^{${L}}${L<0?` = \\frac{1}{${t**(-L)}}`:''}${L>=0?` = ${t**L}`:''}$。`],ans)};
 }});
 
 unit({id:'h-vec2',g:'數A 二上',name:'平面向量',instr:'依題意作答。',h:[20,26,32],gen(d){
   const a1=ri(-6,6),a2=ri(-6,6),b1=ri(-6,6),b2=ri(-6,6);if(a1===0&&a2===0||b1===0&&b2===0)return null;
   const VA=`$${h_va} = ${pt(a1,a2)}$，$${h_vb} = ${pt(b1,b2)}$`,dot=a1*b1+a2*b2,na=a1*a1+a2*a2,nb=b1*b1+b2*b2;
+  const dt=`${a1} \\times ${P(b1)} + ${P(a2)} \\times ${P(b2)}`,nat=`\\sqrt{${P(a1)}^2 + ${P(a2)}^2}`;
   if(d===1){const f=ri(0,2);
-    if(f===0){const m=rnz(-3,3),n=rnz(-3,3);return{q:`已知 ${VA}，求 $${poly([[m,h_va],[n,h_vb]])}$`,a:`$${pt(m*a1+n*b1,m*a2+n*b2)}$`}}
-    if(f===1)return{q:`已知 $A${pt(a1,a2)}$、$B${pt(b1,b2)}$，求 $\\overrightarrow{AB}$ 與 $\\left|\\overrightarrow{AB}\\right|$`,a:`$\\overrightarrow{AB} = ${pt(b1-a1,b2-a2)}$，$\\left|\\overrightarrow{AB}\\right| = ${radOf((b1-a1)**2+(b2-a2)**2)}$`};
-    return{q:`已知 ${VA}，求 $${h_va} \\cdot ${h_vb}$ 與 $\\left|${h_va}\\right|$`,a:`$${h_va} \\cdot ${h_vb} = ${dot}$，$\\left|${h_va}\\right| = ${radOf(na)}$`}}
+    if(f===0){const m=rnz(-3,3),n=rnz(-3,3),ans=`$${pt(m*a1+n*b1,m*a2+n*b2)}$`;
+      return{q:`已知 ${VA}，求 $${poly([[m,h_va],[n,h_vb]])}$`,a:ans,e:h_ln([`係數乘進每個分量：$${m}${h_va} = ${pt(m*a1,m*a2)}$，$${n}${h_vb} = ${pt(n*b1,n*b2)}$。`,
+        `對應分量相加：$(${m*a1} + ${P(n*b1)}, ${m*a2} + ${P(n*b2)}) = ${pt(m*a1+n*b1,m*a2+n*b2)}$。`],ans)}}
+    if(f===1){const L2=(b1-a1)**2+(b2-a2)**2,ans=`$\\overrightarrow{AB} = ${pt(b1-a1,b2-a2)}$，$\\left|\\overrightarrow{AB}\\right| = ${radOf(L2)}$`;
+      return{q:`已知 $A${pt(a1,a2)}$、$B${pt(b1,b2)}$，求 $\\overrightarrow{AB}$ 與 $\\left|\\overrightarrow{AB}\\right|$`,a:ans,e:h_ln([`$\\overrightarrow{AB}$ ＝ 終點 － 起點：$(${b1} - ${P(a1)}, ${b2} - ${P(a2)}) = ${pt(b1-a1,b2-a2)}$。`,
+        `長度 $\\left|\\overrightarrow{AB}\\right| = \\sqrt{${P(b1-a1)}^2 + ${P(b2-a2)}^2} = ${L2===0?'0':h_rt(L2)}$。`],ans)}}
+    const ans=`$${h_va} \\cdot ${h_vb} = ${dot}$，$\\left|${h_va}\\right| = ${radOf(na)}$`;
+    return{q:`已知 ${VA}，求 $${h_va} \\cdot ${h_vb}$ 與 $\\left|${h_va}\\right|$`,a:ans,e:h_ln([`內積＝對應分量相乘再相加：$${h_va} \\cdot ${h_vb} = ${dt} = ${dot}$。`,
+      `$\\left|${h_va}\\right| = ${nat} = ${h_rt(na)}$。`],ans)}}
   if(d===2){const f=ri(0,2);
     if(f===0){const ang=h_angOf(dot/Math.sqrt(na*nb));if(ang===0||ang===180)return null;
-      return{q:`已知 ${VA}，設 $${h_va}$、$${h_vb}$ 的夾角為 $\\theta$，求 $\\cos\\theta$`,a:`$\\cos\\theta = ${h_surd(0,dot,na*nb,na*nb)}$${ang===null?'':`，$\\theta = ${deg(ang)}$`}`}}
+      const ans=`$\\cos\\theta = ${h_surd(0,dot,na*nb,na*nb)}$${ang===null?'':`，$\\theta = ${deg(ang)}$`}`;
+      return{q:`已知 ${VA}，設 $${h_va}$、$${h_vb}$ 的夾角為 $\\theta$，求 $\\cos\\theta$`,a:ans,e:h_ln([`$\\cos\\theta = \\frac{${h_va} \\cdot ${h_vb}}{\\left|${h_va}\\right|\\left|${h_vb}\\right|}$。`,
+        `$${h_va} \\cdot ${h_vb} = ${dt} = ${dot}$；$\\left|${h_va}\\right| = \\sqrt{${na}}$，$\\left|${h_vb}\\right| = \\sqrt{${nb}}$。`,
+        `$\\cos\\theta = \\frac{${dot}}{\\sqrt{${na}} \\times \\sqrt{${nb}}} = \\frac{${dot}}{\\sqrt{${na*nb}}} = ${h_surd(0,dot,na*nb,na*nb)}$${ang===null?'':`，對應的角是 $${deg(ang)}$`}。`],ans)}}
     if(a1===0||a2===0||b2===0)return null;
-    if(f===1)return{q:`已知 $${h_va} = ${pt(a1,a2)}$，$${h_vb} = ${pt('k',b2)}$，若 $${h_va} \\perp ${h_vb}$，求 $k$`,a:`$k = ${ftex(F(-a2*b2,a1))}$`};
-    return{q:`已知 $${h_va} = ${pt(a1,a2)}$，$${h_vb} = ${pt('k',b2)}$，若 $${h_va} \\parallel ${h_vb}$，求 $k$`,a:`$k = ${ftex(F(a1*b2,a2))}$`}}
+    if(f===1){const ans=`$k = ${ftex(F(-a2*b2,a1))}$`;
+      return{q:`已知 $${h_va} = ${pt(a1,a2)}$，$${h_vb} = ${pt('k',b2)}$，若 $${h_va} \\perp ${h_vb}$，求 $k$`,a:ans,e:h_ln([`垂直 ⇔ 內積為 $0$：$${poly([[a1,'k']])} + ${P(a2)} \\times ${P(b2)} = 0$。`,
+        `$${poly([[a1,'k']])} = ${-a2*b2}$，$k = ${h_dv(-a2*b2,a1)}$。`],ans)}}
+    const ans=`$k = ${ftex(F(a1*b2,a2))}$`;
+    return{q:`已知 $${h_va} = ${pt(a1,a2)}$，$${h_vb} = ${pt('k',b2)}$，若 $${h_va} \\parallel ${h_vb}$，求 $k$`,a:ans,e:h_ln([`平行 ⇔ 對應分量成比例：$\\frac{k}{${a1}} = \\frac{${b2}}{${a2}}$。`,
+      `交叉相乘：$${poly([[a2,'k']])} = ${a1} \\times ${P(b2)} = ${a1*b2}$，$k = ${h_dv(a1*b2,a2)}$。`],ans)}}
   const f=ri(0,3);
-  if(f===0){const c1=ri(-6,6),c2=ri(-6,6),det=(b1-a1)*(c2-a2)-(b2-a2)*(c1-a1);if(det===0)return null;
-    return{q:`已知 $A${pt(a1,a2)}$、$B${pt(b1,b2)}$、$C${pt(c1,c2)}$，求 $\\triangle ABC$ 的面積`,a:`$${ftex(F(Math.abs(det),2))}$`}}
+  if(f===0){const c1=ri(-6,6),c2=ri(-6,6),det=(b1-a1)*(c2-a2)-(b2-a2)*(c1-a1);if(det===0)return null;const ans=`$${ftex(F(Math.abs(det),2))}$`;
+    return{q:`已知 $A${pt(a1,a2)}$、$B${pt(b1,b2)}$、$C${pt(c1,c2)}$，求 $\\triangle ABC$ 的面積`,a:ans,e:h_ln([`$\\overrightarrow{AB} = ${pt(b1-a1,b2-a2)}$，$\\overrightarrow{AC} = ${pt(c1-a1,c2-a2)}$。`,
+      `面積 $= \\frac{1}{2}\\left|\\begin{vmatrix} ${b1-a1} & ${b2-a2} \\\\ ${c1-a1} & ${c2-a2} \\end{vmatrix}\\right| = \\frac{1}{2}\\left|${b1-a1} \\times ${P(c2-a2)} - ${P(b2-a2)} \\times ${P(c1-a1)}\\right| = \\frac{1}{2} \\times ${Math.abs(det)}$。`,
+      `$= ${ftex(F(Math.abs(det),2))}$。`],ans)}}
   if(f===1){const m=ri(1,6),n=ri(1,6),th=pick([60,90,120]),p=rnz(-3,3),q=rnz(-3,3),cs=th===60?1:th===120?-1:0,v2=p*p*m*m+q*q*n*n+p*q*m*n*cs;if(v2<=0||m===n&&R()<.5)return null;
-    return{q:`已知 $\\left|${h_va}\\right| = ${m}$，$\\left|${h_vb}\\right| = ${n}$，且 $${h_va}$ 與 $${h_vb}$ 的夾角為 $${deg(th)}$，求 $\\left|${poly([[p,h_va],[q,h_vb]])}\\right|$`,a:`$${radOf(v2)}$`}}
-  if(f===2){if(dot===0)return null;return{q:`已知 ${VA}，若 $${h_va} + t${h_vb}$ 與 $${h_va}$ 垂直，求實數 $t$`,a:`$t = ${ftex(F(-na,dot))}$`}}
-  const k=F(dot,nb);return{q:`已知 ${VA}，求 $${h_va}$ 在 $${h_vb}$ 上的正射影（投影向量）`,a:`$${pt(ftex(fmul(k,F(b1))),ftex(fmul(k,F(b2))))}$`};
+    const ab=F(m*n*cs,2),ans=`$${radOf(v2)}$`,ex=poly([[p,h_va],[q,h_vb]]);
+    return{q:`已知 $\\left|${h_va}\\right| = ${m}$，$\\left|${h_vb}\\right| = ${n}$，且 $${h_va}$ 與 $${h_vb}$ 的夾角為 $${deg(th)}$，求 $\\left|${ex}\\right|$`,a:ans,e:h_ln([
+      `先算內積：$${h_va} \\cdot ${h_vb} = \\left|${h_va}\\right|\\left|${h_vb}\\right|\\cos ${deg(th)} = ${m} \\times ${n} \\times ${cs===1?'\\frac{1}{2}':cs===-1?'\\left(-\\frac{1}{2}\\right)':'0'} = ${ftex(ab)}$。`,
+      `平方展開：$\\left|${ex}\\right|^2 = ${p*p}\\left|${h_va}\\right|^2 + ${P(2*p*q)}(${h_va} \\cdot ${h_vb}) + ${q*q}\\left|${h_vb}\\right|^2$。`,
+      `$= ${p*p} \\times ${m*m} + ${P(2*p*q)} \\times ${h_pf(ab)} + ${q*q} \\times ${n*n} = ${p*p*m*m} + ${P(p*q*m*n*cs)} + ${q*q*n*n} = ${v2}$。`,
+      `開根號：$\\left|${ex}\\right| = ${h_rt(v2)}$。`],ans)}}
+  if(f===2){if(dot===0)return null;const ans=`$t = ${ftex(F(-na,dot))}$`;
+    return{q:`已知 ${VA}，若 $${h_va} + t${h_vb}$ 與 $${h_va}$ 垂直，求實數 $t$`,a:ans,e:h_ln([`垂直 ⇔ 內積為 $0$：$(${h_va} + t${h_vb}) \\cdot ${h_va} = \\left|${h_va}\\right|^2 + t(${h_va} \\cdot ${h_vb}) = 0$。`,
+      `$\\left|${h_va}\\right|^2 = ${P(a1)}^2 + ${P(a2)}^2 = ${na}$，$${h_va} \\cdot ${h_vb} = ${dt} = ${dot}$。`,
+      `$${na} + ${P(dot)}t = 0$，$t = ${h_dv(-na,dot)}$。`],ans)}}
+  const k=F(dot,nb),ans=`$${pt(ftex(fmul(k,F(b1))),ftex(fmul(k,F(b2))))}$`;
+  return{q:`已知 ${VA}，求 $${h_va}$ 在 $${h_vb}$ 上的正射影（投影向量）`,a:ans,e:h_ln([`正射影公式：$\\frac{${h_va} \\cdot ${h_vb}}{\\left|${h_vb}\\right|^2}${h_vb}$。`,
+    `$${h_va} \\cdot ${h_vb} = ${dt} = ${dot}$，$\\left|${h_vb}\\right|^2 = ${P(b1)}^2 + ${P(b2)}^2 = ${nb}$，係數 $= ${h_dv(dot,nb)}$。`,
+    `$${h_pf(k)} \\times ${pt(b1,b2)} = ${pt(ftex(fmul(k,F(b1))),ftex(fmul(k,F(b2))))}$。`],ans)};
 }});
 
 /* ---------- 高二下 ---------- */
 unit({id:'h-mat',g:'數A 二下',name:'矩陣、行列式與反方陣',instr:'依題意作答。',h:[26,32,40],gen(d){
   if(d===1){const A=h_rm(),B=h_rm();
-    if(R()<.6){const m=rnz(-3,3),n=rnz(-3,3),C=[0,1].map(i=>[0,1].map(j=>m*A[i][j]+n*B[i][j]));
-      return{q:`已知 $A = ${h_bm(A)}$，$B = ${h_bm(B)}$，求 $${poly([[m,'A'],[n,'B']])}$`,a:`$${h_bm(C)}$`}}
-    const M=h_rm(-9,9);return{q:`求 $${h_vm(M)}$ 的值`,a:`$${M[0][0]*M[1][1]-M[0][1]*M[1][0]}$`}}
+    if(R()<.6){const m=rnz(-3,3),n=rnz(-3,3),C=[0,1].map(i=>[0,1].map(j=>m*A[i][j]+n*B[i][j])),ans=`$${h_bm(C)}$`;
+      const mA=A.map(r=>r.map(x=>m*x)),nB=B.map(r=>r.map(x=>n*x));
+      return{q:`已知 $A = ${h_bm(A)}$，$B = ${h_bm(B)}$，求 $${poly([[m,'A'],[n,'B']])}$`,a:ans,e:h_ln([`純量乘矩陣：每個元素都乘上該數。`,
+        `$${m}A = ${h_bm(mA)}$，$${n}B = ${h_bm(nB)}$。`,`對應位置相加：$${h_bm([0,1].map(i=>[0,1].map(j=>`${mA[i][j]} + ${P(nB[i][j])}`)))} = ${h_bm(C)}$。`],ans)}}
+    const M=h_rm(-9,9),v=M[0][0]*M[1][1]-M[0][1]*M[1][0],ans=`$${v}$`;
+    return{q:`求 $${h_vm(M)}$ 的值`,a:ans,e:h_ln([`二階行列式 $\\begin{vmatrix} a & b \\\\ c & d \\end{vmatrix} = ad - bc$。`,
+      `$${P(M[0][0])} \\times ${P(M[1][1])} - ${P(M[0][1])} \\times ${P(M[1][0])} = ${M[0][0]*M[1][1]} - ${P(M[0][1]*M[1][0])} = ${v}$。`],ans)}}
   if(d===2){const A=h_rm(-5,5),B=h_rm(-5,5);
-    if(R()<.5)return{q:`已知 $A = ${h_bm(A)}$，$B = ${h_bm(B)}$，求 $AB$`,a:`$${h_bm(h_mm(A,B))}$`};
-    const Dt=A[0][0]*A[1][1]-A[0][1]*A[1][0];if(Dt===0||Math.abs(Dt)>20)return null;
-    return{q:`求 $A = ${h_bm(A)}$ 的反方陣 $A^{-1}$`,a:`$A^{-1} = ${h_inv(A)}$`}}
+    if(R()<.5){const C=h_mm(A,B),ans=`$${h_bm(C)}$`,el=(i,j)=>`${P(A[i][0])} \\times ${P(B[0][j])} + ${P(A[i][1])} \\times ${P(B[1][j])} = ${C[i][j]}`;
+      return{q:`已知 $A = ${h_bm(A)}$，$B = ${h_bm(B)}$，求 $AB$`,a:ans,e:h_ln([`$AB$ 第 $i$ 列第 $j$ 行 ＝ $A$ 的第 $i$ 列與 $B$ 的第 $j$ 行對應相乘再相加。`,
+        `第一列：$${el(0,0)}$，$${el(0,1)}$。`,`第二列：$${el(1,0)}$，$${el(1,1)}$。`],ans)}}
+    const Dt=A[0][0]*A[1][1]-A[0][1]*A[1][0];if(Dt===0||Math.abs(Dt)>20)return null;const ans=`$A^{-1} = ${h_inv(A)}$`;
+    return{q:`求 $A = ${h_bm(A)}$ 的反方陣 $A^{-1}$`,a:ans,e:h_ln([`$\\det A = ${P(A[0][0])} \\times ${P(A[1][1])} - ${P(A[0][1])} \\times ${P(A[1][0])} = ${Dt} \\neq 0$，所以反方陣存在。`,
+      `$\\begin{bmatrix} a & b \\\\ c & d \\end{bmatrix}^{-1} = \\frac{1}{ad - bc}\\begin{bmatrix} d & -b \\\\ -c & a \\end{bmatrix}$：主對角交換、副對角變號。`,
+      `$A^{-1} = \\frac{1}{${Dt}}${h_bm([[A[1][1],-A[0][1]+0],[-A[1][0]+0,A[0][0]]])} = ${h_inv(A)}$。`],ans)}}
   const f=ri(0,2);
   if(f===0){const x0=ri(-6,6),y0=ri(-6,6),a1=rnz(-7,7),b1=rnz(-7,7),a2=rnz(-7,7),b2=rnz(-7,7),Dt=a1*b2-a2*b1;if(Dt===0)return null;
-    const c1=a1*x0+b1*y0,c2=a2*x0+b2*y0;
-    return{q:`以克拉瑪公式解 $${sys(eqxy(a1,b1,c1),eqxy(a2,b2,c2))}$，並寫出 $\\Delta$、$\\Delta_x$、$\\Delta_y$`,a:`$\\Delta = ${Dt}$，$\\Delta_x = ${c1*b2-c2*b1}$，$\\Delta_y = ${a1*c2-a2*c1}$；$x = ${x0},\\ y = ${y0}$`}}
+    const c1=a1*x0+b1*y0,c2=a2*x0+b2*y0,Dx=c1*b2-c2*b1,Dy=a1*c2-a2*c1,ans=`$\\Delta = ${Dt}$，$\\Delta_x = ${Dx}$，$\\Delta_y = ${Dy}$；$x = ${x0},\\ y = ${y0}$`;
+    return{q:`以克拉瑪公式解 $${sys(eqxy(a1,b1,c1),eqxy(a2,b2,c2))}$，並寫出 $\\Delta$、$\\Delta_x$、$\\Delta_y$`,a:ans,e:h_ln([
+      `$\\Delta = ${h_vm([[a1,b1],[a2,b2]])} = ${P(a1)} \\times ${P(b2)} - ${P(b1)} \\times ${P(a2)} = ${Dt}$。`,
+      `$\\Delta_x$ 把 $x$ 的係數換成常數：$${h_vm([[c1,b1],[c2,b2]])} = ${P(c1)} \\times ${P(b2)} - ${P(b1)} \\times ${P(c2)} = ${Dx}$。`,
+      `$\\Delta_y$ 把 $y$ 的係數換成常數：$${h_vm([[a1,c1],[a2,c2]])} = ${P(a1)} \\times ${P(c2)} - ${P(c1)} \\times ${P(a2)} = ${Dy}$。`,
+      `$x = \\frac{\\Delta_x}{\\Delta} = \\frac{${Dx}}{${Dt}} = ${x0}$，$y = \\frac{\\Delta_y}{\\Delta} = \\frac{${Dy}}{${Dt}} = ${y0}$。`],ans)}}
   if(f===1){const p=ri(-4,4),q=ri(-4,4),s=sgn();let A=[[1,p],[0,s]];A=h_mm(A,[[1,0],[q,1]]);if(R()<.5)A=[[A[1][1],A[1][0]],[A[0][1],A[0][0]]];
-    if(A.flat().filter(x=>x===0).length>1)return null;const X=h_rm(-4,4),B=h_mm(A,X);
-    return{q:`已知 $A = ${h_bm(A)}$，$B = ${h_bm(B)}$，求滿足 $AX = B$ 的二階方陣 $X$`,a:`$X = ${h_bm(X)}$`}}
+    if(A.flat().filter(x=>x===0).length>1)return null;const X=h_rm(-4,4),B=h_mm(A,X),ans=`$X = ${h_bm(X)}$`;
+    const Dt=A[0][0]*A[1][1]-A[0][1]*A[1][0],Ai=[[A[1][1]*Dt,-A[0][1]*Dt+0],[-A[1][0]*Dt+0,A[0][0]*Dt]];
+    return{q:`已知 $A = ${h_bm(A)}$，$B = ${h_bm(B)}$，求滿足 $AX = B$ 的二階方陣 $X$`,a:ans,e:h_ln([`兩邊左乘 $A^{-1}$：$X = A^{-1}B$。`,
+      `$\\det A = ${P(A[0][0])} \\times ${P(A[1][1])} - ${P(A[0][1])} \\times ${P(A[1][0])} = ${Dt}$，$A^{-1} = \\frac{1}{${Dt}}${h_bm([[A[1][1],-A[0][1]+0],[-A[1][0]+0,A[0][0]]])} = ${h_bm(Ai)}$。`,
+      `$X = A^{-1}B = ${h_bm(Ai)}${h_bm(B)} = ${h_bm(h_mm(Ai,B))}$。`],ans)}}
   const A=h_rm(-4,4),k=ri(-5,5),m=ri(-6,6),A2=h_mm(A,A),M=[0,1].map(i=>[0,1].map(j=>A2[i][j]+k*A[i][j]+(i===j?m:0)));if(k===0&&m===0)return null;
-  const ex=`A^{2}${k===0?'':` ${k<0?'-':'+'} ${Math.abs(k)===1?'':Math.abs(k)}A`}${m===0?'':` ${m<0?'-':'+'} ${Math.abs(m)===1?'':Math.abs(m)}I`}`;
-  return{q:`已知 $A = ${h_bm(A)}$，求 $${ex}$${m===0?'':'（$I$ 為二階單位方陣）'}`,a:`$${h_bm(M)}$`};
+  const ex=`A^{2}${k===0?'':` ${k<0?'-':'+'} ${Math.abs(k)===1?'':Math.abs(k)}A`}${m===0?'':` ${m<0?'-':'+'} ${Math.abs(m)===1?'':Math.abs(m)}I`}`,ans=`$${h_bm(M)}$`;
+  return{q:`已知 $A = ${h_bm(A)}$，求 $${ex}$${m===0?'':'（$I$ 為二階單位方陣）'}`,a:ans,e:h_ln([`先算 $A^2 = AA = ${h_bm(A)}${h_bm(A)} = ${h_bm(A2)}$。`,
+    k===0?'':`$${k}A = ${h_bm(A.map(r=>r.map(x=>k*x)))}$。`,m===0?'':`$${m}I = ${h_bm([[m,0],[0,m]])}$（只加在主對角線上）。`,
+    `對應位置相加：$${ex} = ${h_bm(M)}$。`],ans)};
 }});
 
 unit({id:'h-vec3',g:'數A 二下',name:'空間向量（含外積、體積與行列式）',instr:'依題意作答。',h:[20,26,32],gen(d){
   const v=()=>[ri(-5,5),ri(-5,5),ri(-5,5)],a=v(),b=v();if(a.every(x=>x===0)||b.every(x=>x===0))return null;
   const dot=(u,w)=>u[0]*w[0]+u[1]*w[1]+u[2]*w[2],cr=(u,w)=>[u[1]*w[2]-u[2]*w[1],u[2]*w[0]-u[0]*w[2],u[0]*w[1]-u[1]*w[0]],n2=u=>dot(u,u);
   const VA=`$${h_va} = ${h_pt3(...a)}$，$${h_vb} = ${h_pt3(...b)}$`;
+  const dtx=(u,w)=>`${P(u[0])} \\times ${P(w[0])} + ${P(u[1])} \\times ${P(w[1])} + ${P(u[2])} \\times ${P(w[2])}`;
+  const crx=(u,w)=>{const c=cr(u,w);return`$\\left(${P(u[1])} \\times ${P(w[2])} - ${P(u[2])} \\times ${P(w[1])},\\ ${P(u[2])} \\times ${P(w[0])} - ${P(u[0])} \\times ${P(w[2])},\\ ${P(u[0])} \\times ${P(w[1])} - ${P(u[1])} \\times ${P(w[0])}\\right) = ${h_pt3(...c)}$`};
   if(d===1){const s=b.map((x,i)=>x-a[i]);if(n2(s)===0)return null;
-    if(R()<.5)return{q:`求空間中兩點 $A${h_pt3(...a)}$ 與 $B${h_pt3(...b)}$ 的距離`,a:`$${radOf(n2(s))}$`};
-    return{q:`已知 $A${h_pt3(...a)}$、$B${h_pt3(...b)}$，求 $\\overrightarrow{AB}$ 與 $${seg('AB')}$ 的中點坐標`,a:`$\\overrightarrow{AB} = ${h_pt3(...s)}$，中點 $${h_pt3(...a.map((x,i)=>ftex(F(x+b[i],2))))}$`}}
+    if(R()<.5){const ans=`$${radOf(n2(s))}$`;return{q:`求空間中兩點 $A${h_pt3(...a)}$ 與 $B${h_pt3(...b)}$ 的距離`,a:ans,e:h_ln([`各坐標差：$${b[0]} - ${P(a[0])} = ${s[0]}$，$${b[1]} - ${P(a[1])} = ${s[1]}$，$${b[2]} - ${P(a[2])} = ${s[2]}$。`,
+      `距離 $= \\sqrt{${P(s[0])}^2 + ${P(s[1])}^2 + ${P(s[2])}^2} = ${h_rt(n2(s))}$。`],ans)}}
+    const mid=a.map((x,i)=>ftex(F(x+b[i],2))),ans=`$\\overrightarrow{AB} = ${h_pt3(...s)}$，中點 $${h_pt3(...mid)}$`;
+    return{q:`已知 $A${h_pt3(...a)}$、$B${h_pt3(...b)}$，求 $\\overrightarrow{AB}$ 與 $${seg('AB')}$ 的中點坐標`,a:ans,e:h_ln([`$\\overrightarrow{AB}$ ＝ 終點 － 起點 $= (${b[0]} - ${P(a[0])}, ${b[1]} - ${P(a[1])}, ${b[2]} - ${P(a[2])}) = ${h_pt3(...s)}$。`,
+      `中點 ＝ 兩端點坐標平均：$\\left(\\frac{${a[0]} + ${P(b[0])}}{2}, \\frac{${a[1]} + ${P(b[1])}}{2}, \\frac{${a[2]} + ${P(b[2])}}{2}\\right) = ${h_pt3(...mid)}$。`],ans)}}
   if(d===2){const f=ri(0,2);
-    if(f===0){const m=rnz(-3,3),n=rnz(-3,3);return{q:`已知 ${VA}，求 $${poly([[m,h_va],[n,h_vb]])}$ 與 $${h_va} \\cdot ${h_vb}$`,a:`$${h_pt3(...a.map((x,i)=>m*x+n*b[i]))}$，$${h_va} \\cdot ${h_vb} = ${dot(a,b)}$`}}
+    if(f===0){const m=rnz(-3,3),n=rnz(-3,3),R3=a.map((x,i)=>m*x+n*b[i]),ans=`$${h_pt3(...R3)}$，$${h_va} \\cdot ${h_vb} = ${dot(a,b)}$`;
+      return{q:`已知 ${VA}，求 $${poly([[m,h_va],[n,h_vb]])}$ 與 $${h_va} \\cdot ${h_vb}$`,a:ans,e:h_ln([`$${m}${h_va} = ${h_pt3(...a.map(x=>m*x))}$，$${n}${h_vb} = ${h_pt3(...b.map(x=>n*x))}$，相加得 $${h_pt3(...R3)}$。`,
+        `內積：$${h_va} \\cdot ${h_vb} = ${dtx(a,b)} = ${dot(a,b)}$。`],ans)}}
     if(f===1){const ang=h_angOf(dot(a,b)/Math.sqrt(n2(a)*n2(b)));if(ang===0||ang===180)return null;
-      return{q:`已知 ${VA}，設兩向量夾角為 $\\theta$，求 $\\cos\\theta$`,a:`$\\cos\\theta = ${h_surd(0,dot(a,b),n2(a)*n2(b),n2(a)*n2(b))}$${ang===null?'':`，$\\theta = ${deg(ang)}$`}`}}
-    const c=cr(a,b);if(c.every(x=>x===0))return null;return{q:`已知 ${VA}，求外積 $${h_va} \\times ${h_vb}$`,a:`$${h_pt3(...c)}$`}}
+      const N=n2(a)*n2(b),ans=`$\\cos\\theta = ${h_surd(0,dot(a,b),N,N)}$${ang===null?'':`，$\\theta = ${deg(ang)}$`}`;
+      return{q:`已知 ${VA}，設兩向量夾角為 $\\theta$，求 $\\cos\\theta$`,a:ans,e:h_ln([`$\\cos\\theta = \\frac{${h_va} \\cdot ${h_vb}}{\\left|${h_va}\\right|\\left|${h_vb}\\right|}$。`,
+        `$${h_va} \\cdot ${h_vb} = ${dtx(a,b)} = ${dot(a,b)}$；$\\left|${h_va}\\right|^2 = ${n2(a)}$，$\\left|${h_vb}\\right|^2 = ${n2(b)}$。`,
+        `$\\cos\\theta = \\frac{${dot(a,b)}}{\\sqrt{${n2(a)}} \\times \\sqrt{${n2(b)}}} = \\frac{${dot(a,b)}}{\\sqrt{${N}}} = ${h_surd(0,dot(a,b),N,N)}$${ang===null?'':`，對應的角是 $${deg(ang)}$`}。`],ans)}}
+    const c=cr(a,b);if(c.every(x=>x===0))return null;const ans=`$${h_pt3(...c)}$`;
+    return{q:`已知 ${VA}，求外積 $${h_va} \\times ${h_vb}$`,a:ans,e:h_ln([`外積公式：$(a_2b_3 - a_3b_2,\\ a_3b_1 - a_1b_3,\\ a_1b_2 - a_2b_1)$。`,`代入：${crx(a,b)}。`],ans)}}
   const f=ri(0,2);
-  if(f===0){const C=v(),N=n2(cr(b.map((x,i)=>x-a[i]),C.map((x,i)=>x-a[i])));if(N===0)return null;
-    return{q:`已知空間中三點 $A${h_pt3(...a)}$、$B${h_pt3(...b)}$、$C${h_pt3(...C)}$，求 $\\triangle ABC$ 的面積`,a:`$${h_surd(0,1,N,2)}$`}}
-  if(f===1){const c=v(),V=Math.abs(dot(a,cr(b,c)));if(V===0)return null;const four=R()<.4;
-    return{q:`已知 ${VA}，$${h_vc} = ${h_pt3(...c)}$，求由 $${h_va}$、$${h_vb}$、$${h_vc}$ 所張${four?'四面體':'平行六面體'}的體積`,a:`$${ftex(F(V,four?6:1))}$`}}
-  const c=v(),bc=dot(b,c);if(bc===0)return null;
-  return{q:`已知 ${VA}，$${h_vc} = ${h_pt3(...c)}$，若 $${h_va} + t${h_vb}$ 與 $${h_vc}$ 垂直，求實數 $t$`,a:`$t = ${ftex(F(-dot(a,c),bc))}$`};
+  if(f===0){const C=v(),u=b.map((x,i)=>x-a[i]),w=C.map((x,i)=>x-a[i]),N=n2(cr(u,w));if(N===0)return null;const ans=`$${h_surd(0,1,N,2)}$`,cw=cr(u,w);
+    return{q:`已知空間中三點 $A${h_pt3(...a)}$、$B${h_pt3(...b)}$、$C${h_pt3(...C)}$，求 $\\triangle ABC$ 的面積`,a:ans,e:h_ln([`$\\overrightarrow{AB} = ${h_pt3(...u)}$，$\\overrightarrow{AC} = ${h_pt3(...w)}$。`,
+      `外積 $\\overrightarrow{AB} \\times \\overrightarrow{AC}$：${crx(u,w)}。`,
+      `$\\left|\\overrightarrow{AB} \\times \\overrightarrow{AC}\\right| = \\sqrt{${P(cw[0])}^2 + ${P(cw[1])}^2 + ${P(cw[2])}^2} = \\sqrt{${N}}$。`,
+      `面積 $= \\frac{1}{2}\\sqrt{${N}} = ${h_surd(0,1,N,2)}$。`],ans)}}
+  if(f===1){const c=v(),V=Math.abs(dot(a,cr(b,c)));if(V===0)return null;const four=R()<.4,ans=`$${ftex(F(V,four?6:1))}$`,bc=cr(b,c);
+    return{q:`已知 ${VA}，$${h_vc} = ${h_pt3(...c)}$，求由 $${h_va}$、$${h_vb}$、$${h_vc}$ 所張${four?'四面體':'平行六面體'}的體積`,a:ans,e:h_ln([
+      `平行六面體體積 $= \\left|${h_va} \\cdot (${h_vb} \\times ${h_vc})\\right|$${four?'，四面體是它的 $\\frac{1}{6}$':''}。`,
+      `$${h_vb} \\times ${h_vc}$：${crx(b,c)}。`,
+      `$${h_va} \\cdot (${h_vb} \\times ${h_vc}) = ${dtx(a,bc)} = ${dot(a,bc)}$，取絕對值得 $${V}$。`,
+      four?`四面體體積 $= \\frac{${V}}{6}${ftex(F(V,6))===`\\frac{${V}}{6}`?'':` = ${ftex(F(V,6))}`}$。`:''],ans)}}
+  const c=v(),bc=dot(b,c);if(bc===0)return null;const ans=`$t = ${ftex(F(-dot(a,c),bc))}$`;
+  return{q:`已知 ${VA}，$${h_vc} = ${h_pt3(...c)}$，若 $${h_va} + t${h_vb}$ 與 $${h_vc}$ 垂直，求實數 $t$`,a:ans,e:h_ln([`垂直 ⇔ 內積為 $0$：$(${h_va} + t${h_vb}) \\cdot ${h_vc} = ${h_va} \\cdot ${h_vc} + t(${h_vb} \\cdot ${h_vc}) = 0$。`,
+    `$${h_va} \\cdot ${h_vc} = ${dtx(a,c)} = ${dot(a,c)}$，$${h_vb} \\cdot ${h_vc} = ${dtx(b,c)} = ${bc}$。`,
+    `$${dot(a,c)} + ${P(bc)}t = 0$，$t = ${h_dv(-dot(a,c),bc)}$。`],ans)};
 }});
 
 /* ---------- 技高數學C ---------- */
@@ -2937,27 +3247,47 @@ const HX_HARM=[[30,'\\sqrt{3}','1','2'],[60,'1','\\sqrt{3}','2'],[120,'-1','\\sq
 function hx_sc(a,b){const ca=a==='1'?'':a==='-1'?'-':a,neg=b.startsWith('-'),bb=b.replace(/^-/,'');return`${ca}\\sin x ${neg?'-':'+'} ${bb==='1'?'':bb}\\cos x`}
 unit({id:'ha-harm',g:'數A 二上',name:'正餘弦函數的疊合',instr:'依題意作答。',h:[18,22,26],gen(d){
   if(d===1){const [p,q,r]=pick([[3,4,5],[5,12,13],[6,8,10],[8,15,17],[7,24,25]]),[a,b]=R()<.5?[p,q]:[q,p],sa=sgn(),sb=sgn();
-    return{q:`求 $y = ${poly([[sa*a,'\\sin x'],[sb*b,'\\cos x']])}$ 的最大值與最小值`,a:`最大值 $${r}$，最小值 $${-r}$`}}
+    const ans=`最大值 $${r}$，最小值 $${-r}$`;
+    return{q:`求 $y = ${poly([[sa*a,'\\sin x'],[sb*b,'\\cos x']])}$ 的最大值與最小值`,a:ans,e:h_ln([`疊合：$a\\sin x + b\\cos x = \\sqrt{a^2 + b^2}\\sin(x + \\theta)$。`,
+      `$\\sqrt{${P(sa*a)}^2 + ${P(sb*b)}^2} = \\sqrt{${a*a} + ${b*b}} = \\sqrt{${r*r}} = ${r}$，所以 $y = ${r}\\sin(x + \\theta)$。`,
+      `$\\sin(x + \\theta)$ 介於 $-1$ 與 $1$，最大值 $${r}$，最小值 $${-r}$。`],ans)}}
   if(d===2){const [th,a0,b0,r0]=pick(HX_HARM),m=ri(1,3),mk=t=>m===1?t:t==='1'?`${m}`:t==='-1'?`-${m}`:t.startsWith('-')?`-${m}${t.slice(1)}`:`${m}${t}`,a=mk(a0),b=mk(b0),r=m===1?r0:r0==='2'?`${2*m}`:`${m}${r0}`;
-    return{q:`將 $${hx_sc(a,b)}$ 表示成 $r\\sin(x + \\theta)$ 的形式（$r > 0$，$0^{\\circ} \\leqq \\theta < 360^{\\circ}$）`,a:`$${r}\\sin(x + ${th}^{\\circ})$`}}
+    const ans=`$${r}\\sin(x + ${th}^{\\circ})$`,r2=r0==='2'?4*m*m:2*m*m,fr=s=>r0==='2'?(s.startsWith('-')?`-\\frac{${s.slice(1)}}{2}`:`\\frac{${s}}{2}`):`${s.startsWith('-')?'-':''}\\frac{\\sqrt{2}}{2}`;
+    return{q:`將 $${hx_sc(a,b)}$ 表示成 $r\\sin(x + \\theta)$ 的形式（$r > 0$，$0^{\\circ} \\leqq \\theta < 360^{\\circ}$）`,a:ans,e:h_ln([
+      `$r\\sin(x + \\theta) = r\\cos\\theta\\sin x + r\\sin\\theta\\cos x$，比較係數：$r\\cos\\theta = ${a}$，$r\\sin\\theta = ${b}$。`,
+      `$r = \\sqrt{(${a})^2 + (${b})^2} = \\sqrt{${r2}}${`\\sqrt{${r2}}`===r?'':` = ${r}`}$。`,
+      `$\\cos\\theta = ${fr(a0)}$，$\\sin\\theta = ${fr(b0)}$，在 $0^{\\circ}$～$360^{\\circ}$ 內得 $\\theta = ${th}^{\\circ}$。`],ans)}}
   const c=rnz(-6,6);
-  if(R()<.5){const [p,q,r]=pick([[3,4,5],[5,12,13],[6,8,10],[8,15,17]]),[a,b]=R()<.5?[p,q]:[q,p];
-    return{q:`求 $y = ${poly([[a*sgn(),'\\sin x'],[b*sgn(),'\\cos x'],[c,'']])}$ 的最大值與最小值`,a:`最大值 $${r+c}$，最小值 $${c-r}$`}}
-  const m=ri(2,4),[th,a,b,r]=pick(HX_HARM.filter(x=>x[3]==='2'));
-  return{q:`求 $y = ${m}(${hx_sc(a,b)}) ${c<0?'-':'+'} ${Math.abs(c)}$ 的最大值與最小值`,a:`最大值 $${2*m+c}$，最小值 $${c-2*m}$`};
+  if(R()<.5){const [p,q,r]=pick([[3,4,5],[5,12,13],[6,8,10],[8,15,17]]),[a,b]=R()<.5?[p,q]:[q,p];const ans=`最大值 $${r+c}$，最小值 $${c-r}$`;
+    return{q:`求 $y = ${poly([[a*sgn(),'\\sin x'],[b*sgn(),'\\cos x'],[c,'']])}$ 的最大值與最小值`,a:ans,e:h_ln([`前兩項疊合：振幅 $\\sqrt{${a}^2 + ${b}^2} = \\sqrt{${r*r}} = ${r}$，所以 $y = ${r}\\sin(x + \\theta) ${c<0?'-':'+'} ${Math.abs(c)}$。`,
+      `$${r}\\sin(x + \\theta)$ 介於 $-${r}$ 與 $${r}$。`,`最大值 $${r} + ${P(c)} = ${r+c}$，最小值 $-${r} + ${P(c)} = ${c-r}$。`],ans)}}
+  const m=ri(2,4),[th,a,b,r]=pick(HX_HARM.filter(x=>x[3]==='2'));const ans=`最大值 $${2*m+c}$，最小值 $${c-2*m}$`;
+  return{q:`求 $y = ${m}(${hx_sc(a,b)}) ${c<0?'-':'+'} ${Math.abs(c)}$ 的最大值與最小值`,a:ans,e:h_ln([`括號內疊合：$r = \\sqrt{(${a})^2 + (${b})^2} = \\sqrt{4} = 2$，所以 $${hx_sc(a,b)} = 2\\sin(x + ${th}^{\\circ})$。`,
+    `$y = ${2*m}\\sin(x + ${th}^{\\circ}) ${c<0?'-':'+'} ${Math.abs(c)}$，$${2*m}\\sin(x + ${th}^{\\circ})$ 介於 $-${2*m}$ 與 $${2*m}$。`,
+    `最大值 $${2*m} + ${P(c)} = ${2*m+c}$，最小值 $-${2*m} + ${P(c)} = ${c-2*m}$。`],ans)};
 }});
 
 /* 數A 二上：平面上的比例與應用 */
 unit({id:'ha-ratio',g:'數A 二上',name:'平面上的比例與向量的線性組合',instr:'依題意作答。',h:[20,24,28],gen(d){
   let m=ri(1,5),n=ri(1,5);if(gcd(m,n)!==1)return null;
   if(d===1){if(R()<.6){const A=[rnz(-8,8),rnz(-8,8)],B=[rnz(-8,8),rnz(-8,8)];if(A[0]===B[0]&&A[1]===B[1])return null;
-      const P=[0,1].map(i=>F(n*A[i]+m*B[i],m+n));return{q:`已知 $A${hx_pt(...A)}$、$B${hx_pt(...B)}$，點 $P$ 在線段 $${seg('AB')}$ 上且 $${seg('AP')} : ${seg('PB')} = ${m} : ${n}$，求 $P$ 的坐標`,a:`$P${hx_fp(...P)}$`}}
+      const P=[0,1].map(i=>F(n*A[i]+m*B[i],m+n)),ans=`$P${hx_fp(...P)}$`,cx=i=>`\\frac{${n===1?'':n+' \\times '}${h_pp(A[i])} + ${m===1?'':m+' \\times '}${h_pp(B[i])}}{${m+n}} = ${h_dv(n*A[i]+m*B[i],m+n)}`;
+      return{q:`已知 $A${hx_pt(...A)}$、$B${hx_pt(...B)}$，點 $P$ 在線段 $${seg('AB')}$ 上且 $${seg('AP')} : ${seg('PB')} = ${m} : ${n}$，求 $P$ 的坐標`,a:ans,e:h_ln([
+        `分點公式：$${seg('AP')} : ${seg('PB')} = m : n$ 時，$P = \\frac{nA + mB}{m + n}$（離 $A$ 近，$A$ 的權重較大）。`,
+        `$x = ${cx(0)}$。`,`$y = ${cx(1)}$。`],ans)}}
     const A=[rnz(-8,8),rnz(-8,8)],B=[rnz(-8,8),rnz(-8,8)],C=[rnz(-8,8),rnz(-8,8)];if((B[0]-A[0])*(C[1]-A[1])-(B[1]-A[1])*(C[0]-A[0])===0)return null;
-    return{q:`已知 $A${hx_pt(...A)}$、$B${hx_pt(...B)}$、$C${hx_pt(...C)}$，求 $\\triangle ABC$ 的重心坐標`,a:`$${hx_fp(F(A[0]+B[0]+C[0],3),F(A[1]+B[1]+C[1],3))}$`}}
-  if(d===2)return{q:`$\\triangle ABC$ 中，$D$ 在 $${seg('BC')}$ 上且 $${seg('BD')} : ${seg('DC')} = ${m} : ${n}$。若 $${hx_vec('AD')} = x${hx_vec('AB')} + y${hx_vec('AC')}$，求 $x$、$y$`,a:`$x = ${ftex(F(n,m+n))}$，$y = ${ftex(F(m,m+n))}$`};
-  const p=ri(1,4),q=ri(1,4);if(gcd(p,q)!==1)return null;
+    const ans=`$${hx_fp(F(A[0]+B[0]+C[0],3),F(A[1]+B[1]+C[1],3))}$`;
+    return{q:`已知 $A${hx_pt(...A)}$、$B${hx_pt(...B)}$、$C${hx_pt(...C)}$，求 $\\triangle ABC$ 的重心坐標`,a:ans,e:h_ln([`重心坐標 ＝ 三個頂點坐標的平均。`,
+      `$x = \\frac{${A[0]} + ${h_pp(B[0])} + ${h_pp(C[0])}}{3} = ${h_dv(A[0]+B[0]+C[0],3)}$，$y = \\frac{${A[1]} + ${h_pp(B[1])} + ${h_pp(C[1])}}{3} = ${h_dv(A[1]+B[1]+C[1],3)}$。`],ans)}}
+  if(d===2){const ans=`$x = ${ftex(F(n,m+n))}$，$y = ${ftex(F(m,m+n))}$`;
+    return{q:`$\\triangle ABC$ 中，$D$ 在 $${seg('BC')}$ 上且 $${seg('BD')} : ${seg('DC')} = ${m} : ${n}$。若 $${hx_vec('AD')} = x${hx_vec('AB')} + y${hx_vec('AC')}$，求 $x$、$y$`,a:ans,e:h_ln([
+      `分點公式：$D$ 把 $${seg('BC')}$ 分成 $${m} : ${n}$，則 $${hx_vec('AD')} = \\frac{${n}}{${m+n}}${hx_vec('AB')} + \\frac{${m}}{${m+n}}${hx_vec('AC')}$（交叉配係數）。`,
+      `所以 $x = ${h_dv(n,m+n)}$，$y = ${h_dv(m,m+n)}$。`],ans)}}
+  const p=ri(1,4),q=ri(1,4);if(gcd(p,q)!==1)return null;const ans=`$x = ${ftex(F(p*n,(p+q)*(m+n)))}$，$y = ${ftex(F(p*m,(p+q)*(m+n)))}$`;
   return{q:`$\\triangle ABC$ 中，$D$ 在 $${seg('BC')}$ 上且 $${seg('BD')} : ${seg('DC')} = ${m} : ${n}$，$E$ 在 $${seg('AD')}$ 上且 $${seg('AE')} : ${seg('ED')} = ${p} : ${q}$。若 $${hx_vec('AE')} = x${hx_vec('AB')} + y${hx_vec('AC')}$，求 $x$、$y$`,
-    a:`$x = ${ftex(F(p*n,(p+q)*(m+n)))}$，$y = ${ftex(F(p*m,(p+q)*(m+n)))}$`};
+    a:ans,e:h_ln([`$D$ 分 $${seg('BC')}$ 為 $${m} : ${n}$：$${hx_vec('AD')} = \\frac{${n}}{${m+n}}${hx_vec('AB')} + \\frac{${m}}{${m+n}}${hx_vec('AC')}$。`,
+      `$${seg('AE')} : ${seg('ED')} = ${p} : ${q}$，所以 $${hx_vec('AE')} = \\frac{${p}}{${p+q}}${hx_vec('AD')}$。`,
+      `$${hx_vec('AE')} = \\frac{${p}}{${p+q}} \\times \\frac{${n}}{${m+n}}${hx_vec('AB')} + \\frac{${p}}{${p+q}} \\times \\frac{${m}}{${m+n}}${hx_vec('AC')}$，$x = ${h_dv(p*n,(p+q)*(m+n))}$，$y = ${h_dv(p*m,(p+q)*(m+n))}$。`],ans)};
 }});
 
 /* 數A 二下：空間中的平面與直線 */
@@ -2965,38 +3295,85 @@ const HX_N=[[1,2,2,3],[2,1,2,3],[2,2,1,3],[1,4,8,9],[4,4,7,9],[2,3,6,7],[2,6,3,7
 const hx_line=(A,v)=>`\\begin{cases} x = ${poly([[A[0],''],[v[0],'t']])} \\\\ y = ${poly([[A[1],''],[v[1],'t']])} \\\\ z = ${poly([[A[2],''],[v[2],'t']])} \\end{cases}`;
 unit({id:'ha-plane',g:'數A 二下',name:'空間中的平面與直線',instr:'依題意作答。',h:[22,26,32],gen(d){
   if(d===1){const [a0,b0,c0,L]=pick(HX_N),[a,b,c]=[a0*sgn(),b0*sgn(),c0*sgn()],P=[ri(-5,5),ri(-5,5),ri(-5,5)],D=a*P[0]+b*P[1]+c*P[2];
-    if(R()<.5)return{q:`求通過點 $P${hx_pt(...P)}$ 且法向量為 $${hx_pt(a,b,c)}$ 的平面方程式`,a:`$${hx_plane(...hx_norm(a,b,c,D))}$`};
-    const k=rnz(-12,12),Q=[ri(-5,5),ri(-5,5),ri(-5,5)],num=Math.abs(a*Q[0]+b*Q[1]+c*Q[2]-k);if(!num)return null;
-    return{q:`求點 $Q${hx_pt(...Q)}$ 到平面 $E: ${hx_plane(a,b,c,k)}$ 的距離`,a:`$${ftex(F(num,L))}$`}}
+    if(R()<.5){const ans=`$${hx_plane(...hx_norm(a,b,c,D))}$`;
+      return{q:`求通過點 $P${hx_pt(...P)}$ 且法向量為 $${hx_pt(a,b,c)}$ 的平面方程式`,a:ans,e:h_ln([`法向量為 $${hx_pt(a,b,c)}$ 的平面可設為 $${hx_plane(a,b,c,'d')}$。`,
+        `代入 $P${hx_pt(...P)}$：$d = ${a} \\times ${h_pp(P[0])} + ${h_pp(b)} \\times ${h_pp(P[1])} + ${h_pp(c)} \\times ${h_pp(P[2])} = ${D}$。`,
+        `平面方程式 $${hx_plane(...hx_norm(a,b,c,D))}$。`],ans)}}
+    const k=rnz(-12,12),Q=[ri(-5,5),ri(-5,5),ri(-5,5)],num=Math.abs(a*Q[0]+b*Q[1]+c*Q[2]-k);if(!num)return null;const ans=`$${ftex(F(num,L))}$`;
+    return{q:`求點 $Q${hx_pt(...Q)}$ 到平面 $E: ${hx_plane(a,b,c,k)}$ 的距離`,a:ans,e:h_ln([`把平面寫成 $${hx_plane(a,b,c,0).replace(/ = 0$/,'')} ${k<0?'+':'-'} ${Math.abs(k)} = 0$，用點到平面距離公式 $\\frac{\\left|ax_0 + by_0 + cz_0 + d\\right|}{\\sqrt{a^2 + b^2 + c^2}}$。`,
+      `分子 $\\left|${a} \\times ${h_pp(Q[0])} + ${h_pp(b)} \\times ${h_pp(Q[1])} + ${h_pp(c)} \\times ${h_pp(Q[2])} ${k<0?'+':'-'} ${Math.abs(k)}\\right| = ${num}$。`,
+      `分母 $\\sqrt{${h_pp(a)}^2 + ${h_pp(b)}^2 + ${h_pp(c)}^2} = \\sqrt{${L*L}} = ${L}$，距離 $= ${h_dv(num,L)}$。`],ans)}}
   if(d===2){const a=ri(-4,4),b=ri(-4,4),c=pick([1,-1]),D=ri(-8,8),pts=[];
     for(let i=0;i<3;i++){const x=ri(-3,3),y=ri(-3,3);pts.push([x,y,(D-a*x-b*y)/c])}
     const u=[0,1,2].map(i=>pts[1][i]-pts[0][i]),v=[0,1,2].map(i=>pts[2][i]-pts[0][i]),cr=[u[1]*v[2]-u[2]*v[1],u[2]*v[0]-u[0]*v[2],u[0]*v[1]-u[1]*v[0]];
     if(!cr[0]&&!cr[1]&&!cr[2])return null;if(pts.some(p=>Math.abs(p[2])>12))return null;
-    return{q:`求通過 $A${hx_pt(...pts[0])}$、$B${hx_pt(...pts[1])}$、$C${hx_pt(...pts[2])}$ 三點的平面方程式`,a:`$${hx_plane(...hx_norm(a,b,c,D))}$`}}
+    const ans=`$${hx_plane(...hx_norm(a,b,c,D))}$`,D2=cr[0]*pts[0][0]+cr[1]*pts[0][1]+cr[2]*pts[0][2];
+    return{q:`求通過 $A${hx_pt(...pts[0])}$、$B${hx_pt(...pts[1])}$、$C${hx_pt(...pts[2])}$ 三點的平面方程式`,a:ans,e:h_ln([
+      `$\\overrightarrow{AB} = ${hx_pt(...u)}$，$\\overrightarrow{AC} = ${hx_pt(...v)}$。`,
+      `法向量取外積 $\\overrightarrow{AB} \\times \\overrightarrow{AC} = (${h_pp(u[1])} \\times ${h_pp(v[2])} - ${h_pp(u[2])} \\times ${h_pp(v[1])},\\ ${h_pp(u[2])} \\times ${h_pp(v[0])} - ${h_pp(u[0])} \\times ${h_pp(v[2])},\\ ${h_pp(u[0])} \\times ${h_pp(v[1])} - ${h_pp(u[1])} \\times ${h_pp(v[0])}) = ${hx_pt(...cr)}$。`,
+      `平面設為 $${hx_plane(...cr,'d')}$，代入 $A$ 得 $d = ${D2}$。`,`約分整理得 $${hx_plane(...hx_norm(a,b,c,D))}$。`],ans)}}
   if(R()<.6){const A=[ri(-4,4),ri(-4,4),ri(-4,4)],v=[rnz(-3,3),rnz(-3,3),rnz(-3,3)],t0=rnz(-3,3),X=A.map((x,i)=>x+t0*v[i]),[a0,b0,c0]=pick(HX_N),n=[a0*sgn(),b0*sgn(),c0*sgn()];
-    if(n[0]*v[0]+n[1]*v[1]+n[2]*v[2]===0)return null;const k=n[0]*X[0]+n[1]*X[1]+n[2]*X[2];
-    return{q:`求直線 $L: ${hx_line(A,v)}$（$t$ 為實數）與平面 $E: ${hx_plane(...n,k)}$ 的交點`,a:`$${hx_pt(...X)}$`}}
-  const [a0,b0,c0,L]=pick(HX_N),n=[a0*sgn(),b0*sgn(),c0*sgn()],k1=rnz(-15,15),k2=rnz(-15,15);if(k1===k2)return null;
-  return{q:`求兩平行平面 $E_1: ${hx_plane(...n,k1)}$ 與 $E_2: ${hx_plane(...n,k2)}$ 的距離`,a:`$${ftex(F(Math.abs(k1-k2),L))}$`};
+    if(n[0]*v[0]+n[1]*v[1]+n[2]*v[2]===0)return null;const k=n[0]*X[0]+n[1]*X[1]+n[2]*X[2],ans=`$${hx_pt(...X)}$`,nA=n[0]*A[0]+n[1]*A[1]+n[2]*A[2],nv=n[0]*v[0]+n[1]*v[1]+n[2]*v[2];
+    return{q:`求直線 $L: ${hx_line(A,v)}$（$t$ 為實數）與平面 $E: ${hx_plane(...n,k)}$ 的交點`,a:ans,e:h_ln([`把直線的 $x$、$y$、$z$ 代入平面方程式：$${n[0]}(${poly([[A[0],''],[v[0],'t']])}) + ${h_pp(n[1])}(${poly([[A[1],''],[v[1],'t']])}) + ${h_pp(n[2])}(${poly([[A[2],''],[v[2],'t']])}) = ${k}$。`,
+      `展開：$${poly([[nA,''],[nv,'t']])} = ${k}$，$${poly([[nv,'t']])} = ${k-nA}$，$t = ${t0}$。`,
+      `$t = ${t0}$ 代回直線：$(${A[0]} + ${h_pp(v[0])} \\times ${h_pp(t0)}, ${A[1]} + ${h_pp(v[1])} \\times ${h_pp(t0)}, ${A[2]} + ${h_pp(v[2])} \\times ${h_pp(t0)}) = ${hx_pt(...X)}$。`],ans)}}
+  const [a0,b0,c0,L]=pick(HX_N),n=[a0*sgn(),b0*sgn(),c0*sgn()],k1=rnz(-15,15),k2=rnz(-15,15);if(k1===k2)return null;const ans=`$${ftex(F(Math.abs(k1-k2),L))}$`;
+  return{q:`求兩平行平面 $E_1: ${hx_plane(...n,k1)}$ 與 $E_2: ${hx_plane(...n,k2)}$ 的距離`,a:ans,e:h_ln([`兩平面的 $x$、$y$、$z$ 係數相同，距離 $= \\frac{\\left|k_1 - k_2\\right|}{\\sqrt{a^2 + b^2 + c^2}}$。`,
+    `$\\left|${k1} - ${h_pp(k2)}\\right| = ${Math.abs(k1-k2)}$，$\\sqrt{${h_pp(n[0])}^2 + ${h_pp(n[1])}^2 + ${h_pp(n[2])}^2} = \\sqrt{${L*L}} = ${L}$。`,`距離 $= ${h_dv(Math.abs(k1-k2),L)}$。`],ans)};
 }});
 
 /* 數A 二下：條件機率與貝氏定理（數B 共用） */
 unit({id:'ha-cond',g:'數A 二下',name:'條件機率與貝氏定理',instr:'依題意作答，答案化為最簡分數。',h:[22,26,32],gen(d){
   if(d===1){const N=pick([10,12,20,24]),c=ri(1,N/3|0),a=ri(c+1,N-2),b=ri(c+1,N-2);if(a+b-c>N)return null;
-    return{q:`已知 $P(A) = ${ftex(F(a,N))}$，$P(B) = ${ftex(F(b,N))}$，$P(A \\cap B) = ${ftex(F(c,N))}$，求 $P(A \\mid B)$ 與 $P(B \\mid A)$`,a:`$P(A \\mid B) = ${ftex(F(c,b))}$，$P(B \\mid A) = ${ftex(F(c,a))}$`}}
+    const ans=`$P(A \\mid B) = ${ftex(F(c,b))}$，$P(B \\mid A) = ${ftex(F(c,a))}$`;
+    return{q:`已知 $P(A) = ${ftex(F(a,N))}$，$P(B) = ${ftex(F(b,N))}$，$P(A \\cap B) = ${ftex(F(c,N))}$，求 $P(A \\mid B)$ 與 $P(B \\mid A)$`,a:ans,e:h_ln([
+      `條件機率 $P(A \\mid B) = \\frac{P(A \\cap B)}{P(B)}$，$P(B \\mid A) = \\frac{P(A \\cap B)}{P(A)}$。為方便計算，把機率都寫成分母 $${N}$：$P(A) = \\frac{${a}}{${N}}$，$P(B) = \\frac{${b}}{${N}}$，$P(A \\cap B) = \\frac{${c}}{${N}}$。`,
+      `$P(A \\mid B) = \\frac{${c}}{${N}} \\div \\frac{${b}}{${N}} = ${h_dv(c,b)}$。`,`$P(B \\mid A) = \\frac{${c}}{${N}} \\div \\frac{${a}}{${N}} = ${h_dv(c,a)}$。`],ans)}}
   if(d===2){const f=ri(0,2);
     if(f===0){const k=ri(4,10),ev=pick([['至少有一顆是 $6$',(i,j)=>i===6||j===6],['兩顆點數相同',(i,j)=>i===j],['第一顆比第二顆大',(i,j)=>i>j]]);
       let all=0,hit=0;for(let i=1;i<=6;i++)for(let j=1;j<=6;j++)if(i+j===k){all++;if(ev[1](i,j))hit++}if(!hit)return null;
-      return{q:`擲兩顆公正骰子，已知點數和為 $${k}$，求${ev[0]}的機率`,a:`$${ftex(F(hit,all))}$`}}
-    if(f===1){const r=ri(3,8),w=ri(2,8),T=r+w;return{q:`袋中有紅球 $${r}$ 顆、白球 $${w}$ 顆，依序取出兩球（取後不放回）。已知第一球是紅球，求第二球也是紅球的機率`,a:`$${ftex(F(r-1,T-1))}$`}}
+      const ans=`$${ftex(F(hit,all))}$`,L1=[],L2=[];for(let i=1;i<=6;i++)for(let j=1;j<=6;j++)if(i+j===k){L1.push(`(${i}, ${j})`);if(ev[1](i,j))L2.push(`(${i}, ${j})`)}
+      return{q:`擲兩顆公正骰子，已知點數和為 $${k}$，求${ev[0]}的機率`,a:ans,e:h_ln([`已知點數和為 $${k}$，樣本空間縮小成 $${L1.join('$、$')}$，共 $${all}$ 種。`,
+        `其中${ev[0]}的有 $${L2.join('$、$')}$，共 $${hit}$ 種。`,`機率 $= ${h_dv(hit,all)}$。`],ans)}}
+    if(f===1){const r=ri(3,8),w=ri(2,8),T=r+w,ans=`$${ftex(F(r-1,T-1))}$`;return{q:`袋中有紅球 $${r}$ 顆、白球 $${w}$ 顆，依序取出兩球（取後不放回）。已知第一球是紅球，求第二球也是紅球的機率`,a:ans,e:h_ln([
+      `第一球是紅球且不放回，袋中剩紅球 $${r-1}$ 顆、白球 $${w}$ 顆，共 $${T-1}$ 顆。`,`第二球是紅球的機率 $= ${h_dv(r-1,T-1)}$。`],ans)}}
     const N=pick([12,20,24,36]),a=ri(2,N-2),b=ri(2,N-2),ind=R()<.5;let c=ind?a*b/N:ri(1,Math.min(a,b)-1);if(!Number.isInteger(c)||c<1||c===a*b/N&&!ind||a+b-c>N)return null;
-    return{q:`已知 $P(A) = ${ftex(F(a,N))}$，$P(B) = ${ftex(F(b,N))}$，$P(A \\cap B) = ${ftex(F(c,N))}$，判斷事件 $A$、$B$ 是否獨立`,a:c*N===a*b?`獨立（$P(A)P(B) = P(A \\cap B)$）`:`不獨立（$P(A)P(B) = ${ftex(F(a*b,N*N))} \\neq P(A \\cap B)$）`}}
-  if(R()<.5){const p=pick([40,50,60,70]),q=100-p,da=ri(1,6),db=ri(1,6);if(da===db)return null;
-    return{q:`某工廠由甲、乙兩條生產線製造產品，產量比例為 $${p}\\%$ 與 $${q}\\%$，不良率分別為 $${da}\\%$ 與 $${db}\\%$。任取一件產品發現是不良品，求它來自甲生產線的機率`,a:`$${ftex(F(p*da,p*da+q*db))}$`}}
-  const prev=pick([1,2,5,10]),sens=pick([90,95,98]),fp=pick([5,10,20]);
-  return{q:`某疾病的盛行率為 $${prev}\\%$，檢驗時患者呈陽性的機率為 $${sens}\\%$，未患病者呈陽性（偽陽性）的機率為 $${fp}\\%$。已知某人檢驗呈陽性，求他確實患病的機率`,a:`$${ftex(F(prev*sens,prev*sens+(100-prev)*fp))}$`};
+    const ans=c*N===a*b?`獨立（$P(A)P(B) = P(A \\cap B)$）`:`不獨立（$P(A)P(B) = ${ftex(F(a*b,N*N))} \\neq P(A \\cap B)$）`;
+    return{q:`已知 $P(A) = ${ftex(F(a,N))}$，$P(B) = ${ftex(F(b,N))}$，$P(A \\cap B) = ${ftex(F(c,N))}$，判斷事件 $A$、$B$ 是否獨立`,a:ans,e:h_ln([`$A$、$B$ 獨立 ⇔ $P(A)P(B) = P(A \\cap B)$。`,
+      `$P(A)P(B) = ${ftex(F(a,N))} \\times ${ftex(F(b,N))} = ${ftex(F(a*b,N*N))}$；$P(A \\cap B) = ${ftex(F(c,N))}$。`,
+      `兩者${c*N===a*b?'相等，所以獨立':'不相等，所以不獨立'}。`],ans)}}
+  if(R()<.5){const p=pick([40,50,60,70]),q=100-p,da=ri(1,6),db=ri(1,6);if(da===db)return null;const ans=`$${ftex(F(p*da,p*da+q*db))}$`;
+    return{q:`某工廠由甲、乙兩條生產線製造產品，產量比例為 $${p}\\%$ 與 $${q}\\%$，不良率分別為 $${da}\\%$ 與 $${db}\\%$。任取一件產品發現是不良品，求它來自甲生產線的機率`,a:ans,e:h_ln([
+      `貝氏定理：$P(\\text{甲} \\mid \\text{不良}) = \\frac{P(\\text{甲})P(\\text{不良} \\mid \\text{甲})}{P(\\text{甲})P(\\text{不良} \\mid \\text{甲}) + P(\\text{乙})P(\\text{不良} \\mid \\text{乙})}$。`,
+      `分子 $${p}\\% \\times ${da}\\%$，分母 $${p}\\% \\times ${da}\\% + ${q}\\% \\times ${db}\\%$；百分比的單位會約掉，只看 $${p} \\times ${da} = ${p*da}$ 與 $${q} \\times ${db} = ${q*db}$。`,
+      `機率 $= \\frac{${p*da}}{${p*da} + ${q*db}} = ${h_dv(p*da,p*da+q*db)}$。`],ans)}}
+  const prev=pick([1,2,5,10]),sens=pick([90,95,98]),fp=pick([5,10,20]),A1=prev*sens,A2=(100-prev)*fp,ans=`$${ftex(F(A1,A1+A2))}$`;
+  return{q:`某疾病的盛行率為 $${prev}\\%$，檢驗時患者呈陽性的機率為 $${sens}\\%$，未患病者呈陽性（偽陽性）的機率為 $${fp}\\%$。已知某人檢驗呈陽性，求他確實患病的機率`,a:ans,e:h_ln([
+    `陽性有兩種來源：患病且陽性 $${prev}\\% \\times ${sens}\\%$，未患病但陽性 $${100-prev}\\% \\times ${fp}\\%$。`,
+    `百分比的單位會約掉，只看 $${prev} \\times ${sens} = ${A1}$ 與 $${100-prev} \\times ${fp} = ${A2}$。`,
+    `貝氏定理：$P(\\text{患病} \\mid \\text{陽性}) = \\frac{${A1}}{${A1} + ${A2}} = ${h_dv(A1,A1+A2)}$。`],ans)};
 }});
 
+/* 高斯消去法的逐步詳解（M 為係數、X 為解） */
+function hx_gauss(M,X){
+  const rows=M.map(r=>[...r,r[0]*X[0]+r[1]*X[1]+r[2]*X[2]]);
+  const eqT=r=>`${poly([[r[0],'x'],[r[1],'y'],[r[2],'z']])} = ${r[3]}`;
+  const red=r=>{const g=r.reduce((s,x)=>gcd(s,x),0)||1,lead=r.slice(0,3).find(x=>x!==0),s=lead<0?-1:1;return r.map(x=>x/g*s+0)};
+  const mul=(lab,k)=>k===1?`(${lab})`:`(${lab}) \\times ${h_pp(k)}`;
+  const elim=(rj,lj,rp,lp,k,lab)=>{if(rj[k]===0)return{r:rj,t:`(${lj}) 本來就沒有 $${'xyz'[k]}$，直接記為 (${lab})：$${eqT(rj)}$`};
+    const l=lcm(Math.abs(rj[k]),Math.abs(rp[k])),cj=l/rj[k],cp=l/rp[k],r=red(rj.map((x,i)=>cj*x-cp*rp[i]));
+    return{r,t:`$${mul(lj,cj)} - ${mul(lp,cp)}$，整理得 (${lab})：$${eqT(r)}$`}};
+  const L=[`三式依序記為 (1)、(2)、(3)，先消去 $x$，再消去 $y$，最後回代。`];
+  const cx=[0,1,2].filter(i=>rows[i][0]!==0),p=cx.reduce((b,i)=>Math.abs(rows[i][0])<Math.abs(rows[b][0])?i:b,cx[0]),oth=[0,1,2].filter(i=>i!==p);
+  const E4=elim(rows[oth[0]],oth[0]+1,rows[p],p+1,0,4),E5=elim(rows[oth[1]],oth[1]+1,rows[p],p+1,0,5);
+  L.push(`用 (${p+1}) 消去 $x$：${E4.t}；${E5.t}。`);
+  const two=[[E4.r,4],[E5.r,5]],cy=two.filter(t=>t[0][1]!==0),[ry,ly]=cy.reduce((b,t)=>Math.abs(t[0][1])<Math.abs(b[0][1])?t:b,cy[0]),[ro,lo]=two.find(t=>t[1]!==ly);
+  const E6=elim(ro,lo,ry,ly,1,6);L.push(`用 (${ly}) 消去 $y$：${E6.t}。`);
+  const r6=E6.r;L.push(r6[2]===1?`由 (6) 直接得到 $z = ${X[2]}$。`:`由 (6)：$${poly([[r6[2],'z']])} = ${r6[3]}$，得 $z = ${X[2]}$。`);
+  L.push(`代入 (${ly})：$${poly([[ry[1],'y']])} = ${ry[3]} - ${h_pp(ry[2]*X[2])} = ${ry[1]*X[1]}$，得 $y = ${X[1]}$。`);
+  const rp=rows[p];L.push(`代入 (${p+1})：$${poly([[rp[0],'x']])} = ${rp[3]} - ${h_pp(rp[1]*X[1])} - ${h_pp(rp[2]*X[2])} = ${rp[0]*X[0]}$，得 $x = ${X[0]}$。`);
+  return L;
+}
 /* 數A 二下：三元一次方程組 */
 unit({id:'ha-sys3',g:'數A 二下',name:'三元一次方程組（高斯消去法）',instr:'解下列三元一次方程組。',h:[30,34,38],gen(d){
   const X=[ri(-5,5),ri(-5,5),ri(-5,5)],lim=d===3?5:3;let M;
@@ -3005,7 +3382,8 @@ unit({id:'ha-sys3',g:'數A 二下',name:'三元一次方程組（高斯消去法
   const det=M[0][0]*(M[1][1]*M[2][2]-M[1][2]*M[2][1])-M[0][1]*(M[1][0]*M[2][2]-M[1][2]*M[2][0])+M[0][2]*(M[1][0]*M[2][1]-M[1][1]*M[2][0]);
   if(det===0||M.some(r=>r.filter(x=>x).length<(d===1?1:2)))return null;
   const eq=r=>`${poly([[r[0],'x'],[r[1],'y'],[r[2],'z']])} = ${r[0]*X[0]+r[1]*X[1]+r[2]*X[2]}`;
-  return{q:`$\\begin{cases} ${M.map(eq).join(' \\\\ ')} \\end{cases}$`,a:`$x = ${X[0]},\\ y = ${X[1]},\\ z = ${X[2]}$`};
+  const ans=`$x = ${X[0]},\\ y = ${X[1]},\\ z = ${X[2]}$`;
+  return{q:`$\\begin{cases} ${M.map(eq).join(' \\\\ ')} \\end{cases}$`,a:ans,e:h_ln(hx_gauss(M,X),ans)};
 }});
 
 /* 數B 二上：三角比與正弦函數（不含和差角、疊合） */
@@ -3016,13 +3394,21 @@ function hx_trig(fn,th){const t=((th%360)+360)%360;let ref=t<=90?t:t<=180?180-t:
   const sign=onAxis?(fn==='sin'?(t===270?-1:1):(t===180?-1:1)):(pos?1:-1);return sign<0?'-'+v:v}
 const hx_pi=(n,dd)=>{const f=F(n,dd);if(f.n===0)return'0';const top=Math.abs(f.n)===1?'\\pi':`${Math.abs(f.n)}\\pi`;return`${f.n<0?'-':''}${f.d===1?top:`\\frac{${top}}{${f.d}}`}`};
 unit({id:'hb-sine',g:'數B 二上',name:'三角比與正弦函數的圖形',instr:'依題意作答。',h:[18,22,26],gen(d){
-  if(d===1){if(R()<.5){const th=pick([30,45,60,90,120,135,150,180,210,225,240,270,300,315,330,360]);return R()<.5?{q:`將 $${deg(th)}$ 化為弧度`,a:`$${hx_pi(th,180)}$`}:{q:`將 $${hx_pi(th,180)}$ 化為度`,a:`$${deg(th)}$`}}
-    const th=pick([120,135,150,210,225,240,300,315,330]),fn=pick(['sin','cos']);return{q:`求 $\\${fn} ${deg(th)}$ 的值`,a:`$${hx_trig(fn,th)}$`}}
-  if(d===2){const r=ri(2,12),[n,dd]=pick([[1,6],[1,4],[1,3],[1,2],[2,3],[3,4],[5,6]]);
-    return{q:`扇形的半徑為 $${r}$，圓心角為 $${hx_pi(n,dd)}$，求扇形的弧長與面積`,a:`弧長 $${hx_pi(r*n,dd)}$，面積 $${hx_pi(r*r*n,2*dd)}$`}}
+  if(d===1){if(R()<.5){const th=pick([30,45,60,90,120,135,150,180,210,225,240,270,300,315,330,360]);
+      if(R()<.5){const ans=`$${hx_pi(th,180)}$`;return{q:`將 $${deg(th)}$ 化為弧度`,a:ans,e:h_ln([`$180^{\\circ} = \\pi$，所以 $1^{\\circ} = \\frac{\\pi}{180}$。`,`$${deg(th)} = ${th} \\times \\frac{\\pi}{180} = ${hx_pi(th,180)}$。`],ans)}}
+      const ans=`$${deg(th)}$`;return{q:`將 $${hx_pi(th,180)}$ 化為度`,a:ans,e:h_ln([`$\\pi = 180^{\\circ}$，把 $\\pi$ 換成 $180^{\\circ}$。`,`$${hx_pi(th,180)} = ${(f=>{const t=`${f.n===1?'':f.n+' \\times '}180^{\\circ}`;return f.d===1?t:`\\frac{${t}}{${f.d}}`})(F(th,180))} = ${deg(th)}$。`],ans)}}
+    const th=pick([120,135,150,210,225,240,300,315,330]),fn=pick(['sin','cos']),ans=`$${hx_trig(fn,th)}$`;
+    const ref=th<180?180-th:th<270?th-180:360-th,qd=th<180?2:th<270?3:4,pos=fn==='sin'?qd===2:qd===4;
+    return{q:`求 $\\${fn} ${deg(th)}$ 的值`,a:ans,e:h_ln([`$${deg(th)}$ 在第${'一二三四'[qd-1]}象限，參考角是 $${deg(ref)}$。`,
+      `第${'一二三四'[qd-1]}象限的 $\\${fn}$ 為${pos?'正':'負'}，所以 $\\${fn} ${deg(th)} = ${pos?'':'-'}\\${fn} ${deg(ref)}$。`,
+      `$\\${fn} ${deg(ref)} = ${HX_V[ref][fn==='sin'?0:1]}$，得 $\\${fn} ${deg(th)} = ${hx_trig(fn,th)}$。`],ans)}}
+  if(d===2){const r=ri(2,12),[n,dd]=pick([[1,6],[1,4],[1,3],[1,2],[2,3],[3,4],[5,6]]),ans=`弧長 $${hx_pi(r*n,dd)}$，面積 $${hx_pi(r*r*n,2*dd)}$`;
+    return{q:`扇形的半徑為 $${r}$，圓心角為 $${hx_pi(n,dd)}$，求扇形的弧長與面積`,a:ans,e:h_ln([`圓心角 $\\theta$ 用弧度時：弧長 $= r\\theta$，面積 $= \\frac{1}{2}r^2\\theta$。`,
+      `弧長 $= ${r} \\times ${hx_pi(n,dd)} = ${hx_pi(r*n,dd)}$。`,`面積 $= \\frac{1}{2} \\times ${r}^2 \\times ${hx_pi(n,dd)} = ${hx_pi(r*r*n,2*dd)}$。`],ans)}}
   const a=rnz(-5,5),b=pick([1,2,3,4]),c=ri(-5,5),A=Math.abs(a);
-  const fx=`y = ${a===1?'':a===-1?'-':a}\\sin ${b===1?'':b}x${c===0?'':c>0?` + ${c}`:` - ${-c}`}`;
-  return{q:`求 $${fx}$ 的週期、最大值與最小值`,a:`週期 $${hx_pi(2,b)}$，最大值 $${A+c}$，最小值 $${c-A}$`};
+  const fx=`y = ${a===1?'':a===-1?'-':a}\\sin ${b===1?'':b}x${c===0?'':c>0?` + ${c}`:` - ${-c}`}`,ans=`週期 $${hx_pi(2,b)}$，最大值 $${A+c}$，最小值 $${c-A}$`;
+  return{q:`求 $${fx}$ 的週期、最大值與最小值`,a:ans,e:h_ln([`$y = \\sin bx$ 的週期是 $\\frac{2\\pi}{b}$：$\\frac{2\\pi}{${b}} = ${hx_pi(2,b)}$。`,
+    `$\\sin ${b===1?'':b}x$ 介於 $-1$ 與 $1$，乘上 $${a}$ 後介於 $-${A}$ 與 $${A}$。`,`再加 $${c}$：最大值 $${A} + ${P(c)} = ${A+c}$，最小值 $-${A} + ${P(c)} = ${c-A}$。`],ans)};
 }});
 
 /* 數B 二上：按比例成長模型 */
@@ -3030,60 +3416,110 @@ const HX_LOG={'1.05':0.0212,'1.08':0.0334,'1.1':0.0414,'1.2':0.0792};
 unit({id:'hb-growth',g:'數B 二上',name:'按比例成長模型',instr:'依題意作答。',h:[20,24,28],gen(d){
   if(d===1){const r=pick([2,5,10]),n=pick([2,3]),P=ri(1,9)*10000,num=P*(100+r)**n,den=100**n;
     const v=num/den,txt=Number.isInteger(v)?commas(String(v)):commas(String(Math.floor(v)))+'.'+String(Math.round((v%1)*100)).padStart(2,'0').replace(/0$/,'');
-    return{q:`本金 $${commas(String(P))}$ 元，年利率 $${r}\\%$，每年複利一次，$${n}$ 年後的本利和是多少元？`,a:`$${txt}$ 元`}}
-  if(d===2){if(R()<.5){const k=pick([2,3]),h=ri(1,6),m=ri(2,5),N=ri(1,9)*100;return{q:`某種細菌每 $${h}$ 小時數量變為原來的 $${k}$ 倍，起初有 $${N}$ 隻，$${h*m}$ 小時後有幾隻？`,a:`$${commas(String(N*k**m))}$ 隻`}}
-    const T=pick([5,8,10,20,30]),m=ri(2,5),M=2**m*ri(1,5);return{q:`某放射性物質的半衰期為 $${T}$ 年，原有 $${M}$ 克，經過 $${T*m}$ 年後剩下幾克？`,a:`$${M/2**m}$ 克`}}
-  if(R()<.3){const [base,L1,r]=pick([['0.9',-0.0458,10],['0.8',-0.0969,20]]),n=Math.floor(0.3010/(-L1))+1;
-    return{q:`某藥物在體內每小時減少 $${r}\\%$，至少要經過幾小時，藥量才會少於原來的一半？（已知 $\\log 2 = 0.3010$，$\\log ${base} = ${L1.toFixed(4)}$）`,a:`$${n}$ 小時`}}
+    const ans=`$${txt}$ 元`,bs=e_dec(100+r,2),pw=e_dec((100+r)**n,2*n);
+    return{q:`本金 $${commas(String(P))}$ 元，年利率 $${r}\\%$，每年複利一次，$${n}$ 年後的本利和是多少元？`,a:ans,e:h_ln([`每年複利一次，每過一年本利和變成 $1 + ${r}\\% = ${bs}$ 倍。`,
+      `$${n}$ 年後：本利和 $= ${commas(String(P))} \\times ${bs}^{${n}}$，而 $${bs}^{${n}} = ${pw}$。`,`$${commas(String(P))} \\times ${pw} = ${txt}$（元）。`],ans)}}
+  if(d===2){if(R()<.5){const k=pick([2,3]),h=ri(1,6),m=ri(2,5),N=ri(1,9)*100,ans=`$${commas(String(N*k**m))}$ 隻`;
+      return{q:`某種細菌每 $${h}$ 小時數量變為原來的 $${k}$ 倍，起初有 $${N}$ 隻，$${h*m}$ 小時後有幾隻？`,a:ans,e:h_ln([`$${h*m}$ 小時裡有 $${h*m} \\div ${h} = ${m}$ 個「$${h}$ 小時」，所以變為 $${k}^{${m}} = ${k**m}$ 倍。`,
+        `$${N} \\times ${k**m} = ${commas(String(N*k**m))}$（隻）。`],ans)}}
+    const T=pick([5,8,10,20,30]),m=ri(2,5),M=2**m*ri(1,5),ans=`$${M/2**m}$ 克`;
+    return{q:`某放射性物質的半衰期為 $${T}$ 年，原有 $${M}$ 克，經過 $${T*m}$ 年後剩下幾克？`,a:ans,e:h_ln([`$${T*m}$ 年是 $${T*m} \\div ${T} = ${m}$ 個半衰期，剩下原來的 $\\left(\\frac{1}{2}\\right)^{${m}} = \\frac{1}{${2**m}}$。`,
+      `$${M} \\times \\frac{1}{${2**m}} = ${M/2**m}$（克）。`],ans)}}
+  if(R()<.3){const [base,L1,r]=pick([['0.9',-0.0458,10],['0.8',-0.0969,20]]),n=Math.floor(0.3010/(-L1))+1,ans=`$${n}$ 小時`;
+    return{q:`某藥物在體內每小時減少 $${r}\\%$，至少要經過幾小時，藥量才會少於原來的一半？（已知 $\\log 2 = 0.3010$，$\\log ${base} = ${L1.toFixed(4)}$）`,a:ans,e:h_ln([
+      `每小時剩下 $1 - ${r}\\% = ${base}$ 倍，$n$ 小時後剩 $${base}^{n}$ 倍；要求 $${base}^{n} < \\frac{1}{2}$。`,
+      `兩邊取 $\\log$：$n \\log ${base} < -\\log 2$，即 $${L1.toFixed(4)}n < -0.3010$。`,
+      `除以負數不等號反向：$n > \\frac{0.3010}{${(-L1).toFixed(4)}} \\approx ${(0.3010/(-L1)).toFixed(2)}$，最小整數 $n = ${n}$。`],ans)}}
   const base=pick(Object.keys(HX_LOG)),L1=HX_LOG[base],k=pick([2,3,4,5]),Lk={2:0.3010,3:0.4771,4:0.6020,5:0.6990}[k],ratio=Lk/L1,fr=ratio-Math.floor(ratio);
-  if(fr<0.05||fr>0.95)return null;const n=Math.floor(ratio)+1,r=Math.round((+base-1)*100);
-  return{q:`某城市人口每年成長 $${r}\\%$，至少要經過幾年，人口才會超過現在的 $${k}$ 倍？（已知 $\\log ${base} = ${L1.toFixed(4)}$，$\\log ${k} = ${Lk.toFixed(4)}$）`,a:`$${n}$ 年`};
+  if(fr<0.05||fr>0.95)return null;const n=Math.floor(ratio)+1,r=Math.round((+base-1)*100),ans=`$${n}$ 年`;
+  return{q:`某城市人口每年成長 $${r}\\%$，至少要經過幾年，人口才會超過現在的 $${k}$ 倍？（已知 $\\log ${base} = ${L1.toFixed(4)}$，$\\log ${k} = ${Lk.toFixed(4)}$）`,a:ans,e:h_ln([
+    `每年變成 $1 + ${r}\\% = ${base}$ 倍，$n$ 年後是 $${base}^{n}$ 倍；要求 $${base}^{n} > ${k}$。`,
+    `兩邊取 $\\log$：$n \\log ${base} > \\log ${k}$，即 $${L1.toFixed(4)}n > ${Lk.toFixed(4)}$。`,
+    `$n > \\frac{${Lk.toFixed(4)}}{${L1.toFixed(4)}} \\approx ${ratio.toFixed(2)}$，最小整數 $n = ${n}$。`],ans)};
 }});
 
 /* 數B 二下：空間概念與空間坐標 */
 unit({id:'hb-space',g:'數B 二下',name:'空間概念與空間坐標',instr:'依題意作答。',h:[18,22,26],gen(d){
   if(d===1){const A=[ri(-6,6),ri(-6,6),ri(-6,6)],B=[ri(-6,6),ri(-6,6),ri(-6,6)];if(A.every((x,i)=>x===B[i]))return null;const s=A.reduce((t,x,i)=>t+(x-B[i])**2,0);
-    return R()<.5?{q:`求空間中兩點 $A${hx_pt(...A)}$、$B${hx_pt(...B)}$ 的距離`,a:`$${radOf(s)}$`}:{q:`求 $A${hx_pt(...A)}$、$B${hx_pt(...B)}$ 的中點坐標`,a:`$${hx_fp(...A.map((x,i)=>F(x+B[i],2)))}$`}}
+    if(R()<.5){const ans=`$${radOf(s)}$`;return{q:`求空間中兩點 $A${hx_pt(...A)}$、$B${hx_pt(...B)}$ 的距離`,a:ans,e:h_ln([`空間距離公式：$\\sqrt{(x_1 - x_2)^2 + (y_1 - y_2)^2 + (z_1 - z_2)^2}$。`,
+      `$\\sqrt{${A.map((x,i)=>`(${x} - ${h_pp(B[i])})^2`).join(' + ')}} = \\sqrt{${A.map((x,i)=>(x-B[i])**2).join(' + ')}} = ${h_rt(s)}$。`],ans)}}
+    const M=A.map((x,i)=>F(x+B[i],2)),ans=`$${hx_fp(...M)}$`;
+    return{q:`求 $A${hx_pt(...A)}$、$B${hx_pt(...B)}$ 的中點坐標`,a:ans,e:h_ln([`中點坐標 ＝ 兩端點坐標的平均。`,
+      `$\\left(${A.map((x,i)=>`\\frac{${x} + ${h_pp(B[i])}}{2}`).join(', ')}\\right) = ${hx_fp(...M)}$。`],ans)}}
   if(d===2){const P=[rnz(-6,6),rnz(-6,6),rnz(-6,6)],f=ri(0,3),[a,b,c]=P;
-    if(f===0)return{q:`點 $P${hx_pt(...P)}$ 到 $xy$ 平面與到 $z$ 軸的距離各是多少？`,a:`到 $xy$ 平面 $${Math.abs(c)}$，到 $z$ 軸 $${radOf(a*a+b*b)}$`};
-    if(f===1)return{q:`求點 $P${hx_pt(...P)}$ 對 $xy$ 平面的對稱點，以及對原點的對稱點`,a:`$${hx_pt(a,b,-c)}$，$${hx_pt(-a,-b,-c)}$`};
-    if(f===2)return{q:`求點 $P${hx_pt(...P)}$ 在 $yz$ 平面上的投影點，以及 $P$ 到 $yz$ 平面的距離`,a:`$${hx_pt(0,b,c)}$，距離 $${Math.abs(a)}$`};
-    return{q:`求點 $P${hx_pt(...P)}$ 到原點的距離`,a:`$${radOf(a*a+b*b+c*c)}$`}}
-  const [a,b,c]=pick([[2,3,6],[1,4,8],[2,6,9],[4,4,7],[3,4,12],[ri(1,6),ri(1,6),ri(1,6)]]);
-  return R()<.5?{q:`長方體的長、寬、高分別為 $${a}$、$${b}$、$${c}$，求它的對角線長`,a:`$${radOf(a*a+b*b+c*c)}$`}
-    :{q:`將長方體放在坐標空間中，一個頂點在原點 $O$，三邊分別在正 $x$、$y$、$z$ 軸上，長 $${a}$、寬 $${b}$、高 $${c}$。求與 $O$ 距離最遠的頂點坐標，以及它到 $O$ 的距離`,a:`$${hx_pt(a,b,c)}$，距離 $${radOf(a*a+b*b+c*c)}$`};
+    if(f===0){const ans=`到 $xy$ 平面 $${Math.abs(c)}$，到 $z$ 軸 $${radOf(a*a+b*b)}$`;
+      return{q:`點 $P${hx_pt(...P)}$ 到 $xy$ 平面與到 $z$ 軸的距離各是多少？`,a:ans,e:h_ln([`到 $xy$ 平面的距離看 $z$ 坐標的絕對值：$\\left|${c}\\right| = ${Math.abs(c)}$。`,
+        `到 $z$ 軸的距離只看 $x$、$y$：$\\sqrt{${h_pp(a)}^2 + ${h_pp(b)}^2} = ${h_rt(a*a+b*b)}$。`],ans)}}
+    if(f===1){const ans=`$${hx_pt(a,b,-c)}$，$${hx_pt(-a,-b,-c)}$`;
+      return{q:`求點 $P${hx_pt(...P)}$ 對 $xy$ 平面的對稱點，以及對原點的對稱點`,a:ans,e:h_ln([`對 $xy$ 平面對稱：$x$、$y$ 不變，$z$ 變號，得 $${hx_pt(a,b,-c)}$。`,
+        `對原點對稱：三個坐標都變號，得 $${hx_pt(-a,-b,-c)}$。`],ans)}}
+    if(f===2){const ans=`$${hx_pt(0,b,c)}$，距離 $${Math.abs(a)}$`;
+      return{q:`求點 $P${hx_pt(...P)}$ 在 $yz$ 平面上的投影點，以及 $P$ 到 $yz$ 平面的距離`,a:ans,e:h_ln([`$yz$ 平面上的點 $x = 0$，投影就是把 $x$ 坐標改成 $0$：$${hx_pt(0,b,c)}$。`,
+        `到 $yz$ 平面的距離是 $x$ 坐標的絕對值：$\\left|${a}\\right| = ${Math.abs(a)}$。`],ans)}}
+    const ans=`$${radOf(a*a+b*b+c*c)}$`;
+    return{q:`求點 $P${hx_pt(...P)}$ 到原點的距離`,a:ans,e:h_ln([`到原點距離 $= \\sqrt{x^2 + y^2 + z^2}$。`,
+      `$\\sqrt{${h_pp(a)}^2 + ${h_pp(b)}^2 + ${h_pp(c)}^2} = \\sqrt{${a*a} + ${b*b} + ${c*c}} = ${h_rt(a*a+b*b+c*c)}$。`],ans)}}
+  const [a,b,c]=pick([[2,3,6],[1,4,8],[2,6,9],[4,4,7],[3,4,12],[ri(1,6),ri(1,6),ri(1,6)]]),S=a*a+b*b+c*c;
+  const dg=`對角線長 $= \\sqrt{${a}^2 + ${b}^2 + ${c}^2} = \\sqrt{${a*a} + ${b*b} + ${c*c}} = ${h_rt(S)}$。`;
+  if(R()<.5){const ans=`$${radOf(S)}$`;return{q:`長方體的長、寬、高分別為 $${a}$、$${b}$、$${c}$，求它的對角線長`,a:ans,e:h_ln([`先算底面對角線：$\\sqrt{${a}^2 + ${b}^2}$，再和高 $${c}$ 用一次畢氏定理。`,dg],ans)}}
+  const ans=`$${hx_pt(a,b,c)}$，距離 $${radOf(S)}$`;
+  return{q:`將長方體放在坐標空間中，一個頂點在原點 $O$，三邊分別在正 $x$、$y$、$z$ 軸上，長 $${a}$、寬 $${b}$、高 $${c}$。求與 $O$ 距離最遠的頂點坐標，以及它到 $O$ 的距離`,a:ans,e:h_ln([
+    `離 $O$ 最遠的頂點是對角的頂點，三個坐標都取最大：$${hx_pt(a,b,c)}$。`,`它到 $O$ 的距離就是長方體的${dg}`],ans)};
 }});
 
 /* 數B 二下：圓錐曲線 */
 const hx_fr=(n,d)=>`\\frac{${n}}{${d}}`;
 unit({id:'hb-conic',g:'數B 二下',name:'圓錐曲線（拋物線、橢圓、雙曲線）',instr:'依題意作答。',h:[20,24,28],gen(d){
   if(d===1){const c=rnz(-5,5);
-    return R()<.5?{q:`求拋物線 $y^2 = ${4*c}x$ 的焦點坐標與準線方程式`,a:`焦點 $${hx_pt(c,0)}$，準線 $x = ${-c}$`}
-                 :{q:`求拋物線 $x^2 = ${4*c}y$ 的焦點坐標與準線方程式`,a:`焦點 $${hx_pt(0,c)}$，準線 $y = ${-c}$`}}
+    if(R()<.5){const ans=`焦點 $${hx_pt(c,0)}$，準線 $x = ${-c}$`;return{q:`求拋物線 $y^2 = ${4*c}x$ 的焦點坐標與準線方程式`,a:ans,e:h_ln([`和標準式 $y^2 = 4cx$ 比較：$4c = ${4*c}$，$c = ${c}$。`,
+      `$y^2 = 4cx$ 的焦點是 $(c, 0)$、準線是 $x = -c$。`,`焦點 $${hx_pt(c,0)}$，準線 $x = ${-c}$。`],ans)}}
+    const ans=`焦點 $${hx_pt(0,c)}$，準線 $y = ${-c}$`;return{q:`求拋物線 $x^2 = ${4*c}y$ 的焦點坐標與準線方程式`,a:ans,e:h_ln([`和標準式 $x^2 = 4cy$ 比較：$4c = ${4*c}$，$c = ${c}$。`,
+      `$x^2 = 4cy$ 的焦點是 $(0, c)$、準線是 $y = -c$。`,`焦點 $${hx_pt(0,c)}$，準線 $y = ${-c}$。`],ans)}}
   if(d===2){if(R()<.5){const [a,b,c]=pick([[5,4,3],[5,3,4],[13,12,5],[13,5,12],[10,8,6],[10,6,8],[17,15,8]]),vert=R()<.4;
-      const eqn=vert?`${hx_fr('x^2',b*b)} + ${hx_fr('y^2',a*a)} = 1`:`${hx_fr('x^2',a*a)} + ${hx_fr('y^2',b*b)} = 1`;
-      return{q:`求橢圓 $${eqn}$ 的焦點坐標、長軸長與短軸長`,a:`焦點 $${vert?`(0, \\pm ${c})`:`(\\pm ${c}, 0)`}$，長軸長 $${2*a}$，短軸長 $${2*b}$`}}
-    const [a,b,c]=pick([[3,4,5],[4,3,5],[5,12,13],[12,5,13],[6,8,10],[8,6,10]]),k=F(b,a);
-    return{q:`求雙曲線 $${hx_fr('x^2',a*a)} - ${hx_fr('y^2',b*b)} = 1$ 的焦點坐標與漸近線方程式`,a:`焦點 $(\\pm ${c}, 0)$，漸近線 $y = \\pm ${ftex(k)}x$`}}
+      const eqn=vert?`${hx_fr('x^2',b*b)} + ${hx_fr('y^2',a*a)} = 1`:`${hx_fr('x^2',a*a)} + ${hx_fr('y^2',b*b)} = 1`,ans=`焦點 $${vert?`(0, \\pm ${c})`:`(\\pm ${c}, 0)`}$，長軸長 $${2*a}$，短軸長 $${2*b}$`;
+      return{q:`求橢圓 $${eqn}$ 的焦點坐標、長軸長與短軸長`,a:ans,e:h_ln([`分母大的是 $a^2 = ${a*a}$（在 $${vert?'y':'x'}^2$ 下面，長軸在 $${vert?'y':'x'}$ 軸上），$b^2 = ${b*b}$，所以 $a = ${a}$，$b = ${b}$。`,
+        `橢圓 $c^2 = a^2 - b^2 = ${a*a} - ${b*b} = ${c*c}$，$c = ${c}$，焦點 $${vert?`(0, \\pm ${c})`:`(\\pm ${c}, 0)`}$。`,`長軸長 $2a = ${2*a}$，短軸長 $2b = ${2*b}$。`],ans)}}
+    const [a,b,c]=pick([[3,4,5],[4,3,5],[5,12,13],[12,5,13],[6,8,10],[8,6,10]]),k=F(b,a),ans=`焦點 $(\\pm ${c}, 0)$，漸近線 $y = \\pm ${ftex(k)}x$`;
+    return{q:`求雙曲線 $${hx_fr('x^2',a*a)} - ${hx_fr('y^2',b*b)} = 1$ 的焦點坐標與漸近線方程式`,a:ans,e:h_ln([`$a^2 = ${a*a}$，$b^2 = ${b*b}$，所以 $a = ${a}$，$b = ${b}$。`,
+      `雙曲線 $c^2 = a^2 + b^2 = ${a*a} + ${b*b} = ${c*c}$，$c = ${c}$，焦點 $(\\pm ${c}, 0)$。`,`漸近線 $y = \\pm \\frac{b}{a}x = \\pm ${h_dv(b,a)}x$。`],ans)}}
   const f=ri(0,2);
-  if(f===0){const c=rnz(-5,5);return{q:`求焦點為 $${hx_pt(0,c)}$、準線為 $y = ${-c}$ 的拋物線方程式`,a:`$x^2 = ${4*c}y$`}}
-  if(f===1){const [a,b,c]=pick([[5,4,3],[5,3,4],[13,12,5],[10,8,6],[10,6,8],[17,15,8]]);return{q:`求焦點為 $(\\pm ${c}, 0)$、長軸長為 $${2*a}$ 的橢圓方程式`,a:`$${hx_fr('x^2',a*a)} + ${hx_fr('y^2',b*b)} = 1$`}}
-  const [a,b,c]=pick([[3,4,5],[4,3,5],[5,12,13],[12,5,13],[6,8,10]]);return{q:`求焦點為 $(\\pm ${c}, 0)$、頂點為 $(\\pm ${a}, 0)$ 的雙曲線方程式`,a:`$${hx_fr('x^2',a*a)} - ${hx_fr('y^2',b*b)} = 1$`};
+  if(f===0){const c=rnz(-5,5),ans=`$x^2 = ${4*c}y$`;return{q:`求焦點為 $${hx_pt(0,c)}$、準線為 $y = ${-c}$ 的拋物線方程式`,a:ans,e:h_ln([`焦點 $(0, c)$、準線 $y = -c$ 的拋物線，頂點在原點，標準式 $x^2 = 4cy$。`,
+    `這裡 $c = ${c}$，$4c = ${4*c}$，得 $x^2 = ${4*c}y$。`],ans)}}
+  if(f===1){const [a,b,c]=pick([[5,4,3],[5,3,4],[13,12,5],[10,8,6],[10,6,8],[17,15,8]]),ans=`$${hx_fr('x^2',a*a)} + ${hx_fr('y^2',b*b)} = 1$`;
+    return{q:`求焦點為 $(\\pm ${c}, 0)$、長軸長為 $${2*a}$ 的橢圓方程式`,a:ans,e:h_ln([`焦點在 $x$ 軸上，中心在原點，設 $\\frac{x^2}{a^2} + \\frac{y^2}{b^2} = 1$。`,
+      `長軸長 $2a = ${2*a}$，$a = ${a}$；$c = ${c}$。`,`$b^2 = a^2 - c^2 = ${a*a} - ${c*c} = ${b*b}$，代入得 $${hx_fr('x^2',a*a)} + ${hx_fr('y^2',b*b)} = 1$。`],ans)}}
+  const [a,b,c]=pick([[3,4,5],[4,3,5],[5,12,13],[12,5,13],[6,8,10]]),ans=`$${hx_fr('x^2',a*a)} - ${hx_fr('y^2',b*b)} = 1$`;
+  return{q:`求焦點為 $(\\pm ${c}, 0)$、頂點為 $(\\pm ${a}, 0)$ 的雙曲線方程式`,a:ans,e:h_ln([`焦點、頂點都在 $x$ 軸上，設 $\\frac{x^2}{a^2} - \\frac{y^2}{b^2} = 1$，$a = ${a}$，$c = ${c}$。`,
+    `$b^2 = c^2 - a^2 = ${c*c} - ${a*a} = ${b*b}$，代入得 $${hx_fr('x^2',a*a)} - ${hx_fr('y^2',b*b)} = 1$。`],ans)};
 }});
 
 /* 數B 二下：矩陣與資料表格 */
 unit({id:'hb-mat',g:'數B 二下',name:'矩陣與資料表格',instr:'依題意作答。',h:[22,26,32],gen(d){
   if(d===1){const r=pick([2,3]),c=pick([2,3]),A=hx_rand(r,c,-5,5),B=hx_rand(r,c,-5,5),k=rnz(-3,3),f=ri(0,2);
-    if(f===0)return{q:`已知 $A = ${hx_bm(A)}$，$B = ${hx_bm(B)}$，求 $A + B$`,a:`$${hx_bm(A.map((row,i)=>row.map((x,j)=>x+B[i][j])))}$`};
-    if(f===1)return{q:`已知 $A = ${hx_bm(A)}$，$B = ${hx_bm(B)}$，求 $A - B$`,a:`$${hx_bm(A.map((row,i)=>row.map((x,j)=>x-B[i][j])))}$`};
-    const m=rnz(-3,3);return{q:`已知 $A = ${hx_bm(A)}$，$B = ${hx_bm(B)}$，求 $${k===1?'':k===-1?'-':k}A ${m<0?'-':'+'} ${Math.abs(m)===1?'':Math.abs(m)}B$`,a:`$${hx_bm(A.map((row,i)=>row.map((x,j)=>k*x+m*B[i][j])))}$`}}
-  if(d===2){const sh=pick([[2,2,2],[2,3,2],[3,2,2],[2,2,3]]),A=hx_rand(sh[0],sh[1],-4,4),B=hx_rand(sh[1],sh[2],-4,4);
-    return{q:`已知 $A = ${hx_bm(A)}$，$B = ${hx_bm(B)}$，求 $AB$`,a:`$${hx_bm(hx_mul(A,B))}$`}}
+    const op=(s,M)=>`對應位置${s}：$${hx_bm(A.map((row,i)=>row.map((x,j)=>`${x} ${s==='相加'?'+':'-'} ${h_pp(B[i][j])}`)))} = ${hx_bm(M)}$。`;
+    if(f===0){const M=A.map((row,i)=>row.map((x,j)=>x+B[i][j])),ans=`$${hx_bm(M)}$`;
+      return{q:`已知 $A = ${hx_bm(A)}$，$B = ${hx_bm(B)}$，求 $A + B$`,a:ans,e:h_ln([`兩矩陣大小相同（都是 $${r} \\times ${c}$）才能相加。`,op('相加',M)],ans)}}
+    if(f===1){const M=A.map((row,i)=>row.map((x,j)=>x-B[i][j])),ans=`$${hx_bm(M)}$`;
+      return{q:`已知 $A = ${hx_bm(A)}$，$B = ${hx_bm(B)}$，求 $A - B$`,a:ans,e:h_ln([`兩矩陣大小相同（都是 $${r} \\times ${c}$）才能相減。`,op('相減',M)],ans)}}
+    const m=rnz(-3,3),M=A.map((row,i)=>row.map((x,j)=>k*x+m*B[i][j])),ans=`$${hx_bm(M)}$`,kA=A.map(r=>r.map(x=>k*x)),mB=B.map(r=>r.map(x=>m*x));
+    return{q:`已知 $A = ${hx_bm(A)}$，$B = ${hx_bm(B)}$，求 $${k===1?'':k===-1?'-':k}A ${m<0?'-':'+'} ${Math.abs(m)===1?'':Math.abs(m)}B$`,a:ans,e:h_ln([`純量乘矩陣，每個元素都要乘：$${k}A = ${hx_bm(kA)}$，$${m}B = ${hx_bm(mB)}$。`,
+      `對應位置相加：$${hx_bm(kA.map((row,i)=>row.map((x,j)=>`${x} + ${h_pp(mB[i][j])}`)))} = ${hx_bm(M)}$。`],ans)}}
+  if(d===2){const sh=pick([[2,2,2],[2,3,2],[3,2,2],[2,2,3]]),A=hx_rand(sh[0],sh[1],-4,4),B=hx_rand(sh[1],sh[2],-4,4),C=hx_mul(A,B),ans=`$${hx_bm(C)}$`;
+    const el=(i,j)=>`c_{${i+1}${j+1}} = ${A[i].map((x,t)=>`${h_pp(x)} \\times ${h_pp(B[t][j])}`).join(' + ')} = ${C[i][j]}`;
+    return{q:`已知 $A = ${hx_bm(A)}$，$B = ${hx_bm(B)}$，求 $AB$`,a:ans,e:h_ln([`$A$ 是 $${sh[0]} \\times ${sh[1]}$、$B$ 是 $${sh[1]} \\times ${sh[2]}$，乘積是 $${sh[0]} \\times ${sh[2]}$；第 $i$ 列第 $j$ 行 ＝ $A$ 的第 $i$ 列與 $B$ 的第 $j$ 行對應相乘再相加。`,
+      ...C.map((row,i)=>`第 ${i+1} 列：$${row.map((_,j)=>el(i,j)).join('$，$')}$。`)],ans)}}
   if(R()<.5){const shops=['甲店','乙店'],items=['蘋果','香蕉','芭樂'],Q=hx_rand(2,3,2,15),p=[[ri(10,30)],[ri(5,20)],[ri(8,25)]],T=hx_mul(Q,p);
-    return{q:`兩家店某天的銷售量（單位：個）如矩陣 $Q = ${hx_bm(Q)}$（第一列甲店、第二列乙店；三行依序為${items.join('、')}），單價（元）如矩陣 $P = ${hx_bm(p)}$。求 $QP$，並說明甲、乙兩店當天的營業額`,a:`$QP = ${hx_bm(T)}$，甲店 $${T[0][0]}$ 元、乙店 $${T[1][0]}$ 元`}}
+    const ans=`$QP = ${hx_bm(T)}$，甲店 $${T[0][0]}$ 元、乙店 $${T[1][0]}$ 元`,row=i=>`${Q[i][0]} \\times ${p[0][0]} + ${Q[i][1]} \\times ${p[1][0]} + ${Q[i][2]} \\times ${p[2][0]} = ${T[i][0]}`;
+    return{q:`兩家店某天的銷售量（單位：個）如矩陣 $Q = ${hx_bm(Q)}$（第一列甲店、第二列乙店；三行依序為${items.join('、')}），單價（元）如矩陣 $P = ${hx_bm(p)}$。求 $QP$，並說明甲、乙兩店當天的營業額`,a:ans,e:h_ln([
+      `$Q$ 是 $2 \\times 3$、$P$ 是 $3 \\times 1$，$QP$ 是 $2 \\times 1$：每一列是「各水果數量 × 單價」的總和。`,
+      `第一列（甲店）：$${row(0)}$。`,`第二列（乙店）：$${row(1)}$。`,`所以甲店營業額 $${T[0][0]}$ 元、乙店 $${T[1][0]}$ 元。`],ans)}}
   const A=[[rnz(-4,4),rnz(-4,4)],[rnz(-4,4),rnz(-4,4)]],det=A[0][0]*A[1][1]-A[0][1]*A[1][0];if(Math.abs(det)!==1)return null;
   const x=ri(-6,6),y=ri(-6,6),b=[A[0][0]*x+A[0][1]*y,A[1][0]*x+A[1][1]*y],inv=[[A[1][1]*det,-A[0][1]*det],[-A[1][0]*det,A[0][0]*det]];
-  return{q:`將方程組 $${sys(eqxy(A[0][0],A[0][1],b[0]),eqxy(A[1][0],A[1][1],b[1]))}$ 寫成 $AX = B$，利用反方陣求解`,a:`$A^{-1} = ${hx_bm(inv)}$，$x = ${x},\\ y = ${y}$`};
+  const ans=`$A^{-1} = ${hx_bm(inv)}$，$x = ${x},\\ y = ${y}$`;
+  return{q:`將方程組 $${sys(eqxy(A[0][0],A[0][1],b[0]),eqxy(A[1][0],A[1][1],b[1]))}$ 寫成 $AX = B$，利用反方陣求解`,a:ans,e:h_ln([
+    `係數矩陣 $A = ${hx_bm(A)}$，$X = \\begin{bmatrix} x \\\\ y \\end{bmatrix}$，$B = \\begin{bmatrix} ${b[0]} \\\\ ${b[1]} \\end{bmatrix}$。`,
+    `$\\det A = ${h_pp(A[0][0])} \\times ${h_pp(A[1][1])} - ${h_pp(A[0][1])} \\times ${h_pp(A[1][0])} = ${det}$，$A^{-1} = \\frac{1}{${det}}${hx_bm([[A[1][1],-A[0][1]],[-A[1][0],A[0][0]]])} = ${hx_bm(inv)}$。`,
+    `$X = A^{-1}B$：$x = ${h_pp(inv[0][0])} \\times ${h_pp(b[0])} + ${h_pp(inv[0][1])} \\times ${h_pp(b[1])} = ${x}$，$y = ${h_pp(inv[1][0])} \\times ${h_pp(b[0])} + ${h_pp(inv[1][1])} \\times ${h_pp(b[1])} = ${y}$。`],ans)};
 }});
 
 /* 數A、數B 共用題型（同一套出題程式，列在數B） */
@@ -3095,58 +3531,114 @@ unit({id:'hb-mat',g:'數B 二下',name:'矩陣與資料表格',instr:'依題意�
 const h3_pi=f=>f.n===0?'0':`${f.n<0?'-':''}${f.d===1?(Math.abs(f.n)===1?'':Math.abs(f.n)):`\\frac{${Math.abs(f.n)}}{${f.d}}`}\\pi`;
 const h3_pn=(terms)=>poly(terms);           // 以 n 為變數的多項式
 const h3_lim=(e)=>`\\lim_{n \\to \\infty} ${e}`;
+const h3_q=ts=>{let s='';for(const [k,den] of ts){if(k===0)continue;const body=den?`\\frac{${Math.abs(k)}}{${den}}`:`${Math.abs(k)}`;s+=s===''?(k<0?'-':'')+body:(k<0?' - ':' + ')+body}return s||'0'};
 
 /* 數列的極限與無窮等比級數 */
 unit({id:'h3-limit',g:'數甲 上',name:'數列的極限與無窮等比級數',instr:'依題意作答。',h:[20,24,28],gen(d){
   if(d===1){const a=rnz(-6,6),b=ri(-9,9),c=ri(-9,9),dd=rnz(-6,6),e=ri(-9,9),f=ri(-9,9);
-    if(R()<.7)return{q:`求 $${h3_lim(`\\frac{${h3_pn([[a,'n^2'],[b,'n'],[c,'']])}}{${h3_pn([[dd,'n^2'],[e,'n'],[f,'']])}}`)}$`,a:`$${ftex(F(a,dd))}$`};
-    return{q:`求 $${h3_lim(`\\frac{${h3_pn([[b||1,'n'],[c,'']])}}{${h3_pn([[dd,'n^2'],[e,'n'],[f,'']])}}`)}$`,a:'$0$'}}
+    if(R()<.7){const ans=`$${ftex(F(a,dd))}$`;return{q:`求 $${h3_lim(`\\frac{${h3_pn([[a,'n^2'],[b,'n'],[c,'']])}}{${h3_pn([[dd,'n^2'],[e,'n'],[f,'']])}}`)}$`,a:ans,e:h_ln([
+      `分子、分母都是二次式，同除以最高次 $n^2$：$\\frac{${h3_q([[a,''],[b,'n'],[c,'n^2']])}}{${h3_q([[dd,''],[e,'n'],[f,'n^2']])}}$。`,
+      `$n \\to \\infty$ 時 $\\frac{1}{n} \\to 0$、$\\frac{1}{n^2} \\to 0$，極限是最高次項係數的比 $${h_dv(a,dd)}$。`],ans)}}
+    return{q:`求 $${h3_lim(`\\frac{${h3_pn([[b||1,'n'],[c,'']])}}{${h3_pn([[dd,'n^2'],[e,'n'],[f,'']])}}`)}$`,a:'$0$',e:h_ln([`分子是一次式、分母是二次式，同除以 $n^2$：分子變成 $${h3_q([[b||1,'n'],[c,'n^2']])} \\to 0$，分母 $\\to ${dd}$。`,
+      `分母次數較高，極限為 $\\frac{0}{${dd}} = 0$。`],'$0$')}}
   if(d===2){if(R()<.5){const a=rnz(-9,9),p=rnz(-4,4),q=ri(2,6);if(Math.abs(p)>=q||gcd(p,q)!==1)return null;const r=F(p,q),t=[F(a,1),fmul(F(a,1),r),fmul(fmul(F(a,1),r),r)];
-      return{q:`求無窮等比級數 $${ftex(t[0])} ${t[1].n<0?'-':'+'} ${ftex(F(Math.abs(t[1].n),t[1].d))} ${t[2].n<0?'-':'+'} ${ftex(F(Math.abs(t[2].n),t[2].d))} ${t[2].n*p<0?'-':'+'} \\cdots$ 的和`,a:`$${ftex(fdiv(F(a,1),fsub(F(1,1),r)))}$`}}
-    if(R()<.5){const ab=ri(10,98);if(ab%11===0)return null;return{q:`將循環小數 $0.\\overline{${String(ab).padStart(2,'0')}}$ 化為最簡分數`,a:`$${ftex(F(ab,99))}$`}}
-    const a=ri(1,9),b=ri(0,9);if(a===b)return null;return{q:`將循環小數 $0.${a}\\overline{${b}}$ 化為最簡分數`,a:`$${ftex(F(10*a+b-a,90))}$`}}
-  if(R()<.5){const a=rnz(-9,9);return{q:`求 $${h3_lim(`\\left(\\sqrt{n^2 ${a<0?'-':'+'} ${Math.abs(a)}n} - n\\right)`)}$`,a:`$${ftex(F(a,2))}$`}}
+      const S=fdiv(F(a,1),fsub(F(1,1),r)),ans=`$${ftex(S)}$`;
+      return{q:`求無窮等比級數 $${ftex(t[0])} ${t[1].n<0?'-':'+'} ${ftex(F(Math.abs(t[1].n),t[1].d))} ${t[2].n<0?'-':'+'} ${ftex(F(Math.abs(t[2].n),t[2].d))} ${t[2].n*p<0?'-':'+'} \\cdots$ 的和`,a:ans,e:h_ln([
+        `首項 $a = ${a}$，公比 $r = ${h_pf(t[1])} \\div ${h_pf(t[0])} = ${ftex(r)}$。`,`$\\left|r\\right| < 1$，級數收斂，和 $= \\frac{a}{1 - r}$。`,
+        `$\\frac{${a}}{1 - ${h_pf(r)}} = \\frac{${a}}{${ftex(fsub(F(1),r))}} = ${ftex(S)}$。`],ans)}}
+    if(R()<.5){const ab=ri(10,98);if(ab%11===0)return null;const s2=String(ab).padStart(2,'0'),ans=`$${ftex(F(ab,99))}$`;
+      return{q:`將循環小數 $0.\\overline{${s2}}$ 化為最簡分數`,a:ans,e:h_ln([`設 $x = 0.\\overline{${s2}}$，循環節有 $2$ 位，乘 $100$：$100x = ${s2}.\\overline{${s2}}$。`,
+        `兩式相減：$99x = ${ab}$，$x = ${h_dv(ab,99)}$。`],ans)}}
+    const a=ri(1,9),b=ri(0,9);if(a===b)return null;const ans=`$${ftex(F(10*a+b-a,90))}$`;
+    return{q:`將循環小數 $0.${a}\\overline{${b}}$ 化為最簡分數`,a:ans,e:h_ln([`設 $x = 0.${a}\\overline{${b}}$，則 $100x = ${a}${b}.\\overline{${b}}$，$10x = ${a}.\\overline{${b}}$。`,
+      `兩式相減：$90x = ${10*a+b} - ${a} = ${10*a+b-a}$，$x = ${h_dv(10*a+b-a,90)}$。`],ans)}}
+  if(R()<.5){const a=rnz(-9,9),ans=`$${ftex(F(a,2))}$`,sg=`${a<0?'-':'+'} ${Math.abs(a)===1?'':Math.abs(a)}n`;
+    return{q:`求 $${h3_lim(`\\left(\\sqrt{n^2 ${a<0?'-':'+'} ${Math.abs(a)}n} - n\\right)`)}$`,a:ans,e:h_ln([
+      `分子有理化：乘以 $\\frac{\\sqrt{n^2 ${sg}} + n}{\\sqrt{n^2 ${sg}} + n}$，得 $\\frac{(n^2 ${sg}) - n^2}{\\sqrt{n^2 ${sg}} + n} = \\frac{${poly([[a,'n']])}}{\\sqrt{n^2 ${sg}} + n}$。`,
+      `分子分母同除以 $n$：$\\frac{${a}}{\\sqrt{1 ${a<0?'-':'+'} \\frac{${Math.abs(a)}}{n}} + 1}$。`,`$n \\to \\infty$ 時分母 $\\to 1 + 1 = 2$，極限 $= \\frac{${a}}{2}${ftex(F(a,2))===`\\frac{${a}}{2}`?'':` = ${ftex(F(a,2))}`}$。`],ans)}}
   const p=pick([2,3,5]),q=pick([2,3,4,5,7]),u=rnz(-3,3),v=rnz(-3,3);if(p===q)return null;
   const big=Math.max(p,q),small=Math.min(p,q),A=[ri(1,3),ri(1,3)],ans=p>q?F(A[0]*p,A[1]):F(A[0],A[1]*q);
-  return{q:`求 $${h3_lim(`\\frac{${A[0]===1?'':A[0]}\\cdot ${p}^{n+1} + ${q}^{n}}{${A[1]===1?'':A[1]}\\cdot ${p}^{n} + ${q}^{n+1}}`)}$`.replace(/\{\\cdot /g,'{'),a:`$${ftex(p>q?F(A[0]*p,A[1]):F(1,q))}$`};
+  const aS=`$${ftex(p>q?F(A[0]*p,A[1]):F(1,q))}$`,c0=A[0]===1?'':`${A[0]} \\cdot `,c1=A[1]===1?'':`${A[1]} \\cdot `;
+  return{q:`求 $${h3_lim(`\\frac{${A[0]===1?'':A[0]}\\cdot ${p}^{n+1} + ${q}^{n}}{${A[1]===1?'':A[1]}\\cdot ${p}^{n} + ${q}^{n+1}}`)}$`.replace(/\{\\cdot /g,'{'),a:aS,e:h_ln([
+    `看底數較大的 $${big}^{n}$，分子、分母同除以 $${big}^{n}$；$\\left(\\frac{${small}}{${big}}\\right)^{n} \\to 0$。`,
+    p>q?`分子 $${c0}${p}^{n+1} + ${q}^{n}$ 除以 $${p}^{n}$ 得 $${A[0]===1?'':A[0]+' \\cdot '}${p} + \\left(\\frac{${q}}{${p}}\\right)^{n} \\to ${A[0]*p}$；分母 $${c1}${p}^{n} + ${q}^{n+1}$ 除以 $${p}^{n}$ 得 $${A[1]} + ${q}\\left(\\frac{${q}}{${p}}\\right)^{n} \\to ${A[1]}$。`
+       :`分子 $${c0}${p}^{n+1} + ${q}^{n}$ 除以 $${q}^{n}$ 得 $${A[0]===1?'':A[0]+' \\cdot '}${p}\\left(\\frac{${p}}{${q}}\\right)^{n} + 1 \\to 1$；分母 $${c1}${p}^{n} + ${q}^{n+1}$ 除以 $${q}^{n}$ 得 $${A[1]===1?'':A[1]+' \\cdot '}\\left(\\frac{${p}}{${q}}\\right)^{n} + ${q} \\to ${q}$。`,
+    p>q?`極限 $= ${h_dv(A[0]*p,A[1])}$。`:`極限 $= \\frac{1}{${q}}$。`],aS)};
 }});
 
 /* 導數與微分公式（數甲含連鎖律） */
 unit({id:'h3-diff',g:'數甲 上',name:'導數與微分公式（含連鎖律）',instr:'依題意作答。',h:[18,22,28],gen(d){
-  if(d===1){const a=rnz(-5,5),b=ri(-6,6),c=ri(-9,9),e=ri(-9,9);return{q:`已知 $f(x) = ${poly([[a,'x^3'],[b,'x^2'],[c,'x'],[e,'']])}$，求 $f'(x)$`,a:`$f'(x) = ${poly([[3*a,'x^2'],[2*b,'x'],[c,'']])}$`}}
-  if(d===2){const a=rnz(-3,3),b=rnz(-4,4),n=ri(3,5),k=ri(-2,2),v=n*a*(a*k+b)**(n-1);if(Math.abs(v)>5000)return null;
-    return{q:`已知 $f(x) = (${lin(a,b)})^{${n}}$，求 $f'(${k})$`,a:`$${v}$`}}
-  if(R()<.5){const p=rnz(-5,5),q=rnz(-4,4),r=ri(-5,5),k=ri(-3,3);return{q:`已知 $f(x) = (${quad(1,0,p)})(${lin(q,r)})$，求 $f'(${k})$`,a:`$${2*k*(q*k+r)+q*(k*k+p)}$`}}
-  const a=rnz(-3,3),b=ri(-4,4),c=ri(-6,6),e=ri(-6,6),k=ri(-2,2),m=3*a*k*k+2*b*k+c,f0=a*k**3+b*k*k+c*k+e;
-  return{q:`求曲線 $y = ${poly([[a,'x^3'],[b,'x^2'],[c,'x'],[e,'']])}$ 在 $x = ${k}$ 處的切線方程式`,a:`$y = ${lin(m,f0-m*k)}$`};
+  if(d===1){const a=rnz(-5,5),b=ri(-6,6),c=ri(-9,9),e=ri(-9,9),ans=`$f'(x) = ${poly([[3*a,'x^2'],[2*b,'x'],[c,'']])}$`;
+    return{q:`已知 $f(x) = ${poly([[a,'x^3'],[b,'x^2'],[c,'x'],[e,'']])}$，求 $f'(x)$`,a:ans,e:h_ln([`逐項微分：$(x^n)' = nx^{n-1}$，常數的導數是 $0$。`,
+      `$${[[a,'x^3',3*a,'x^2'],[b,'x^2',2*b,'x'],[c,'x',c,'']].filter(t=>t[0]).map(t=>`(${poly([[t[0],t[1]]])})' = ${poly([[t[2],t[3]]])}`).join('$，$')}$${e?`，常數 $${e}$ 微分後是 $0$`:''}。`,`合起來 $f'(x) = ${poly([[3*a,'x^2'],[2*b,'x'],[c,'']])}$。`],ans)}}
+  if(d===2){const a=rnz(-3,3),b=rnz(-4,4),n=ri(3,5),k=ri(-2,2),v=n*a*(a*k+b)**(n-1);if(Math.abs(v)>5000)return null;const ans=`$${v}$`;
+    return{q:`已知 $f(x) = (${lin(a,b)})^{${n}}$，求 $f'(${k})$`,a:ans,e:h_ln([`連鎖律：$f'(x) = ${n}(${lin(a,b)})^{${n-1}} \\times (${lin(a,b)})' = ${n}(${lin(a,b)})^{${n-1}} \\times ${h_pp(a)}$。`,
+      `$x = ${k}$ 時 $${lin(a,b)} = ${a*k+b}$。`,`$f'(${k}) = ${n} \\times ${h_pp(a*k+b)}^{${n-1}} \\times ${h_pp(a)} = ${n} \\times ${h_pp((a*k+b)**(n-1))} \\times ${h_pp(a)} = ${v}$。`],ans)}}
+  if(R()<.5){const p=rnz(-5,5),q=rnz(-4,4),r=ri(-5,5),k=ri(-3,3),v=2*k*(q*k+r)+q*(k*k+p),ans=`$${v}$`;
+    return{q:`已知 $f(x) = (${quad(1,0,p)})(${lin(q,r)})$，求 $f'(${k})$`,a:ans,e:h_ln([`乘法規則：$(uv)' = u'v + uv'$，$u = ${quad(1,0,p)}$，$v = ${lin(q,r)}$，$u' = 2x$，$v' = ${q}$。`,
+      `$f'(x) = 2x(${lin(q,r)}) + ${h_pp(q)}(${quad(1,0,p)})$。`,
+      `$x = ${k}$：$u = ${k*k+p}$，$v = ${q*k+r}$，$f'(${k}) = 2 \\times ${h_pp(k)} \\times ${h_pp(q*k+r)} + ${h_pp(q)} \\times ${h_pp(k*k+p)} = ${2*k*(q*k+r)} + ${h_pp(q*(k*k+p))} = ${v}$。`],ans)}}
+  const a=rnz(-3,3),b=ri(-4,4),c=ri(-6,6),e=ri(-6,6),k=ri(-2,2),m=3*a*k*k+2*b*k+c,f0=a*k**3+b*k*k+c*k+e,ans=`$y = ${lin(m,f0-m*k)}$`;
+  return{q:`求曲線 $y = ${poly([[a,'x^3'],[b,'x^2'],[c,'x'],[e,'']])}$ 在 $x = ${k}$ 處的切線方程式`,a:ans,e:h_ln([`切點：$f(${k}) = ${h_psub([a,b,c,e],h_pp(k))} = ${f0}$，切點 $${pt(k,f0)}$。`,
+    `斜率：$f'(x) = ${poly([[3*a,'x^2'],[2*b,'x'],[c,'']])}$，$f'(${k}) = ${m}$。`,
+    `點斜式：$y - ${h_pp(f0)} = ${m}(x - ${h_pp(k)})$，整理得 $y = ${lin(m,f0-m*k)}$。`],ans)};
 }});
 
 /* 導數的應用：單調、極值、凹凸與反曲點 */
 unit({id:'h3-ext',g:'數甲 上',name:'導數的應用（極值、凹凸與反曲點）',instr:'依題意作答。',h:[22,26,30],gen(d){
   const al=ri(-5,4),be=al+2*ri(1,3),s=(al+be)/2,r=ri(-9,9),f=x=>x**3-3*s*x*x+3*al*be*x+r;
   const fx=`f(x) = ${poly([[1,'x^3'],[-3*s,'x^2'],[3*al*be,'x'],[r,'']])}`;
-  if(d===1)return{q:`求 $${fx}$ 的遞增與遞減區間`,a:`$x \\leqq ${al}$ 或 $x \\geqq ${be}$ 時遞增；$${al} \\leqq x \\leqq ${be}$ 時遞減`};
-  if(d===2)return{q:`求 $${fx}$ 的極大值與極小值`,a:`極大值 $f(${al}) = ${f(al)}$，極小值 $f(${be}) = ${f(be)}$`};
-  return{q:`求 $${fx}$ 圖形的反曲點，以及凹向上的範圍`,a:`反曲點 $${pt(s,f(s))}$，$x > ${s}$ 時凹向上`};
+  const cf=[1,-3*s,3*al*be,r],dv=`f'(x) = ${poly([[3,'x^2'],[-6*s,'x'],[3*al*be,'']])} = 3${h_fx(al)}${h_fx(be)}`;
+  if(d===1){const ans=`$x \\leqq ${al}$ 或 $x \\geqq ${be}$ 時遞增；$${al} \\leqq x \\leqq ${be}$ 時遞減`;
+    return{q:`求 $${fx}$ 的遞增與遞減區間`,a:ans,e:h_ln([`$${dv}$，$f'(x) = 0$ 的根是 $x = ${al}$、$x = ${be}$。`,
+      `$f'(x)$ 是開口向上的二次式：$x < ${al}$ 或 $x > ${be}$ 時 $f'(x) > 0$，$${al} < x < ${be}$ 時 $f'(x) < 0$。`,
+      `$f'(x) > 0$ 的地方遞增、$f'(x) < 0$ 的地方遞減（端點可以包含）。`],ans)}}
+  if(d===2){const ans=`極大值 $f(${al}) = ${f(al)}$，極小值 $f(${be}) = ${f(be)}$`;
+    return{q:`求 $${fx}$ 的極大值與極小值`,a:ans,e:h_ln([`$${dv}$，臨界點 $x = ${al}$、$x = ${be}$。`,
+      `$f'$ 的正負：在 $x = ${al}$ 由正變負（先增後減）是極大；在 $x = ${be}$ 由負變正（先減後增）是極小。`,
+      `$f(${al}) = ${h_psub(cf,h_pp(al))} = ${f(al)}$。`,`$f(${be}) = ${h_psub(cf,h_pp(be))} = ${f(be)}$。`],ans)}}
+  const ans=`反曲點 $${pt(s,f(s))}$，$x > ${s}$ 時凹向上`;
+  return{q:`求 $${fx}$ 圖形的反曲點，以及凹向上的範圍`,a:ans,e:h_ln([`$f'(x) = ${poly([[3,'x^2'],[-6*s,'x'],[3*al*be,'']])}$，$f''(x) = ${lin(6,-6*s)}$。`,
+    `$f''(x) = 0$ 得 $x = ${s}$；$x > ${s}$ 時 $f''(x) > 0$ 凹向上，$x < ${s}$ 時 $f''(x) < 0$ 凹向下，所以凹性在此改變。`,
+    `$f(${s}) = ${h_psub(cf,h_pp(s))} = ${f(s)}$，反曲點 $${pt(s,f(s))}$。`],ans)};
 }});
 
 /* 定積分與面積 */
 unit({id:'h3-int',g:'數甲 下',name:'定積分與平面區域面積',instr:'依題意作答。',h:[20,24,28],gen(d){
   if(d===1){const a=ri(-3,3),b=ri(-6,6),c=ri(-6,6),lo=ri(-3,2),hi=lo+ri(1,3);if(!a&&!b)return null;
-    const Fx=x=>fadd(fadd(F(a*x**3,3),F(b*x*x,2)),F(c*x,1));return{q:`求 $\\int_{${lo}}^{${hi}} (${quad(a,b,c)})\\,dx$`,a:`$${ftex(fsub(Fx(hi),Fx(lo)))}$`}}
-  const r1=ri(-5,3),r2=r1+ri(1,5),A=F((r2-r1)**3,6);
-  if(d===2){const k=pick([1,-1]);return{q:`求曲線 $y = ${quad(k,-k*(r1+r2),k*r1*r2)}$ 與 $x$ 軸所圍成區域的面積`,a:`$${ftex(A)}$`}}
-  const m=ri(-4,4),kk=ri(-6,6),p=-(r1+r2)+m,q=r1*r2+kk;
-  return{q:`求拋物線 $y = ${quad(1,p,q)}$ 與直線 $y = ${lin(m,kk)}$ 所圍成區域的面積`,a:`$${ftex(A)}$`};
+    const Fx=x=>fadd(fadd(F(a*x**3,3),F(b*x*x,2)),F(c*x,1)),ans=`$${ftex(fsub(Fx(hi),Fx(lo)))}$`;
+    return{q:`求 $\\int_{${lo}}^{${hi}} (${quad(a,b,c)})\\,dx$`,a:ans,e:h_ln([`反導函數：$F(x) = ${h_fpoly([[F(a,3),'x^3'],[F(b,2),'x^2'],[F(c),'x']])}$。`,
+      `$F(${hi}) = ${ftex(Fx(hi))}$，$F(${lo}) = ${ftex(Fx(lo))}$。`,`$\\int_{${lo}}^{${hi}} = F(${hi}) - F(${lo}) = ${ftex(Fx(hi))} - ${h_pf(Fx(lo))} = ${ftex(fsub(Fx(hi),Fx(lo)))}$。`],ans)}}
+  const r1=ri(-5,3),r2=r1+ri(1,5),A=F((r2-r1)**3,6),six=`\\frac{(${r2} - ${h_pp(r1)})^3}{6} = \\frac{${(r2-r1)**3}}{6}${ftex(A)===`\\frac{${(r2-r1)**3}}{6}`?'':` = ${ftex(A)}`}`;
+  if(d===2){const k=pick([1,-1]),ans=`$${ftex(A)}$`;
+    return{q:`求曲線 $y = ${quad(k,-k*(r1+r2),k*r1*r2)}$ 與 $x$ 軸所圍成區域的面積`,a:ans,e:h_ln([`因式分解：$y = ${k<0?'-':''}${h_fx(r1)}${h_fx(r2)}$，與 $x$ 軸交於 $x = ${r1}$、$x = ${r2}$。`,
+      `在 $${r1} \\leqq x \\leqq ${r2}$ 之間曲線在 $x$ 軸${k>0?'下':'上'}方，面積 $= \\left|\\int_{${r1}}^{${r2}} (x - \\alpha)(x - \\beta)\\,dx\\right| = \\frac{(\\beta - \\alpha)^3}{6}$。`,
+      `面積 $= ${six}$。`],ans)}}
+  const m=ri(-4,4),kk=ri(-6,6),p=-(r1+r2)+m,q=r1*r2+kk,ans=`$${ftex(A)}$`;
+  return{q:`求拋物線 $y = ${quad(1,p,q)}$ 與直線 $y = ${lin(m,kk)}$ 所圍成區域的面積`,a:ans,e:h_ln([`求交點：$${quad(1,p,q)} = ${lin(m,kk)}$，移項得 $${quad(1,-(r1+r2),r1*r2)} = 0$，即 $${h_fx(r1)}${h_fx(r2)} = 0$，$x = ${r1}$ 或 $x = ${r2}$。`,
+    `兩交點之間直線在拋物線上方，面積 $= \\int_{${r1}}^{${r2}} [\\text{直線} - \\text{拋物線}]\\,dx = \\int_{${r1}}^{${r2}} -${h_fx(r1)}${h_fx(r2)}\\,dx = \\frac{(\\beta - \\alpha)^3}{6}$。`,
+    `面積 $= ${six}$。`],ans)};
 }});
 
 /* 旋轉體體積（數甲） */
 unit({id:'h3-vol',g:'數甲 下',name:'旋轉體的體積',instr:'依題意作答（答案保留 π）。',h:[20,24,28],gen(d){
-  if(d===1){const k=ri(1,4),a=ri(1,6);return{q:`將直線 $y = ${k===1?'':k}x$、$x$ 軸與直線 $x = ${a}$ 所圍成的區域繞 $x$ 軸旋轉一圈，求旋轉體的體積`,a:`$${h3_pi(F(k*k*a**3,3))}$`}}
-  if(d===2){const a=ri(1,8);return R()<.5?{q:`將 $y = x^2$、$x$ 軸與直線 $x = ${a}$ 所圍成的區域繞 $x$ 軸旋轉一圈，求旋轉體的體積`,a:`$${h3_pi(F(a**5,5))}$`}
-    :{q:`將 $y = \\sqrt{x}$、$x$ 軸與直線 $x = ${a}$ 所圍成的區域繞 $x$ 軸旋轉一圈，求旋轉體的體積`,a:`$${h3_pi(F(a*a,2))}$`}}
-  if(R()<.5){const m=ri(1,4);return{q:`將拋物線 $y = ${m*m} - x^2$ 與 $x$ 軸所圍成的區域繞 $x$ 軸旋轉一圈，求旋轉體的體積`,a:`$${h3_pi(F(16*m**5,15))}$`}}
-  const k=ri(1,6);return{q:`將拋物線 $y = ${k===1?'':k}x - x^2$ 與 $x$ 軸所圍成的區域繞 $x$ 軸旋轉一圈，求旋轉體的體積`,a:`$${h3_pi(F(k**5,30))}$`};
+  if(d===1){const k=ri(1,4),a=ri(1,6),ans=`$${h3_pi(F(k*k*a**3,3))}$`;
+    return{q:`將直線 $y = ${k===1?'':k}x$、$x$ 軸與直線 $x = ${a}$ 所圍成的區域繞 $x$ 軸旋轉一圈，求旋轉體的體積`,a:ans,e:h_ln([`繞 $x$ 軸的體積 $V = \\pi\\int_{0}^{${a}} y^2\\,dx = \\pi\\int_{0}^{${a}} ${k*k===1?'':k*k}x^2\\,dx$。`,
+      `$= \\pi \\left[\\frac{${k*k===1?'':k*k}x^3}{3}\\right]_{0}^{${a}} = \\pi \\times \\frac{${k*k===1?'':k*k+' \\times '}${a**3}}{3} = ${h3_pi(F(k*k*a**3,3))}$。`,
+      `（也可以看成底半徑 $${k*a}$、高 $${a}$ 的圓錐：$\\frac{1}{3}\\pi \\times ${k*a}^2 \\times ${a}$，結果相同。）`],ans)}}
+  if(d===2){const a=ri(1,8);
+    if(R()<.5){const ans=`$${h3_pi(F(a**5,5))}$`;return{q:`將 $y = x^2$、$x$ 軸與直線 $x = ${a}$ 所圍成的區域繞 $x$ 軸旋轉一圈，求旋轉體的體積`,a:ans,e:h_ln([
+      `$V = \\pi\\int_{0}^{${a}} (x^2)^2\\,dx = \\pi\\int_{0}^{${a}} x^4\\,dx$。`,`$= \\pi \\left[\\frac{x^5}{5}\\right]_{0}^{${a}} = \\pi \\times \\frac{${a**5}}{5} = ${h3_pi(F(a**5,5))}$。`],ans)}}
+    const ans=`$${h3_pi(F(a*a,2))}$`;return{q:`將 $y = \\sqrt{x}$、$x$ 軸與直線 $x = ${a}$ 所圍成的區域繞 $x$ 軸旋轉一圈，求旋轉體的體積`,a:ans,e:h_ln([
+      `$V = \\pi\\int_{0}^{${a}} (\\sqrt{x})^2\\,dx = \\pi\\int_{0}^{${a}} x\\,dx$。`,`$= \\pi \\left[\\frac{x^2}{2}\\right]_{0}^{${a}} = \\pi \\times \\frac{${a*a}}{2} = ${h3_pi(F(a*a,2))}$。`],ans)}}
+  if(R()<.5){const m=ri(1,4),ans=`$${h3_pi(F(16*m**5,15))}$`,M2=m*m;
+    return{q:`將拋物線 $y = ${M2} - x^2$ 與 $x$ 軸所圍成的區域繞 $x$ 軸旋轉一圈，求旋轉體的體積`,a:ans,e:h_ln([`與 $x$ 軸交於 $x = \\pm ${m}$，$V = \\pi\\int_{-${m}}^{${m}} (${M2} - x^2)^2\\,dx$，圖形對稱，$= 2\\pi\\int_{0}^{${m}} (${M2*M2} - ${2*M2}x^2 + x^4)\\,dx$。`,
+      `$= 2\\pi\\left[${poly([[M2*M2,'x']])} -${h_fpoly([[F(2*M2,3),'x^3']])} + \\frac{x^5}{5}\\right]_{0}^{${m}} = 2\\pi\\left(${M2*M2*m} - ${ftex(F(2*M2*m**3,3))} + ${ftex(F(m**5,5))}\\right)$。`,
+      `$= 2\\pi \\times ${ftex(F(8*m**5,15))} = ${h3_pi(F(16*m**5,15))}$。`],ans)}}
+  const k=ri(1,6),ans=`$${h3_pi(F(k**5,30))}$`,kx=k===1?'':k;
+  return{q:`將拋物線 $y = ${k===1?'':k}x - x^2$ 與 $x$ 軸所圍成的區域繞 $x$ 軸旋轉一圈，求旋轉體的體積`,a:ans,e:h_ln([`與 $x$ 軸交於 $x = 0$、$x = ${k}$，$V = \\pi\\int_{0}^{${k}} (${kx}x - x^2)^2\\,dx = \\pi\\int_{0}^{${k}} (${k*k===1?'':k*k}x^2 - ${2*k}x^3 + x^4)\\,dx$。`,
+    `$= \\pi\\left[${h_fpoly([[F(k*k,3),'x^3']])} - ${h_fpoly([[F(2*k,4),'x^4']])} + \\frac{x^5}{5}\\right]_{0}^{${k}} = \\pi\\left(${ftex(F(k**5,3))} - ${ftex(F(k**5,2))} + ${ftex(F(k**5,5))}\\right)$。`,
+    `$= \\pi \\times ${ftex(F(k**5,30))} = ${h3_pi(F(k**5,30))}$。`],ans)};
 }});
 
 /* 複數平面與棣美弗定理 */
@@ -3154,14 +3646,28 @@ const H3_POLAR=[[1,'\\sqrt{3}',60,'2'],['\\sqrt{3}',1,30,'2'],[-1,'\\sqrt{3}',12
 const h3_z=(a,b)=>{const bs=String(b),neg=bs.startsWith('-'),bb=bs.replace(/^-/,'');return`${a} ${neg?'-':'+'} ${bb==='1'?'':bb}i`};
 unit({id:'h3-cpx',g:'數甲 下',name:'複數平面、極式與棣美弗定理',instr:'依題意作答。',h:[18,22,26],gen(d){
   if(d===1){const a=rnz(-6,6),b=rnz(-6,6),c=rnz(-6,6),e=rnz(-6,6),f=ri(0,2);
-    if(f===0)return{q:`計算 $(${h3_z(a,b)})(${h3_z(c,e)})$`,a:`$${h3_z(a*c-b*e,a*e+b*c).replace(/\+ 0i|- 0i/,'')}$`};
+    if(f===0){const ans=`$${h3_z(a*c-b*e,a*e+b*c).replace(/\+ 0i|- 0i/,'')}$`;
+      return{q:`計算 $(${h3_z(a,b)})(${h3_z(c,e)})$`,a:ans,e:h_ln([`像多項式一樣展開，再用 $i^2 = -1$。`,
+        `實部：$${h_pp(a)} \\times ${h_pp(c)} - ${h_pp(b)} \\times ${h_pp(e)} = ${a*c-b*e}$（$bi \\times di = bd \\cdot i^2 = -bd$）。`,
+        `虛部：$${h_pp(a)} \\times ${h_pp(e)} + ${h_pp(b)} \\times ${h_pp(c)} = ${a*e+b*c}$。`],ans)}}
     const [p,q,r]=pick([[3,4,5],[5,12,13],[6,8,10],[8,15,17]]),sa=sgn(),sb=sgn();
-    if(f===1)return{q:`求複數 $z = ${h3_z(sa*p,sb*q)}$ 的絕對值 $|z|$ 與共軛複數 $\\overline{z}$`,a:`$|z| = ${r}$，$\\overline{z} = ${h3_z(sa*p,-sb*q)}$`};
-    return{q:`求複數平面上兩點 $z_1 = ${h3_z(a,b)}$、$z_2 = ${h3_z(c,e)}$ 的距離`,a:`$${radOf((a-c)**2+(b-e)**2)}$`}}
-  if(d===2){const [a,b,th,r]=pick(H3_POLAR);return{q:`將 $z = ${h3_z(a,b)}$ 化為極式（$0^{\\circ} \\leqq \\theta < 360^{\\circ}$）`,a:`$z = ${r}(\\cos ${th}^{\\circ} + i\\sin ${th}^{\\circ})$`}}
+    if(f===1){const ans=`$|z| = ${r}$，$\\overline{z} = ${h3_z(sa*p,-sb*q)}$`;
+      return{q:`求複數 $z = ${h3_z(sa*p,sb*q)}$ 的絕對值 $|z|$ 與共軛複數 $\\overline{z}$`,a:ans,e:h_ln([`$|a + bi| = \\sqrt{a^2 + b^2}$：$|z| = \\sqrt{${h_pp(sa*p)}^2 + ${h_pp(sb*q)}^2} = \\sqrt{${r*r}} = ${r}$。`,
+        `共軛複數：實部不變、虛部變號，$\\overline{z} = ${h3_z(sa*p,-sb*q)}$。`],ans)}}
+    const D=(a-c)**2+(b-e)**2,ans=`$${radOf(D)}$`;
+    return{q:`求複數平面上兩點 $z_1 = ${h3_z(a,b)}$、$z_2 = ${h3_z(c,e)}$ 的距離`,a:ans,e:h_ln([`距離 $= |z_1 - z_2|$，$z_1 - z_2 = ${h3_z(a-c,b-e).replace(/ [+-] 0i$/,'')}$。`,
+      `$|z_1 - z_2| = \\sqrt{${h_pp(a-c)}^2 + ${h_pp(b-e)}^2} = ${D===0?'0':h_rt(D)}$。`],ans)}}
+  const cs=r=>v=>{const s=String(v);return r==='2'?(s.startsWith('-')?`-\\frac{${s.slice(1)}}{2}`:`\\frac{${s}}{2}`):`${s.startsWith('-')?'-':''}\\frac{\\sqrt{2}}{2}`};
+  if(d===2){const [a,b,th,r]=pick(H3_POLAR),ans=`$z = ${r}(\\cos ${th}^{\\circ} + i\\sin ${th}^{\\circ})$`,c=cs(r);
+    return{q:`將 $z = ${h3_z(a,b)}$ 化為極式（$0^{\\circ} \\leqq \\theta < 360^{\\circ}$）`,a:ans,e:h_ln([`$r = |z| = \\sqrt{(${a})^2 + (${b})^2} = \\sqrt{${r==='2'?4:2}}${r==='2'?' = 2':''}$。`,
+      `$\\cos\\theta = \\frac{${a}}{${r}} = ${c(a)}$，$\\sin\\theta = \\frac{${b}}{${r}} = ${c(b)}$，在 $0^{\\circ}$～$360^{\\circ}$ 內得 $\\theta = ${th}^{\\circ}$。`,
+      `$z = ${r}(\\cos ${th}^{\\circ} + i\\sin ${th}^{\\circ})$。`],ans)}}
   const [a,b,th,r]=pick(H3_POLAR),step=r==='2'?3:2,n=step*ri(1,3),mod=r==='2'?2**n:2**(n/2),ang=(th*n)%360;
-  const val=ang===0?`${mod}`:ang===180?`${-mod}`:ang===90?`${mod}i`:`${-mod}i`;if(ang%90)return null;
-  return{q:`利用棣美弗定理計算 $(${h3_z(a,b)})^{${n}}$`,a:`$${val}$`};
+  const val=ang===0?`${mod}`:ang===180?`${-mod}`:ang===90?`${mod}i`:`${-mod}i`;if(ang%90)return null;const ans=`$${val}$`;
+  return{q:`利用棣美弗定理計算 $(${h3_z(a,b)})^{${n}}$`,a:ans,e:h_ln([`先化成極式：$${h3_z(a,b)} = ${r}(\\cos ${th}^{\\circ} + i\\sin ${th}^{\\circ})$。`,
+    `棣美弗定理：$(${h3_z(a,b)})^{${n}} = ${r==='2'?2:'(\\sqrt{2})'}^{${n}}(\\cos ${th*n}^{\\circ} + i\\sin ${th*n}^{\\circ})$，其中 $${r==='2'?2:'(\\sqrt{2})'}^{${n}} = ${mod}$。`,
+    `${th*n===ang?'':`$${th*n}^{\\circ}$ 與 $${ang}^{\\circ}$ 同界，`}$\\cos ${ang}^{\\circ} + i\\sin ${ang}^{\\circ} = ${['1','i','-1','-i'][ang/90]}$。`,
+    `所以結果 $= ${mod} \\times ${['1','i','(-1)','(-i)'][ang/90]} = ${val}$。`],ans)};
 }});
 
 /* 隨機變數：期望值、變異數、二項分布、幾何分布 */
@@ -3169,12 +3675,26 @@ unit({id:'h3-rv',g:'數甲 下',name:'隨機變數與機率分布',instr:'依題
   if(d<=2){const N=pick([6,8,10,12]),p1=ri(1,N-2),p2=ri(1,N-1-p1),p3=N-p1-p2,xs=[ri(-3,1),ri(2,4),ri(5,9)],ps=[p1,p2,p3];
     const E=F(xs.reduce((s,x,i)=>s+x*ps[i],0),N),E2=F(xs.reduce((s,x,i)=>s+x*x*ps[i],0),N),V=fsub(E2,fmul(E,E));
     const tbl=`\\begin{array}{c|ccc} X & ${xs.join(' & ')} \\\\ \\hline P & ${ps.map(p=>ftex(F(p,N))).join(' & ')} \\end{array}`;
-    return d===1?{q:`隨機變數 $X$ 的機率分布如下，求期望值 $E(X)$：$${tbl}$`,a:`$${ftex(E)}$`}:{q:`隨機變數 $X$ 的機率分布如下，求期望值與變異數：$${tbl}$`,a:`$E(X) = ${ftex(E)}$，$\\mathrm{Var}(X) = ${ftex(V)}$`}}
+    const sE=xs.reduce((s,x,i)=>s+x*ps[i],0),sE2=xs.reduce((s,x,i)=>s+x*x*ps[i],0);
+    const L=[`把機率都寫成分母 $${N}$：$P = \\frac{${p1}}{${N}}, \\frac{${p2}}{${N}}, \\frac{${p3}}{${N}}$。`,
+      `$E(X) = \\sum x \\cdot P(x) = \\frac{${xs.map((x,i)=>`${h_pp(x)} \\times ${ps[i]}`).join(' + ')}}{${N}} = \\frac{${sE}}{${N}}${ftex(E)===`\\frac{${sE}}{${N}}`?'':` = ${ftex(E)}`}$。`];
+    if(d===1){const ans=`$${ftex(E)}$`;return{q:`隨機變數 $X$ 的機率分布如下，求期望值 $E(X)$：$${tbl}$`,a:ans,e:h_ln(L,ans)}}
+    const ans=`$E(X) = ${ftex(E)}$，$\\mathrm{Var}(X) = ${ftex(V)}$`;
+    return{q:`隨機變數 $X$ 的機率分布如下，求期望值與變異數：$${tbl}$`,a:ans,e:h_ln([...L,
+      `$E(X^2) = \\frac{${xs.map((x,i)=>`${h_pp(x)}^2 \\times ${ps[i]}`).join(' + ')}}{${N}} = \\frac{${sE2}}{${N}}${ftex(E2)===`\\frac{${sE2}}{${N}}`?'':` = ${ftex(E2)}`}$。`,
+      `$\\mathrm{Var}(X) = E(X^2) - [E(X)]^2 = ${ftex(E2)} - ${h_xf(E)}^2 = ${ftex(E2)} - ${ftex(fmul(E,E))} = ${ftex(V)}$。`],ans)}}
   if(R()<.6){const n=ri(3,6),[pn,pd]=pick([[1,2],[1,3],[2,3],[1,4],[1,5],[1,6]]),k=ri(0,n),C=[...Array(k)].reduce((c,_,i)=>c*(n-i)/(i+1),1);
-    const P=F(C*pn**k*(pd-pn)**(n-k),pd**n);
-    return{q:`某射手每次命中的機率為 $${ftex(F(pn,pd))}$，射擊 $${n}$ 次，設命中次數為 $X$。求 $P(X = ${k})$、$E(X)$ 與 $\\mathrm{Var}(X)$`,a:`$P(X = ${k}) = ${ftex(P)}$，$E(X) = ${ftex(F(n*pn,pd))}$，$\\mathrm{Var}(X) = ${ftex(F(n*pn*(pd-pn),pd*pd))}$`}}
-  const pd=pick([2,3,4,5,6]),k=ri(2,4);
-  return{q:`某人每次投籃命中的機率為 $${ftex(F(1,pd))}$，一直投到第一次命中為止，設投籃次數為 $X$。求 $P(X = ${k})$ 與 $E(X)$`,a:`$P(X = ${k}) = ${ftex(F((pd-1)**(k-1),pd**k))}$，$E(X) = ${pd}$`};
+    const P=F(C*pn**k*(pd-pn)**(n-k),pd**n),ans=`$P(X = ${k}) = ${ftex(P)}$，$E(X) = ${ftex(F(n*pn,pd))}$，$\\mathrm{Var}(X) = ${ftex(F(n*pn*(pd-pn),pd*pd))}$`,qn=pd-pn;
+    return{q:`某射手每次命中的機率為 $${ftex(F(pn,pd))}$，射擊 $${n}$ 次，設命中次數為 $X$。求 $P(X = ${k})$、$E(X)$ 與 $\\mathrm{Var}(X)$`,a:ans,e:h_ln([
+      `$X$ 服從二項分布 $B(n, p)$，$n = ${n}$，$p = ${ftex(F(pn,pd))}$，$1 - p = ${ftex(F(qn,pd))}$。`,
+      `$P(X = ${k}) = C^{${n}}_{${k}} \\left(${ftex(F(pn,pd))}\\right)^{${k}}\\left(${ftex(F(qn,pd))}\\right)^{${n-k}} = \\frac{${C} \\times ${pn**k} \\times ${qn**(n-k)}}{${pd**n}} = ${h_dv(C*pn**k*qn**(n-k),pd**n)}$。`,
+      `$E(X) = np = ${n} \\times ${ftex(F(pn,pd))} = ${ftex(F(n*pn,pd))}$。`,
+      `$\\mathrm{Var}(X) = np(1 - p) = ${n} \\times ${ftex(F(pn,pd))} \\times ${ftex(F(qn,pd))} = ${ftex(F(n*pn*qn,pd*pd))}$。`],ans)}}
+  const pd=pick([2,3,4,5,6]),k=ri(2,4),ans=`$P(X = ${k}) = ${ftex(F((pd-1)**(k-1),pd**k))}$，$E(X) = ${pd}$`;
+  return{q:`某人每次投籃命中的機率為 $${ftex(F(1,pd))}$，一直投到第一次命中為止，設投籃次數為 $X$。求 $P(X = ${k})$ 與 $E(X)$`,a:ans,e:h_ln([
+    `$X$ 服從幾何分布，$p = \\frac{1}{${pd}}$：前 $${k-1}$ 次都沒中、第 $${k}$ 次才中。`,
+    `$P(X = ${k}) = (1 - p)^{${k-1}}p = \\left(\\frac{${pd-1}}{${pd}}\\right)^{${k-1}} \\times \\frac{1}{${pd}} = ${h_dv((pd-1)**(k-1),pd**k)}$。`,
+    `幾何分布的期望值 $E(X) = \\frac{1}{p} = ${pd}$。`],ans)};
 }});
 
 /* 線性規劃（數乙） */
@@ -3216,11 +3736,17 @@ unit({id:'h3-lp',g:'數乙 下',name:'線性規劃',instr:'依題意作答。',h
 /* 常態分布（數乙） */
 unit({id:'h3-normal',g:'數乙 下',name:'常態分布與信賴區間的概念',instr:'依 68–95–99.7 規則作答。',h:[16,20,24],gen(d){
   const mu=pick([50,60,65,70,75]),sg=pick([5,8,10,12]);
-  if(d===1){const [k,pc]=pick([[1,68],[2,95],[3,99.7]]);return{q:`某次考試成績呈常態分布，平均 $${mu}$ 分、標準差 $${sg}$ 分。約有 $${pc}\\%$ 的人成績落在哪個範圍？`,a:`$${mu-k*sg}$ 分到 $${mu+k*sg}$ 分之間`}}
-  if(d===2){const opts=[[`高於 $${mu+sg}$ 分`,'16'],[`低於 $${mu-2*sg}$ 分`,'2.5'],[`介於 $${mu-sg}$ 分與 $${mu+2*sg}$ 分之間`,'81.5'],[`介於 $${mu}$ 分與 $${mu+sg}$ 分之間`,'34'],[`高於 $${mu-sg}$ 分`,'84']],[t,v]=pick(opts);
-    return{q:`某次考試成績呈常態分布，平均 $${mu}$ 分、標準差 $${sg}$ 分，成績${t}的人約占多少百分比？`,a:`約 $${v}\\%$`}}
-  const N=ri(2,20)*200,[t,v]=pick([[`高於 $${mu+2*sg}$ 分`,0.025],[`高於 $${mu+sg}$ 分`,0.16],[`介於 $${mu-sg}$ 分與 $${mu+sg}$ 分之間`,0.68]]);
-  return{q:`某次模擬考有 $${commas(String(N))}$ 人參加，成績呈常態分布，平均 $${mu}$ 分、標準差 $${sg}$ 分。成績${t}的大約有多少人？`,a:`約 $${commas(String(Math.round(N*v)))}$ 人`};
+  if(d===1){const [k,pc]=pick([[1,68],[2,95],[3,99.7]]),ans=`$${mu-k*sg}$ 分到 $${mu+k*sg}$ 分之間`;
+    return{q:`某次考試成績呈常態分布，平均 $${mu}$ 分、標準差 $${sg}$ 分。約有 $${pc}\\%$ 的人成績落在哪個範圍？`,a:ans,e:h_ln([`68–95–99.7 規則：約 $68\\%$ 落在 $\\mu \\pm \\sigma$、$95\\%$ 落在 $\\mu \\pm 2\\sigma$、$99.7\\%$ 落在 $\\mu \\pm 3\\sigma$。`,
+      `$${pc}\\%$ 對應 $\\mu \\pm ${k===1?'':k}\\sigma$：$${mu} - ${k===1?'':k+' \\times '}${sg} = ${mu-k*sg}$，$${mu} + ${k===1?'':k+' \\times '}${sg} = ${mu+k*sg}$。`],ans)}}
+  const half=`常態分布左右對稱：$\\mu$ 到 $\\mu + \\sigma$ 約 $34\\%$，$\\mu + \\sigma$ 到 $\\mu + 2\\sigma$ 約 $13.5\\%$，$\\mu + 2\\sigma$ 以上約 $2.5\\%$（左半邊相同）。`;
+  if(d===2){const opts=[[`高於 $${mu+sg}$ 分`,'16',`$${mu+sg}$ 是 $\\mu + \\sigma$，高於它的是 $\\frac{100\\% - 68\\%}{2} = 16\\%$`],[`低於 $${mu-2*sg}$ 分`,'2.5',`$${mu-2*sg}$ 是 $\\mu - 2\\sigma$，低於它的是 $\\frac{100\\% - 95\\%}{2} = 2.5\\%$`],
+      [`介於 $${mu-sg}$ 分與 $${mu+2*sg}$ 分之間`,'81.5',`$${mu-sg}$ 到 $${mu}$ 是 $\\frac{68\\%}{2} = 34\\%$，$${mu}$ 到 $${mu+2*sg}$ 是 $\\frac{95\\%}{2} = 47.5\\%$，合計 $81.5\\%$`],
+      [`介於 $${mu}$ 分與 $${mu+sg}$ 分之間`,'34',`$${mu}$ 到 $${mu+sg}$ 是 $\\mu$ 到 $\\mu + \\sigma$，佔 $\\frac{68\\%}{2} = 34\\%$`],[`高於 $${mu-sg}$ 分`,'84',`$${mu-sg}$ 到 $${mu}$ 是 $34\\%$，再加上高於平均的 $50\\%$，合計 $84\\%$`]],[t,v,why]=pick(opts),ans=`約 $${v}\\%$`;
+    return{q:`某次考試成績呈常態分布，平均 $${mu}$ 分、標準差 $${sg}$ 分，成績${t}的人約占多少百分比？`,a:ans,e:h_ln([half,`${why}。`],ans)}}
+  const N=ri(2,20)*200,[t,v,why]=pick([[`高於 $${mu+2*sg}$ 分`,0.025,`$${mu+2*sg}$ 是 $\\mu + 2\\sigma$，高於它約 $\\frac{100\\% - 95\\%}{2} = 2.5\\%$`],[`高於 $${mu+sg}$ 分`,0.16,`$${mu+sg}$ 是 $\\mu + \\sigma$，高於它約 $\\frac{100\\% - 68\\%}{2} = 16\\%$`],[`介於 $${mu-sg}$ 分與 $${mu+sg}$ 分之間`,0.68,`$${mu-sg}$ 到 $${mu+sg}$ 是 $\\mu \\pm \\sigma$，約 $68\\%$`]]),ans=`約 $${commas(String(Math.round(N*v)))}$ 人`;
+  return{q:`某次模擬考有 $${commas(String(N))}$ 人參加，成績呈常態分布，平均 $${mu}$ 分、標準差 $${sg}$ 分。成績${t}的大約有多少人？`,a:ans,e:h_ln([`${why}。`,
+    `人數 $\\approx ${commas(String(N))} \\times ${+(v*100).toFixed(1)}\\% = ${commas(String(Math.round(N*v)))}$（人）。`],ans)};
 }});
 
 /* 數甲、數乙 共用題型 */
