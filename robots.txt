@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+
+# 瀏覽計數頁不需要收錄
+Disallow: /count.html
+
+Sitemap: https://wade-chuang.github.io/jenfoo/sitemap.xml
