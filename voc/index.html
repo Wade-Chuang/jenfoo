@@ -69,6 +69,7 @@ main{padding-block:26px 90px}
 .qbox{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:22px}
 .qbox .q{font-size:18px;font-weight:700;line-height:1.7}
 .qimg{margin:2px 0 10px}
+.qimg.stem{padding:10px 10px 4px;background:#f6f7f9;border-radius:8px;border:1px solid var(--line);margin-bottom:14px}
 .qimg img{max-width:100%;height:auto;display:block;border-radius:6px;background:#fff}
 .papers{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:10px}
 .papers a{display:block;padding:12px 14px;border:1px solid var(--line);border-radius:8px;text-decoration:none;color:inherit;font-weight:700}
@@ -146,7 +147,7 @@ footer a{color:var(--brass)}
 </footer>
 
 <script src="data/bank.js?v=cd09dc17"></script>
-<script src="data/exams.js?v=3f496121"></script>
+<script src="data/exams.js?v=793d3490"></script>
 <script>
 var SUBJ = [
   {s:"基本電學", g:"高一上", color:"#4a6fa5", pdf:"基本電學", yt:"https://www.youtube.com/@chuanglaomath"},
@@ -407,7 +408,9 @@ function renderExam(){
     + '<button onclick="exams()">統測歷屆真題</button><span>/</span><span>' + e.y + ' ' + PAPER[e.p] + '</span></div>';
   html += '<div class="qhead"><span class="n">第 ' + (cur.i + 1) + ' / ' + e.items.length + ' 題</span>'
     + '<span class="score">答對 ' + cur.right + '</span></div>';
-  html += '<div class="qbox"><div class="qimg"><img src="img/' + it.img + '" alt="第 ' + it.n + ' 題" loading="lazy"></div>';
+  html += '<div class="qbox">';
+  if (it.stem) html += '<div class="qimg stem"><img src="img/' + it.stem + '" alt="共用題幹" loading="lazy"></div>';
+  html += '<div class="qimg"><img src="img/' + it.img + '" alt="第 ' + it.n + ' 題" loading="lazy"></div>';
   html += '<div class="opts">';
   'ABCD'.split('').forEach(function(L, k){
     var cls = 'opt';
