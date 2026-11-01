@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-NSNBQNLSDN"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-NSNBQNLSDN');
+</script>
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>技高專業科目｜基本電學・電子學 線上練習｜正賦文理</title>
+<meta name="description" content="技術型高中電機與電子群專業科目線上練習：基本電學、電子學，逐題附詳解，答完馬上批改。正賦文理，宜蘭羅東。">
+<link rel="icon" type="image/png" href="../img/logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@700;900&family=Noto+Sans+TC:wght@400;500;700&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+:root{
+  --ink:#16223a; --ink-2:#44506a; --paper:#f2f4f3; --surface:#fff; --line:#d7dddb;
+  --brass:#a8822a; --brass-soft:#efe6cf; --board:#23382f; --chalk:#eef1e8; --chalk-dim:#a9b8ad;
+  --ok:#1f7a4d; --ok-bg:#e7f4ec; --no:#c0392b; --no-bg:#fbecea; --line-green:#06c755;
+  --serif:"Noto Serif TC","Songti TC",serif; --sans:"Noto Sans TC","Microsoft JhengHei",sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,Consolas,monospace;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font:400 16px/1.75 var(--sans);-webkit-font-smoothing:antialiased}
+a{color:inherit}
+h1,h2,h3{font-family:var(--serif);margin:0;line-height:1.35;text-wrap:balance}
+p{margin:0}
+.wrap{max-width:900px;margin:0 auto;padding-inline:18px}
+.label{font:700 12px/1 var(--mono);letter-spacing:.14em;color:var(--brass)}
+button{font:inherit;cursor:pointer}
+:focus-visible{outline:3px solid var(--brass);outline-offset:2px}
+
+header.top{background:var(--ink);color:var(--paper);padding-block:14px}
+header.top .wrap{display:flex;align-items:center;gap:12px}
+header.top img{width:32px;height:32px;border-radius:50%}
+header.top b{font-family:var(--serif);font-size:17px}
+header.top small{color:#aab4c6;font-size:12px}
+header.top a.home{margin-left:auto;font-size:13px;color:#cdd6e4;text-decoration:none}
+
+.hero{background:var(--board);color:var(--chalk);padding-block:30px 26px}
+.hero h1{font-size:clamp(24px,4.6vw,34px);font-weight:900;margin:10px 0 8px}
+.hero p{color:var(--chalk-dim);font-size:15px}
+.hero .label{color:#e3c26a}
+
+main{padding-block:26px 90px}
+.grid{display:grid;gap:14px}
+@media(min-width:640px){.grid.two{grid-template-columns:1fr 1fr}}
+
+.card{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:20px;text-align:left;width:100%}
+.card.sub{border-left:5px solid var(--accent,var(--brass))}
+.card h3{font-size:19px;font-weight:900;margin-bottom:4px}
+.card .meta{font:500 13px var(--mono);color:var(--ink-2)}
+.card .bar{margin-top:12px;height:6px;border-radius:99px;background:#e8ecea;overflow:hidden}
+.card .bar i{display:block;height:100%;background:var(--accent,var(--brass))}
+.card:hover{border-color:var(--ink)}
+
+.crumb{display:flex;align-items:center;gap:10px;margin-bottom:16px;font-size:14px;color:var(--ink-2);flex-wrap:wrap}
+.crumb button{background:none;border:0;color:var(--brass);font-weight:700;padding:0}
+
+.qhead{display:flex;align-items:baseline;gap:12px;margin-bottom:10px}
+.qhead .n{font:700 13px var(--mono);color:var(--brass)}
+.qhead .score{margin-left:auto;font:700 14px var(--mono);color:var(--ink-2)}
+.qbox{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:22px}
+.qbox .q{font-size:18px;font-weight:700;line-height:1.7}
+.opts{display:grid;gap:10px;margin-top:18px}
+.opt{display:flex;gap:12px;align-items:flex-start;text-align:left;background:#fafbfa;border:1px solid var(--line);border-radius:6px;padding:13px 15px;line-height:1.6}
+.opt b{font:700 13px var(--mono);color:var(--ink-2);flex:none;margin-top:2px}
+.opt:hover:not(:disabled){border-color:var(--ink)}
+.opt.right{background:var(--ok-bg);border-color:var(--ok)}
+.opt.right b{color:var(--ok)}
+.opt.wrong{background:var(--no-bg);border-color:var(--no)}
+.opt.wrong b{color:var(--no)}
+.opt:disabled{cursor:default;opacity:1;color:var(--ink)}
+.opt:disabled:not(.right):not(.wrong){color:var(--ink-2)}
+.sol{margin-top:18px;border-top:1px dashed var(--line);padding-top:16px;font-size:15px;color:var(--ink-2);line-height:1.85}
+.sol b.tag{display:inline-block;font:700 12px var(--mono);letter-spacing:.1em;padding:2px 8px;border-radius:99px;margin-bottom:8px}
+.sol b.tag.ok{background:var(--ok-bg);color:var(--ok)}
+.sol b.tag.no{background:var(--no-bg);color:var(--no)}
+.nav{display:flex;gap:10px;margin-top:18px;flex-wrap:wrap}
+.btn{border:0;border-radius:999px;padding:12px 22px;font-weight:700;font-size:15px;text-decoration:none;display:inline-flex;align-items:center;gap:8px}
+.btn.main{background:var(--ink);color:#fff}
+.btn.ghost{background:none;border:1.5px solid var(--line);color:var(--ink)}
+.btn.line{background:var(--line-green);color:#fff}
+.btn:disabled{opacity:.4;cursor:default}
+
+.done{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:28px;text-align:center}
+.done .big{font:900 46px/1 var(--serif);color:var(--brass);font-variant-numeric:tabular-nums}
+.done p{color:var(--ink-2);margin-top:10px}
+.wrongbox{margin-top:20px;text-align:left}
+.wrongbox h4{font-family:var(--serif);font-size:16px;margin-bottom:8px}
+.wrongbox li{font-size:14px;color:var(--ink-2);margin-bottom:6px}
+
+.res{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:20px;margin-top:16px}
+.res h3{font-size:17px;margin-bottom:10px}
+.res a{display:block;padding:10px 0;border-bottom:1px solid var(--line);text-decoration:none;font-size:15px}
+.res a:last-child{border-bottom:0}
+.res a small{display:block;color:var(--ink-2);font-size:13px}
+.note{margin-top:18px;font-size:13px;color:var(--ink-2)}
+
+footer{border-top:1px solid var(--line);padding-block:24px 40px;font-size:13px;color:var(--ink-2);text-align:center}
+footer a{color:var(--brass)}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <img src="../img/logo.png" alt="">
+    <div><b>技高專業科目</b><br><small>正賦文理・宜蘭羅東</small></div>
+    <a class="home" href="../">回官網 →</a>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap">
+    <p class="label">電機與電子群</p>
+    <h1 id="heroTitle">專業科目線上練習</h1>
+    <p id="heroSub">選科目 → 選章節 → 作答，每題答完立刻批改並顯示詳解。照羅工的進度排。</p>
+  </div>
+</section>
+
+<main><div class="wrap" id="view"></div></main>
+
+<footer>
+  <div class="wrap">
+    題目依 108 課綱自行命題，非課本原題。發現錯誤歡迎<a href="https://line.me/ti/p/~jenfoo2021" target="_blank" rel="noopener">加 LINE</a>告訴莊老師。<br>
+    © 正賦文理短期補習班
+  </div>
+</footer>
+
+<script src="data/bank.js?v=5902a7a0"></script>
+<script>
+var SUBJ = [
+  {s:"基本電學", g:"高一上", color:"#4a6fa5", pdf:"基本電學", yt:"https://www.youtube.com/@chuanglaomath"},
+  {s:"電子學",   g:"高二上", color:"#8a5a3b", pdf:"電子學",   yt:"https://www.youtube.com/@chuanglaomath"}
+];
+var view = document.getElementById('view');
+var KEY = 'voc_progress_v1';
+
+function load(){ try{ return JSON.parse(localStorage.getItem(KEY)) || {}; }catch(e){ return {}; } }
+function save(o){ try{ localStorage.setItem(KEY, JSON.stringify(o)); }catch(e){} }
+function chaptersOf(s){ return BANK.filter(function(b){ return b.s === s; }).sort(function(a,b){ return a.ch - b.ch; }); }
+function esc(t){ return String(t).replace(/[&<>]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;'}[c]; }); }
+
+function home(){
+  location.hash = '';
+  document.getElementById('heroTitle').textContent = '專業科目線上練習';
+  document.getElementById('heroSub').textContent = '選科目 → 選章節 → 作答，每題答完立刻批改並顯示詳解。照羅工的進度排。';
+  var p = load();
+  var html = '<div class="grid two">';
+  SUBJ.forEach(function(sj){
+    var chs = chaptersOf(sj.s);
+    var total = chs.reduce(function(n,c){ return n + c.items.length; }, 0);
+    var best = chs.reduce(function(n,c){ return n + ((p[c.id] && p[c.id].best) || 0); }, 0);
+    html += '<button class="card sub" style="--accent:' + sj.color + '" onclick="subject(\'' + sj.s + '\')">' +
+      '<h3>' + sj.s + '</h3>' +
+      '<div class="meta">' + sj.g + '　·　' + chs.length + ' 章　·　' + total + ' 題</div>' +
+      '<div class="bar"><i style="width:' + (total ? Math.round(best / total * 100) : 0) + '%"></i></div>' +
+      '<div class="meta" style="margin-top:6px">最佳紀錄 ' + best + ' / ' + total + ' 題答對</div></button>';
+  });
+  html += '</div>';
+  html += '<div class="res"><h3>這一群還會陸續補上</h3>' +
+    '<a href="#">數位邏輯設計<small>等莊老師提供課本目錄後建置</small></a>' +
+    '<a href="#">基本電學 第3章以後<small>同上</small></a>' +
+    '<a href="../practice/#/tc/C" >統測數學 C 歷屆真題<small>已經上線，375 題附逐題詳解 →</small></a>' +
+    '</div>' +
+    '<p class="note">想先練數學？官網的<a href="../practice/">正賦線上練習</a>有國中、高中、技高數學 A／B／C 的單元練習與統測真題。</p>';
+  view.innerHTML = html;
+}
+
+function subject(s){
+  var sj = SUBJ.filter(function(x){ return x.s === s; })[0];
+  document.getElementById('heroTitle').textContent = s;
+  document.getElementById('heroSub').textContent = sj.g + '　·　依課本章節排列，先練單元、再練整章';
+  var p = load();
+  var html = '<div class="crumb"><button onclick="home()">← 所有科目</button><span>/</span><span>' + s + '</span></div><div class="grid">';
+  chaptersOf(s).forEach(function(c){
+    var rec = p[c.id] || {};
+    var best = rec.best || 0;
+    html += '<button class="card sub" style="--accent:' + sj.color + '" onclick="start(\'' + c.id + '\')">' +
+      '<h3>第 ' + c.ch + ' 章　' + c.u + '</h3>' +
+      '<div class="meta">' + c.items.length + ' 題' + (rec.best !== undefined ? '　·　最佳 ' + best + ' / ' + c.items.length : '　·　尚未練習') + '</div>' +
+      '<div class="bar"><i style="width:' + Math.round(best / c.items.length * 100) + '%"></i></div></button>';
+  });
+  html += '</div>';
+  html += '<div class="res"><h3>' + s + '　其他資源</h3>' +
+    '<a href="https://line.me/ti/p/~jenfoo2021" target="_blank" rel="noopener">段考備戰包 PDF<small>重點講義、模擬試卷、詳解——加 LINE 留言「' + sj.pdf + '」索取</small></a>' +
+    '<a href="' + sj.yt + '" target="_blank" rel="noopener">莊老數學教室<small>段考複習影片與單元講解 →</small></a>' +
+    '</div>';
+  view.innerHTML = html;
+}
+
+var cur = null;
+function start(id){
+  var c = BANK.filter(function(b){ return b.id === id; })[0];
+  if (!c) return home();
+  cur = {c: c, i: 0, right: 0, wrong: [], picked: null};
+  document.getElementById('heroTitle').textContent = c.s + '　第 ' + c.ch + ' 章';
+  document.getElementById('heroSub').textContent = c.u + '　·　共 ' + c.items.length + ' 題';
+  render();
+}
+
+function render(){
+  var c = cur.c, it = c.items[cur.i];
+  var html = '<div class="crumb"><button onclick="home()">所有科目</button><span>/</span>' +
+    '<button onclick="subject(\'' + c.s + '\')">' + c.s + '</button><span>/</span><span>第 ' + c.ch + ' 章</span></div>';
+  html += '<div class="qhead"><span class="n">第 ' + (cur.i + 1) + ' / ' + c.items.length + ' 題</span>' +
+    '<span class="score">答對 ' + cur.right + '</span></div>';
+  html += '<div class="qbox"><div class="q">' + esc(it.q) + '</div><div class="opts">';
+  it.opts.forEach(function(o, k){
+    var cls = 'opt';
+    if (cur.picked !== null) {
+      if (k === it.ans) cls += ' right';
+      else if (k === cur.picked) cls += ' wrong';
+    }
+    html += '<button class="' + cls + '"' + (cur.picked !== null ? ' disabled' : '') +
+      ' onclick="pick(' + k + ')"><b>(' + 'ABCD'[k] + ')</b><span>' + esc(o) + '</span></button>';
+  });
+  html += '</div>';
+  if (cur.picked !== null) {
+    var ok = cur.picked === it.ans;
+    html += '<div class="sol"><b class="tag ' + (ok ? 'ok' : 'no') + '">' + (ok ? '答對了' : '再看一次') + '</b><br>' +
+      '<b>答案：(' + 'ABCD'[it.ans] + ')</b>　' + esc(it.sol) + '</div>';
+    html += '<div class="nav"><button class="btn main" onclick="next()">' +
+      (cur.i + 1 < c.items.length ? '下一題 →' : '看成績 →') + '</button></div>';
+  }
+  html += '</div>';
+  view.innerHTML = html;
+  window.scrollTo(0, 0);
+}
+
+function pick(k){
+  if (cur.picked !== null) return;
+  cur.picked = k;
+  var it = cur.c.items[cur.i];
+  if (k === it.ans) cur.right++; else cur.wrong.push(cur.i);
+  render();
+}
+
+function next(){
+  cur.picked = null;
+  cur.i++;
+  if (cur.i < cur.c.items.length) return render();
+  finish();
+}
+
+function finish(){
+  var c = cur.c, p = load(), rec = p[c.id] || {};
+  if (!rec.best || cur.right > rec.best) rec.best = cur.right;
+  rec.last = cur.right; p[c.id] = rec; save(p);
+  var pct = Math.round(cur.right / c.items.length * 100);
+  var msg = pct === 100 ? '全對，這一章可以放心了。' :
+            pct >= 80 ? '底子穩，把錯的那幾題觀念補起來就好。' :
+            pct >= 60 ? '一半以上會了，錯的集中複習一次再考一遍。' :
+                        '先回去看講義這一章，再回來重練一次。';
+  var html = '<div class="crumb"><button onclick="home()">所有科目</button><span>/</span>' +
+    '<button onclick="subject(\'' + c.s + '\')">' + c.s + '</button></div>';
+  html += '<div class="done"><div class="big">' + cur.right + ' / ' + c.items.length + '</div>' +
+    '<p>' + msg + '</p>';
+  if (cur.wrong.length) {
+    html += '<div class="wrongbox"><h4>錯的題目</h4><ul>';
+    cur.wrong.forEach(function(i){ html += '<li>第 ' + (i + 1) + ' 題　' + esc(c.items[i].q.slice(0, 32)) + '…</li>'; });
+    html += '</ul></div>';
+  }
+  html += '<div class="nav" style="justify-content:center">' +
+    '<button class="btn main" onclick="start(\'' + c.id + '\')">再練一次</button>' +
+    '<button class="btn ghost" onclick="subject(\'' + c.s + '\')">換一章</button>' +
+    '<a class="btn line" href="https://line.me/ti/p/~jenfoo2021" target="_blank" rel="noopener">問莊老師</a>' +
+    '</div></div>';
+  view.innerHTML = html;
+  window.scrollTo(0, 0);
+}
+
+home();
+</script>
+</body>
+</html>
