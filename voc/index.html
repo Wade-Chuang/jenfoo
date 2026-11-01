@@ -68,6 +68,9 @@ main{padding-block:26px 90px}
 .qhead .score{margin-left:auto;font:700 14px var(--mono);color:var(--ink-2)}
 .qbox{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:22px}
 .qbox .q{font-size:18px;font-weight:700;line-height:1.7}
+.fig{margin:16px 0 4px;background:#fbfcfb;border:1px solid var(--line);border-radius:6px;padding:14px 10px;overflow-x:auto}
+.fig svg{display:block;margin:0 auto;width:100%;max-width:440px;height:auto}
+.fig text{font-family:var(--sans);font-weight:700}
 .opts{display:grid;gap:10px;margin-top:18px}
 .opt{display:flex;gap:12px;align-items:flex-start;text-align:left;background:#fafbfa;border:1px solid var(--line);border-radius:6px;padding:13px 15px;line-height:1.6}
 .opt b{font:700 13px var(--mono);color:var(--ink-2);flex:none;margin-top:2px}
@@ -134,7 +137,7 @@ footer a{color:var(--brass)}
   </div>
 </footer>
 
-<script src="data/bank.js?v=c369a464"></script>
+<script src="data/bank.js?v=d9c406c3"></script>
 <script>
 var SUBJ = [
   {s:"基本電學", g:"高一上", color:"#4a6fa5", pdf:"基本電學", yt:"https://www.youtube.com/@chuanglaomath"},
@@ -197,6 +200,96 @@ function subject(s){
   view.innerHTML = html;
 }
 
+
+/* ---------- 電路圖：由題目的 fig 規格畫成 SVG ---------- */
+var INK = '#16223a', GOLD = '#a8822a';
+function sv(w, h, body){
+  return '<svg viewBox="0 0 ' + w + ' ' + h + '" width="' + w + '" role="img" ' +
+    'style="stroke:' + INK + ';fill:none;stroke-width:2;stroke-linecap:round">' + body + '</svg>';
+}
+function wire(x1, y1, x2, y2){ return '<path d="M' + x1 + ' ' + y1 + 'H' + x2 + 'V' + y2 + '"/>'; }
+function line(x1, y1, x2, y2){ return '<line x1="' + x1 + '" y1="' + y1 + '" x2="' + x2 + '" y2="' + y2 + '"/>'; }
+function label(x, y, t, col){ return '<text x="' + x + '" y="' + y + '" text-anchor="middle" fill="' + (col || INK) + '" stroke="none" font-size="13">' + t + '</text>'; }
+/* 電阻：水平方框 */
+function resH(x, y, t){
+  return '<rect x="' + x + '" y="' + (y - 11) + '" width="54" height="22" rx="3" fill="#fff"/>' + label(x + 27, y + 5, t);
+}
+/* 電阻：垂直方框 */
+function resV(x, y, t){
+  return '<rect x="' + (x - 11) + '" y="' + y + '" width="22" height="54" rx="3" fill="#fff"/>' +
+         label(x + 30, y + 32, t);
+}
+/* 電池（直流電源），畫在左側 */
+function battery(x, y, t){
+  return line(x, y - 16, x, y + 16).replace('stroke-width', 'data-x') +
+    '<line x1="' + x + '" y1="' + (y - 16) + '" x2="' + x + '" y2="' + (y + 16) + '" stroke-width="3"/>' +
+    '<line x1="' + (x - 9) + '" y1="' + (y - 8) + '" x2="' + (x - 9) + '" y2="' + (y + 8) + '"/>' +
+    label(x - 2, y - 24, '+', GOLD) + label(x - 34, y + 5, t, GOLD);
+}
+function arrowDefs(){
+  return '<defs><marker id="ar" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto">' +
+    '<path d="M0 0 L9 4.5 L0 9 z" fill="' + GOLD + '" stroke="none"/></marker></defs>';
+}
+function drawFig(f){
+  if (!f) return '';
+  var b = '', i, x;
+  if (f.t === 'series'){                      // 電源 + 數個串聯電阻
+    var n = f.r.length, W = 120 + n * 90, H = 150;
+    b = battery(50, 75, f.v);
+    b += '<path d="M50 59V35H' + (W - 40) + 'V115H50V91"/>';
+    for (i = 0; i < n; i++){
+      x = 95 + i * 90;
+      b += '<rect x="' + x + '" y="24" width="54" height="22" rx="3" fill="#fff"/>' + label(x + 27, 18, f.r[i]);
+    }
+    return sv(W, H, b);
+  }
+  if (f.t === 'parallel'){                    // 電源 + 數條並聯支路
+    var m = f.r.length, W2 = 140 + m * 95, H2 = 170;
+    b = battery(50, 85, f.v);
+    b += '<path d="M50 69V35H' + (60 + m * 95) + '"/>';
+    b += '<path d="M50 101V135H' + (60 + m * 95) + '"/>';
+    for (i = 0; i < m; i++){
+      x = 120 + i * 95;
+      b += line(x, 35, x, 58) + line(x, 112, x, 135) + resV(x, 58, f.r[i]);
+    }
+    b += line(60 + m * 95, 35, 60 + m * 95, 135);
+    return sv(W2, H2, b);
+  }
+  if (f.t === 'sp'){                          // R1 串聯（R2 並聯 R3）
+    b = battery(50, 85, f.v);
+    b += '<path d="M50 69V35H120"/>' + '<rect x="120" y="24" width="54" height="22" rx="3" fill="#fff"/>' + label(147, 18, f.r1);
+    b += '<path d="M174 35H250"/>';
+    b += line(250, 35, 250, 58) + resV(250, 58, f.r2) + line(250, 112, 250, 135);
+    b += line(330, 35, 330, 58) + resV(330, 58, f.r3) + line(330, 112, 330, 135);
+    b += '<path d="M250 35H390V135H250"/>';
+    b += '<path d="M50 101V135H250"/>';
+    return sv(420, 170, b);
+  }
+  if (f.t === 'node'){                        // KCL 節點
+    b = arrowDefs();
+    b += '<circle cx="160" cy="70" r="5" fill="' + INK + '"/>';
+    (f.inn || []).forEach(function(t, k){
+      var y = 40 + k * 60;
+      b += '<line x1="40" y1="' + y + '" x2="150" y2="70" marker-end="url(#ar)" stroke="' + GOLD + '"/>' + label(70, y - 8, t, GOLD);
+    });
+    (f.out || []).forEach(function(t, k){
+      var y2 = 40 + k * 60;
+      b += '<line x1="170" y1="70" x2="285" y2="' + y2 + '" marker-end="url(#ar)" stroke="' + GOLD + '"/>' + label(265, y2 - 8, t, GOLD);
+    });
+    b += label(160, 95, f.name || 'A');
+    return sv(320, 150, b);
+  }
+  if (f.t === 'bridge'){                      // 惠斯登電橋
+    b = '<path d="M160 20L60 85L160 150L260 85Z"/>';
+    b += label(95, 45, f.p) + label(230, 45, f.q) + label(95, 135, f.r) + label(230, 135, f.s);
+    b += '<circle cx="160" cy="85" r="14" fill="#fff"/>' + label(160, 90, 'G');
+    b += '<path d="M60 85H146"/><path d="M174 85H260"/>';
+    b += label(160, 14, '＋') + label(160, 168, '－');
+    return sv(320, 180, b);
+  }
+  return '';
+}
+
 var cur = null;
 function start(id){
   var c = BANK.filter(function(b){ return b.id === id; })[0];
@@ -213,7 +306,9 @@ function render(){
     '<button onclick="subject(\'' + c.s + '\')">' + c.s + '</button><span>/</span><span>第 ' + c.ch + ' 章</span></div>';
   html += '<div class="qhead"><span class="n">第 ' + (cur.i + 1) + ' / ' + c.items.length + ' 題</span>' +
     '<span class="score">答對 ' + cur.right + '</span></div>';
-  html += '<div class="qbox"><div class="q">' + esc(it.q) + '</div><div class="opts">';
+  html += '<div class="qbox"><div class="q">' + esc(it.q) + '</div>';
+  if (it.fig) html += '<div class="fig">' + drawFig(it.fig) + '</div>';
+  html += '<div class="opts">';
   it.opts.forEach(function(o, k){
     var cls = 'opt';
     if (cur.picked !== null) {
