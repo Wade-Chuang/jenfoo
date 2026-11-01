@@ -137,7 +137,7 @@ footer a{color:var(--brass)}
   </div>
 </footer>
 
-<script src="data/bank.js?v=d9c406c3"></script>
+<script src="data/bank.js?v=ca3dbc5f"></script>
 <script>
 var SUBJ = [
   {s:"基本電學", g:"高一上", color:"#4a6fa5", pdf:"基本電學", yt:"https://www.youtube.com/@chuanglaomath"},
@@ -169,7 +169,7 @@ function home(){
   });
   html += '</div>';
   html += '<div class="res"><h3>目前進度</h3>' +
-    '<a href="#" onclick="subject('基本電學');return false">基本電學 12 個主題全部完成<small>另加「看圖計算」一章，每題都有電路圖 →</small></a>' +
+    '<a href="#" onclick="subject(\'基本電學\');return false">基本電學 12 個主題全部完成<small>另加「看圖計算」一章，每題都有電路圖 →</small></a>' +
     '<a href="#">電子學 主題 F～K<small>場效電晶體、MOSFET 放大與數位電路、運算放大器…建置中</small></a>' +
     '<a href="#">數位邏輯設計 主題 A～H<small>邏輯閘、布林代數、卡諾圖、正反器…建置中</small></a>' +
     '<a href="../practice/#/tc/C" >統測數學 C 歷屆真題<small>已經上線，375 題附逐題詳解 →</small></a>' +
@@ -264,6 +264,56 @@ function drawFig(f){
     b += '<path d="M250 35H390V135H250"/>';
     b += '<path d="M50 101V135H250"/>';
     return sv(420, 170, b);
+  }
+  if (f.t === 'sp2'){                         // （R1 並聯 R2）再串聯 R3
+    b = battery(50, 85, f.v);
+    b += '<path d="M50 69V35H130"/>';
+    b += line(130, 35, 130, 58) + resV(130, 58, f.r1) + line(130, 112, 130, 135);
+    b += line(210, 35, 210, 58) + resV(210, 58, f.r2) + line(210, 112, 210, 135);
+    b += '<path d="M130 35H210"/><path d="M130 135H210"/>';
+    b += '<path d="M210 35H270"/>' + '<rect x="270" y="24" width="54" height="22" rx="3" fill="#fff"/>' + label(297, 18, f.r3);
+    b += '<path d="M324 35H390V135H50V101"/>';
+    b += '<path d="M210 135H50"/>';
+    return sv(420, 170, b);
+  }
+  if (f.t === 'ladder'){                      // R1 串聯（R2 並聯 R3）再串聯 R4
+    b = battery(50, 85, f.v);
+    b += '<path d="M50 69V35H110"/>' + '<rect x="110" y="24" width="48" height="22" rx="3" fill="#fff"/>' + label(134, 18, f.r1);
+    b += '<path d="M158 35H230"/>';
+    b += line(230, 35, 230, 58) + resV(230, 58, f.r2) + line(230, 112, 230, 135);
+    b += line(310, 35, 310, 58) + resV(310, 58, f.r3) + line(310, 112, 310, 135);
+    b += '<path d="M230 35H310"/><path d="M230 135H310"/>';
+    b += '<path d="M310 35H370"/>' + '<rect x="370" y="24" width="48" height="22" rx="3" fill="#fff"/>' + label(394, 18, f.r4);
+    b += '<path d="M418 35H470V135H50V101"/>';
+    b += '<path d="M310 135H50"/>';
+    return sv(500, 170, b);
+  }
+  if (f.t === 'meter'){                       // 串聯電路 + 安培計或伏特計
+    b = battery(50, 85, f.v);
+    b += '<path d="M50 69V35H120"/>' + '<rect x="120" y="24" width="54" height="22" rx="3" fill="#fff"/>' + label(147, 18, f.r1);
+    b += '<path d="M174 35H250"/>' + '<rect x="250" y="24" width="54" height="22" rx="3" fill="#fff"/>' + label(277, 18, f.r2);
+    b += '<path d="M304 35H370V135H50V101"/>';
+    if (f.m === 'A'){                         // 安培計串聯在迴路上
+      b += '<circle cx="210" cy="135" r="16" fill="#fff"/>' + label(210, 140, 'A', GOLD);
+      b += '<path d="M50 135H194"/><path d="M226 135H370"/>';
+    } else {                                  // 伏特計並聯在 R2 兩端
+      b += '<circle cx="277" cy="95" r="16" fill="#fff"/>' + label(277, 100, 'V', GOLD);
+      b += line(250, 35, 250, 79) + line(250, 79, 261, 95);
+      b += line(304, 35, 304, 79) + line(304, 79, 293, 95);
+    }
+    return sv(400, 170, b);
+  }
+  if (f.t === 'divider'){                     // 分壓器：R1 上、R2 下，輸出取在 R2 兩端
+    b = battery(50, 90, f.v);
+    b += '<path d="M50 74V30H170"/>';
+    b += '<rect x="159" y="30" width="22" height="50" rx="3" fill="#fff"/>' + label(205, 60, f.r1);
+    b += '<rect x="159" y="100" width="22" height="50" rx="3" fill="#fff"/>' + label(205, 130, f.r2);
+    b += '<path d="M170 80V100"/>';
+    b += '<circle cx="170" cy="90" r="4" fill="' + INK + '"/>';
+    b += '<path d="M170 90H280"/>' + label(300, 95, 'Vo', GOLD);
+    b += '<path d="M170 150V170H50V106"/>';
+    b += '<path d="M170 170H280"/>' + label(300, 175, 'GND');
+    return sv(340, 200, b);
   }
   if (f.t === 'node'){                        // KCL 節點
     b = arrowDefs();
