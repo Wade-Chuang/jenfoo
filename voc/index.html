@@ -127,7 +127,7 @@ footer a{color:var(--brass)}
   <div class="wrap">
     <p class="label">電機與電子群</p>
     <h1 id="heroTitle">專業科目線上練習</h1>
-    <p id="heroSub">選科目 → 選章節 → 作答，每題答完立刻批改並顯示詳解。章節依 107 年課綱主題排列：<b>基本電學、電子學</b>是統測專業科目(一)，<b>電工機械</b>是電機類專二，<b>數位邏輯設計、微處理機、程式設計實習</b>是資電類專二。</p>
+    <p id="heroSub">選科目 → 選章節 → 作答，每題答完立刻批改並顯示詳解。章節依 107 年課綱主題排列：<b>基本電學、電子學</b>是統測專業科目(一)，<b>電工機械</b>是電機類專二，<b>數位邏輯設計、微處理機、程式設計實習</b>是資電類專二；另有<b>基本電學實習、電子學實習</b>兩科實習科目。</p>
   </div>
 </section>
 
@@ -140,7 +140,7 @@ footer a{color:var(--brass)}
   </div>
 </footer>
 
-<script src="data/bank.js?v=aa9c338e"></script>
+<script src="data/bank.js?v=cd09dc17"></script>
 <script>
 var SUBJ = [
   {s:"基本電學", g:"高一上", color:"#4a6fa5", pdf:"基本電學", yt:"https://www.youtube.com/@chuanglaomath"},
@@ -148,7 +148,9 @@ var SUBJ = [
   {s:"電工機械", g:"高二下", color:"#4d7f63", pdf:"電工機械", yt:"https://www.youtube.com/@chuanglaomath"},
   {s:"數位邏輯設計", g:"高二下", color:"#7a3b8a", pdf:"數位邏輯設計", yt:"https://www.youtube.com/@chuanglaomath"},
   {s:"微處理機", g:"高三上", color:"#b05a2a", pdf:"微處理機", yt:"https://www.youtube.com/@chuanglaomath"},
-  {s:"程式設計實習", g:"高二下", color:"#2f6f7f", pdf:"程式設計實習", yt:"https://www.youtube.com/@chuanglaomath"}
+  {s:"程式設計實習", g:"高二下", color:"#2f6f7f", pdf:"程式設計實習", yt:"https://www.youtube.com/@chuanglaomath"},
+  {s:"基本電學實習", g:"高一下", color:"#6b5ea8", pdf:"基本電學實習", yt:"https://www.youtube.com/@chuanglaomath"},
+  {s:"電子學實習", g:"高二", color:"#a8453f", pdf:"電子學實習", yt:"https://www.youtube.com/@chuanglaomath"}
 ];
 var view = document.getElementById('view');
 var KEY = 'voc_progress_v1';
@@ -161,7 +163,7 @@ function esc(t){ return String(t).replace(/[&<>]/g, function(c){ return {'&':'&a
 function home(){
   location.hash = '';
   document.getElementById('heroTitle').textContent = '專業科目線上練習';
-  document.getElementById('heroSub').textContent = '選科目 → 選章節 → 作答，每題答完立刻批改並顯示詳解。章節依 107 年課綱主題排列：基本電學與電子學是統測專業科目(一)，電工機械是電機類專二，數位邏輯設計、微處理機與程式設計實習是資電類專二。';
+  document.getElementById('heroSub').textContent = '選科目 → 選章節 → 作答，每題答完立刻批改並顯示詳解。章節依 107 年課綱主題排列：基本電學與電子學是統測專業科目(一)，電工機械是電機類專二，數位邏輯設計、微處理機與程式設計實習是資電類專二；另有基本電學實習、電子學實習兩科實習科目。';
   var p = load();
   var html = '<div class="grid two">';
   SUBJ.forEach(function(sj){
@@ -175,13 +177,15 @@ function home(){
       '<div class="meta" style="margin-top:6px">最佳紀錄 ' + best + ' / ' + total + ' 題答對</div></button>';
   });
   html += '</div>';
-  html += '<div class="res"><h3>電機與電子群　六科全部完成</h3>' +
+  html += '<div class="res"><h3>電機與電子群　理論六科＋實習兩科全部完成</h3>' +
     '<a href="#" onclick="subject(\'基本電學\');return false">基本電學 12 個主題全部完成<small>另加「看圖計算」一章，每題都有電路圖 →</small></a>' +
     '<a href="#" onclick="subject(\'電子學\');return false">電子學 11 個主題全部完成<small>二極體、BJT、MOSFET、運算放大器與濾波器 →</small></a>' +
     '<a href="#" onclick="subject(\'電工機械\');return false">電工機械 9 個主題全部完成<small>直流機、變壓器、感應機、同步機、特殊電機 →</small></a>' +
     '<a href="#" onclick="subject(\'數位邏輯設計\');return false">數位邏輯設計 8 個主題全部完成<small>統測資電類專二　邏輯閘、卡諾圖、正反器、計數器 →</small></a>' +
     '<a href="#" onclick="subject(\'微處理機\');return false">微處理機 8 個主題全部完成<small>統測資電類專二　匯流排、中斷、記憶體、串並列傳輸 →</small></a>' +
     '<a href="#" onclick="subject(\'程式設計實習\');return false">程式設計實習 4 個主題全部完成<small>統測資電類專二　C 語言，每題附程式碼 →</small></a>' +
+    '<a href="#" onclick="subject(\'基本電學實習\');return false">基本電學實習 7 個單元全部完成<small>儀表使用、色碼、示波器讀值、家電檢修 →</small></a>' +
+    '<a href="#" onclick="subject(\'電子學實習\');return false">電子學實習 12 個單元全部完成<small>元件判別、整流濾波、放大電路、OP 應用、振盪 →</small></a>' +
     '<a href="../practice/#/tc/C" >統測數學 C 歷屆真題<small>已經上線，375 題附逐題詳解 →</small></a>' +
     '</div>' +
     '<p class="note">想先練數學？官網的<a href="../practice/">正賦線上練習</a>有國中、高中、技高數學 A／B／C 的單元練習與統測真題。</p>';
