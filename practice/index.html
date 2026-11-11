@@ -748,7 +748,10 @@ const TOPS=[
   {id:'void',name:'無界星',ic:'🌌',atk:9,def:8,sta:8,col:['#D8CCFF','#6A4FD8','#241046'],pat:'star',sp:'無界崩星',desc:'傳說的陀螺，沒有弱點',need:{beat:'legend'}},
   /* rev＝左迴旋：轉向跟別人相反，撞到時把對手掉的轉速吸一半回來 */
   {id:'rev',name:'逆旋盤',ic:'🔄',atk:6,def:7,sta:6,col:['#BFF5E6','#17A398','#0A4A45'],pat:'spiral',rev:true,sp:'逆旋吸星',
-   desc:'左迴旋・撞到對手就吸走他一半的轉速',need:{wins:50}}];
+   desc:'左迴旋・撞到對手就吸走他一半的轉速',need:{wins:50}},
+  /* rage＝背水一戰：剩不到三成轉速時攻擊暴增，越落後越強 */
+  {id:'bull',name:'鬥魂牛',ic:'🐂',atk:8,def:6,sta:7,col:['#FFD0B0','#E04A2F','#6B1508'],pat:'horn',rage:true,sp:'鬥魂衝鋒',
+   desc:'轉速剩不到三成時，撞擊力接近兩倍',need:{stars:150}}];
 const TOPP={
   easy:{name:'新手',who:'阿星',ic:'🙂',top:'cat',w:null,mul:.8,dash:.22,noise:.9,sp:0,avoid:.4,perf:.1,need:null,d:1},
   pro:{name:'高手',who:'小雷',ic:'😎',top:'tiger',w:'saw',mul:1,dash:.55,noise:.4,sp:1,avoid:.9,perf:.35,need:'easy',d:2},
@@ -864,6 +867,9 @@ function drawTop(c,x,y,r,t,ang,o={}){
     rep(5,()=>{c.beginPath();c.arc(r*.62,r*.36,r*.06,0,7);c.fill()})}
   else if(P==='flame')rep(4,()=>{c.beginPath();c.moveTo(r*.2,r*.06);c.bezierCurveTo(r*.4,-r*.3,r*.62,-r*.06,r*.84,-r*.32);c.bezierCurveTo(r*.74,r*.02,r*.6,r*.14,r*.2,r*.06);c.fill();c.stroke()});
   else if(P==='moon')rep(3,()=>{c.beginPath();c.arc(r*.52,0,r*.28,0,7);c.arc(r*.6,-r*.08,r*.22,0,7,true);c.fill('evenodd');c.stroke()});
+  /* 鬥魂牛：三對往外張的牛角 */
+  else if(P==='horn')rep(3,()=>{[-1,1].forEach(s=>{c.beginPath();c.moveTo(r*.22,s*r*.1);
+    c.quadraticCurveTo(r*.62,s*r*.42,r*.86,s*r*.16);c.quadraticCurveTo(r*.6,s*r*.2,r*.22,s*r*.26);c.closePath();c.fill();c.stroke()})});
   /* 左迴旋：葉片往逆時針方向捲，一眼看得出轉向跟別人相反 */
   else if(P==='spiral')rep(4,()=>{c.beginPath();c.moveTo(r*.2,-r*.04);c.bezierCurveTo(r*.44,-r*.38,r*.74,-r*.34,r*.86,-r*.02);
     c.bezierCurveTo(r*.66,-r*.12,r*.44,r*.04,r*.2,r*.12);c.closePath();c.fill();c.stroke()});
@@ -1056,7 +1062,10 @@ function topWorld(cfg){
         const rep=60+(P.spin>0&&E.spin>0?40:0);P.vx-=nx*rep/P.m*kP;P.vy-=ny*rep/P.m*kP;E.vx+=nx*rep/E.m*kE;E.vy+=ny*rep/E.m*kE;
         if(W.hitCD<=0&&W.phase==='fight'){
           const spm=f=>f.spT>0?(f.wid==='spike'?f.w.k:2.4):1,wm=f=>f.wid==='saw'&&f.dashT>0?f.w.k:1;
-          const mP=spm(P)*wm(P),mE=spm(E)*wm(E);
+          // rage＝背水一戰：自己的轉速剩不到三成時，撞擊傷害接近兩倍
+          const rg=f=>{if(!f.t.rage||f.spin<=0||f.spin>=f.s0*.35)return 1;
+            if(!f.raged){f.raged=1;say('🔥 背水一戰！','#FF8A3D',f.x,f.y-26);if(f===P)snd('dash')}return 1.9};
+          const mP=spm(P)*wm(P)*rg(P),mE=spm(E)*wm(E)*rg(E);
           const imp=Math.max(0,vrel),sh=(aP+5)/(aP+aE+10);
           const dE=(.5+imp*sh*.55)/100*P.atk/(E.def+3)*mP,dP=(.5+imp*(1-sh)*.55)/100*E.atk/(P.def+3)*mE;
           E.spin-=dE;P.spin-=dP;
