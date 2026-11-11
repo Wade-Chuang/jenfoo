@@ -144,6 +144,15 @@ footer a{font-weight:700}
 /* ===== 闖關對戰（移植自啟賦小學堂，改成正賦 CI） ===== */
 :root{--sun:#d9a520}
 .big.game{background:linear-gradient(135deg,#16223a,#23382f);color:#eef1e8;border-color:#16223a}.big.game b{color:#e3c26a}.big.game span{color:#cfd6cc}
+/* 我的紀錄：闖關對戰首頁上方，一眼看到自己累積了什麼 */
+.myrec{margin-top:12px;padding:16px 18px;border:1px solid var(--line);border-radius:18px;background:var(--card)}
+.myrec>b{display:block;margin-bottom:12px}
+.myrec>b small{font-weight:400;color:var(--ink-2);font-size:13px}
+.recs{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(132px,1fr))}
+.recs>div{display:grid;gap:2px;padding:10px 12px;border-radius:14px;background:var(--bg2,rgba(0,0,0,.035))}
+.recs span{font-size:12.5px;color:var(--ink-2)}
+.recs b{font-family:var(--serif);font-size:22px;line-height:1.15}
+.recs small{font-size:11.5px;color:var(--ink-2)}
 .gcards{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));margin-top:12px}
 .gcard{display:grid;gap:10px;padding:20px;border-radius:20px;text-decoration:none;color:#eef1e8;box-shadow:var(--shadow);background:linear-gradient(135deg,#16223a,#23382f)}
 .gcard.t{background:linear-gradient(135deg,#23382f,#16223a 60%,#3a2f12)}
@@ -484,7 +493,7 @@ function viewHK(){
 
 /* ---------- 作答 ---------- */
 let Q=null;
-function startQuiz(items,meta){Q={items,i:0,right:0,combo:0,meta,wrongNow:[],hearts:3,hp:100};drawQ()}
+function startQuiz(items,meta){const hm=(meta&&meta.hearts)||3;Q={items,i:0,right:0,combo:0,meta,wrongNow:[],hearts:hm,hmax:hm,hp:100};drawQ()}
 function typeset(el){if(!/\$/.test(el.innerHTML))return;const run=()=>MathJax.typesetPromise([el]).catch(()=>{});if(window.__mj)run();else document.addEventListener('mj-ready',run,{once:true})}
 function drawQ(){
   const it=Q.items[Q.i],n=Q.items.length,hk=it.kind==='hk'?hkById(it.hk):null;
@@ -579,8 +588,21 @@ function viewGame(){
   const g=S.grade,R=topRec();let st=0,mx=0,bd=0,dn=0,tot=0;
   BOOKS[g].forEach((b,i)=>{const P=advProgress(g,i);st+=P.stars;mx+=P.max;bd+=P.badges;dn+=P.done;tot+=P.total});
   const bossTot=BOOKS[g].reduce((s,b,i)=>s+advLevels(g,i).levels.filter(l=>l.type==='b').length,0);
+  const kings=BOOKS[g].filter((b,i)=>advProgress(g,i).king).length,bks=BOOKS[g].length;
+  const rk=rankOf(winsAll());
   $('#view').innerHTML=`
   <h2>🎮 闖關對戰<small>${GNAME[g]}・用數學題目打魔王、幫陀螺充能</small></h2>
+  <section class="myrec">
+    <b>我的紀錄<small>　${GNAME[g]}・存在這台裝置上</small></b>
+    <div class="recs">
+      <div><span>🔥 最高連勝</span><b>${R.best||0}</b><small>目前 ${R.streak||0} 連勝</small></div>
+      <div><span>${rk.ic} 陀螺段位</span><b>${rk.name}</b><small>勝場 ${winsAll()}・再 ${rk.next-winsAll()} 場升級</small></div>
+      <div><span>🏆 冊王徽章</span><b>${kings} / ${bks}</b><small>整冊 20 題混合過關</small></div>
+      <div><span>🏅 魔王徽章</span><b>${bd} / ${bossTot}</b><small>打倒魔王拿到</small></div>
+      <div><span>★ 闖關星星</span><b>${st}</b><small>滿分 ${mx}</small></div>
+      <div><span>🌀 陀螺收集</span><b>${R.unlocked.length} / ${TOPS.length}</b><small>武器 ${R.wpn.length} / ${WPN.length}</small></div>
+    </div>
+  </section>
   <div class="grades" role="group" aria-label="年級">${['7','8','9','H1','HA','HB','HJ','HY','A','B','C'].map(n=>`<button data-g="${n}" aria-pressed="${n===g}" style="padding:6px 12px;font-size:14px">${GNAME[n]}</button>`).join('')}</div>
   <div class="gcards">
     <a class="gcard" href="#/adv"><span class="ic">🗺️</span><b>數學闖關</b>
@@ -635,16 +657,25 @@ function advLevels(g,bi){
   const book=BOOKS[g][bi],units=book?MATH.filter(u=>u.g===book):[],levels=[];let grp=0,bn=0;
   units.forEach((u,i)=>{levels.push({type:'n',id:u.id,unit:u,name:u.name.replace(/（附圖）/,'')});grp++;
     if(grp===4||i===units.length-1){bn++;levels.push({type:'b',id:'boss'+bn,bn,pool:units.slice(Math.max(0,i-3),i+1),name:'魔王關 '+bn});grp=0}});
+  // 冊王挑戰：全部關卡都過了才開，整冊 20 題混合、5 顆愛心，過了拿冊王徽章
+  if(units.length)levels.push({type:'k',id:'king',pool:units,name:'冊王挑戰'});
   return{book,key:g+'|'+book,levels}}
 function advRec(key){S.adv=S.adv||{};return S.adv[key]||(S.adv[key]={b:{}})}
 function advProgress(g,bi){const L=advLevels(g,bi),b=((S.adv||{})[L.key]||{b:{}}).b;let done=0,stars=0,badges=0;
   L.levels.forEach(l=>{const v=b[l.id]||0;if(v>0){done++;stars+=v;if(l.type==='b')badges++}});
-  return{done,total:L.levels.length,stars,max:L.levels.length*3,badges,L,b}}
-const advUnlocked=(L,b,i)=>i===0||(b[L.levels[i-1].id]||0)>0;
+  return{done,total:L.levels.length,stars,max:L.levels.length*3,badges,king:(b.king||0)>0,L,b}}
+/* 一般關只要前一關過了；冊王要前面「全部」都過了 */
+const advUnlocked=(L,b,i)=>L.levels[i].type==='k'
+  ? L.levels.every((l,k)=>k>=i||(b[l.id]||0)>0)
+  : i===0||(b[L.levels[i-1].id]||0)>0;
 const advNum=i=>i+1-Math.floor(i/5);   // 第幾關（魔王不算）
 /* 魔王關：前面（最多）4 個單元混合 10 題，由易到難 */
 function bossSet(pool){const plan=[1,1,2,2,2,2,3,3,3,3],us=shuffleArr(pool),out=[],seen=new Set();
   for(let k=0;k<plan.length;k++)for(let t=0;t<12;t++){const u=us[(k+t)%us.length],it=fromMath(u,plan[k]);if(it&&!seen.has(it.key)){seen.add(it.key);out.push(it);break}}
+  return out}
+/* 冊王挑戰：整冊單元混合 20 題，由易到難，盡量每個單元都出到 */
+function kingSet(pool){const plan=[1,1,1,1,2,2,2,2,2,2,2,3,3,3,3,3,3,3,3,3],us=shuffleArr(pool),out=[],seen=new Set();
+  for(let k=0;k<plan.length;k++)for(let t=0;t<16;t++){const u=us[(k+t)%us.length],it=fromMath(u,plan[k]);if(it&&!seen.has(it.key)){seen.add(it.key);out.push(it);break}}
   return out}
 /* 沒指定冊次：挑第一本還沒闖完的 */
 function advDefault(g){const n=BOOKS[g].length;for(let i=0;i<n;i++){const P=advProgress(g,i);if(P.done<P.total)return i}return 0}
@@ -653,27 +684,27 @@ function viewAdv(bi){
   const book=bs[bi],T=advTheme(book),P=advProgress(g,bi),L=P.L,b=P.b;
   if(!L.levels.length){$('#view').innerHTML=`<a class="back" href="#/game">← 闖關對戰</a><div class="empty">這一冊的關卡正在準備中。</div>`;return}
   // 位置：蜿蜒小路（x 用百分比、y 用 px）
-  const pts=[];let y=92;L.levels.forEach((l,i)=>{const x=50+27*Math.sin(i*Math.PI/3);if(l.type==='b')y+=14;pts.push({x,y});y+=l.type==='b'?132:112});
+  const pts=[];let y=92;L.levels.forEach((l,i)=>{const x=l.type==='k'?50:50+27*Math.sin(i*Math.PI/3);if(l.type!=='n')y+=14;pts.push({x,y});y+=l.type!=='n'?132:112});
   const H=y+40,cur=L.levels.findIndex((l,i)=>!(b[l.id]>0)&&advUnlocked(L,b,i));
   let d=`M${pts[0].x} ${pts[0].y-60}`;let prev={x:pts[0].x,y:pts[0].y-60};
   pts.concat([{x:50,y:H-30}]).forEach(p=>{const m=(p.y-prev.y)/2;d+=` C${prev.x} ${prev.y+m} ${p.x} ${p.y-m} ${p.x} ${p.y}`;prev=p});
-  const nodes=L.levels.map((l,i)=>{const p=pts[i],v=b[l.id]||0,un=advUnlocked(L,b,i),boss=l.type==='b';
-    const cls='node'+(boss?' boss':'')+(v>0?' done':'')+(un?'':' lock')+(i===cur?' cur':'');
-    const inner=boss?(v>0?T.badge:T.boss):(un?String(advNum(i)):'🔒');
+  const nodes=L.levels.map((l,i)=>{const p=pts[i],v=b[l.id]||0,un=advUnlocked(L,b,i),boss=l.type==='b',king=l.type==='k';
+    const cls='node'+(boss||king?' boss':'')+(v>0?' done':'')+(un?'':' lock')+(i===cur?' cur':'');
+    const inner=king?(v>0?'🏆':un?'👑':'🔒'):boss?(v>0?T.badge:T.boss):(un?String(advNum(i)):'🔒');
     const st=v>0?`<span class="st">${'★'.repeat(v)}<span class="off">${'★'.repeat(3-v)}</span></span>`:'';
-    const lab=boss?(v>0?'打倒了！':T.bossName):l.name;
+    const lab=king?(v>0?'冊王！':'冊王挑戰'):boss?(v>0?'打倒了！':T.bossName):l.name;
     const side=i%2?-1:1,mx=p.x>=58?13:p.x<=42?87:(side>0?87:13);
-    return`<button class="${cls}" style="left:${p.x}%;top:${p.y}px" data-i="${i}" aria-label="${esc((boss?'魔王關：'+T.bossName:'第'+advNum(i)+'關：'+l.name))}${un?'':'（還沒解鎖）'}"${un?'':' aria-disabled="true"'}>${inner}${st}</button>
-      <span class="nlabel${un?'':' lockt'}" style="left:${p.x}%;top:${p.y+(boss?52:42)}px">${esc(lab)}</span>
+    return`<button class="${cls}" style="left:${p.x}%;top:${p.y}px" data-i="${i}" aria-label="${esc(king?'冊王挑戰':boss?'魔王關：'+T.bossName:'第'+advNum(i)+'關：'+l.name)}${un?'':'（還沒解鎖）'}"${un?'':' aria-disabled="true"'}>${inner}${st}</button>
+      <span class="nlabel${un?'':' lockt'}" style="left:${p.x}%;top:${p.y+(boss||king?52:42)}px">${esc(lab)}</span>
       <span class="mark" aria-hidden="true" style="left:${mx}%;top:${p.y+20}px">${T.marks[i%T.marks.length]}</span>`}).join('');
   const hero=cur>=0?`<span class="hero" aria-hidden="true" style="left:calc(${pts[cur].x}% + ${L.levels[cur].type==='b'?60:48}px);top:${pts[cur].y+14}px">🧑‍🎓</span>`:'';
   const bookPick=`<div class="row2"><b style="font-size:14px">選冊次：</b><div class="grades">${bs.map((x,i)=>{const q=advProgress(g,i);return`<button data-b="${i}" aria-pressed="${i===bi}">${bookName(x)}${q.total&&q.done===q.total?' 🏅':''}</button>`}).join('')}</div></div>`;
   $('#view').innerHTML=`<a class="back" href="#/game">← 闖關對戰</a>
   <h2>🗺️ 數學闖關・${T.name} ${T.ic}<small>${GNAME[g]}・${bookName(book)}</small></h2>
   <section class="advtop">${bookPick}
-    <div class="row2"><span class="chip">★ <b>${P.stars}</b> / ${P.max}</span><span class="chip">🏅 徽章 <b>${P.badges}</b> 枚</span><span class="chip">已過 <b>${P.done}</b> / ${P.total} 關</span></div>
-    <p class="hint" style="margin:0">一個單元一關，每關 8 題、3 顆愛心，答錯扣 1 顆；剩幾顆愛心就拿幾顆星。每 4 關有一隻魔王「${T.bossName}」：10 題混合前面的單元，把牠的血打到 20 以下就贏了。</p>
-    ${cur>=0?`<button class="btn primary" id="advGo" style="justify-self:start">▶ 繼續闖關：${L.levels[cur].type==='b'?'魔王關・'+T.bossName:'第 '+advNum(cur)+' 關・'+esc(L.levels[cur].name)}</button>`:'<b>🏆 整張地圖都闖完了！可以再挑戰把每一關拿滿三顆星。</b>'}</section>
+    <div class="row2"><span class="chip">★ <b>${P.stars}</b> / ${P.max}</span><span class="chip">🏅 徽章 <b>${P.badges}</b> 枚</span><span class="chip">已過 <b>${P.done}</b> / ${P.total} 關</span>${P.king?'<span class="chip">🏆 <b>冊王</b></span>':''}</div>
+    <p class="hint" style="margin:0">一個單元一關，每關 8 題、3 顆愛心，答錯扣 1 顆；剩幾顆愛心就拿幾顆星。每 4 關有一隻魔王「${T.bossName}」：10 題混合前面的單元，把牠的血打到 20 以下就贏了。全部過完，地圖最後會開<b>冊王挑戰</b>：整冊 20 題混合、5 顆愛心，過了拿冊王徽章。</p>
+    ${cur>=0?`<button class="btn primary" id="advGo" style="justify-self:start">▶ ${L.levels[cur].type==='k'?'挑戰冊王：'+bookName(book)+'　整冊 20 題':'繼續闖關：'+(L.levels[cur].type==='b'?'魔王關・'+T.bossName:'第 '+advNum(cur)+' 關・'+esc(L.levels[cur].name))}</button>`:'<b>🏆 整張地圖都闖完了，冊王也拿到了！可以再挑戰把每一關拿滿三顆星。</b>'}</section>
   <div class="advmap${T.night?' night':''}" style="--abg:${T.bg};--apc:${T.pc};height:${H}px">
     <svg class="path" viewBox="0 0 100 ${H}" preserveAspectRatio="none" aria-hidden="true"><path d="${d}" fill="none" stroke="rgba(255,255,255,.75)" stroke-width="22" stroke-linecap="round" vector-effect="non-scaling-stroke"/><path d="${d}" fill="none" stroke="${T.pc}" stroke-opacity=".55" stroke-width="4" stroke-dasharray="2 12" stroke-linecap="round" vector-effect="non-scaling-stroke"/></svg>
     <span class="ttl">${T.ic} ${T.name}</span>
@@ -688,12 +719,13 @@ function startAdv(bi,i){
   const g=S.grade;if(!(bi>=0&&bi<BOOKS[g].length))return false;
   const L=advLevels(g,bi),b=advRec(L.key).b,l=L.levels[i];
   if(!l||!advUnlocked(L,b,i))return false;
-  const items=l.type==='b'?bossSet(l.pool):mathSet(l.unit,[1,1,2,2,2,3,3,3]);if(!items.length)return false;
-  startQuiz(items,{back:'#/adv/'+bi,adv:{bi,i,book:L.book,key:L.key,id:l.id,boss:l.type==='b',name:l.name,num:advNum(i),last:i===L.levels.length-1,total:L.levels.length}});
+  const king=l.type==='k';
+  const items=king?kingSet(l.pool):l.type==='b'?bossSet(l.pool):mathSet(l.unit,[1,1,2,2,2,3,3,3]);if(!items.length)return false;
+  startQuiz(items,{back:'#/adv/'+bi,hearts:king?5:3,adv:{bi,i,book:L.book,key:L.key,id:l.id,boss:l.type==='b',king,name:l.name,num:advNum(i),last:i===L.levels.length-1,total:L.levels.length}});
   return true}
 function advHud(){const A=Q.meta.adv,T=advTheme(A.book);
-  const hearts=[0,1,2].map(k=>`<span${k<Q.hearts?'':' class="lost"'}>❤️</span>`).join('');
-  return`<div class="advhud"><span class="hearts" id="hearts" aria-label="剩下 ${Q.hearts} 顆愛心">${hearts}</span><span>${A.boss?'👑 魔王關':'第 '+A.num+' 關'}・${esc(A.boss?T.name:A.name)}</span></div>`+
+  const hearts=Array.from({length:Q.hmax||3},(_,k)=>`<span${k<Q.hearts?'':' class="lost"'}>❤️</span>`).join('');
+  return`<div class="advhud"><span class="hearts" id="hearts" aria-label="剩下 ${Q.hearts} 顆愛心">${hearts}</span><span>${A.king?'🏆 冊王挑戰':A.boss?'👑 魔王關':'第 '+A.num+' 關'}・${esc(A.king?bookName(A.book):A.boss?T.name:A.name)}</span></div>`+
     (A.boss?`<div class="bossbox"><span class="bossic" id="bossIc" aria-hidden="true">${T.boss}</span><div><b>${T.bossName}</b><div class="hp" role="progressbar" aria-label="魔王血量" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${Q.hp}"><i id="hpBar" style="width:${Q.hp}%"></i></div><small id="hpTxt">HP ${Q.hp} / 100・打到 20 以下就贏</small></div></div>`:'')}
 function advHit(ok){const A=Q.meta.adv;
   if(ok){if(A.boss){Q.hp=Math.max(0,Q.hp-10);const bar=$('#hpBar');if(bar){bar.style.width=Q.hp+'%';bar.parentNode.setAttribute('aria-valuenow',Q.hp)}$('#hpTxt').textContent='HP '+Q.hp+' / 100・打到 20 以下就贏';replayAnim($('#bossIc'),'hit')}}
@@ -701,13 +733,17 @@ function advHit(ok){const A=Q.meta.adv;
     $('#hearts').setAttribute('aria-label','剩下 '+Q.hearts+' 顆愛心');if(A.boss)replayAnim($('#bossIc'),'atk')}
   if(Q.hearts<=0){clearTimeout(Q.auto);const nb=$('#nextBtn');if(nb)nb.textContent='愛心用完了，看結果 →'}}
 function advFinish(){
-  const A=Q.meta.adv,T=advTheme(A.book),n=Q.items.length,r=Q.right,win=Q.hearts>0&&(!A.boss||Q.hp<=20),stars=win?Q.hearts:0;
+  const A=Q.meta.adv,T=advTheme(A.book),n=Q.items.length,r=Q.right,win=Q.hearts>0&&(!A.boss||Q.hp<=20);
+  // 冊王有 5 顆愛心，星星一樣最多 3 顆：剩 5→3、4→2、其餘→1
+  const stars=!win?0:A.king?Math.max(1,Math.min(3,Q.hearts-2)):Q.hearts;
   const rec=advRec(A.key),old=rec.b[A.id]||0;if(stars>old)rec.b[A.id]=stars;
-  const gain=r*10+stars*20+(win&&A.boss?50:0);S.xp+=gain;S.stars+=stars;
+  const gain=r*10+stars*20+(win&&A.boss?50:0)+(win&&A.king?150:0);S.xp+=gain;S.stars+=stars+(win&&A.king?3:0);
   if(!S.days.includes(today()))S.days.push(today());S.days=S.days.slice(-60);
   save();header();
   const allDone=win&&A.last;
-  const msg=allDone?`整冊闖完！${bookName(A.book)}「${T.name}」被你攻下了，這一冊的觀念你都摸過一輪了。`:
+  const msg=A.king?(win?`冊王！${bookName(A.book)}整冊 20 題混在一起你還是撐住了，這一冊可以說是你的了。`:
+      pick(['冊王是整冊混合，難度本來就跳一階。看完錯題，知道是哪幾個單元還鬆，再來一次。','差一點！把錯的那幾題回去把單元重練一遍，下次就過了。'])):
+    allDone?`整冊闖完！${bookName(A.book)}「${T.name}」被你攻下了，這一冊的觀念你都摸過一輪了。`:
     win&&A.boss?pick([`打倒${T.bossName}！前面幾個單元混在一起你也不會亂，這就是實力。`,`${T.bossName}倒下了！混合題能過，段考就不怕。`,'魔王關過了！把這種穩定度帶到考場去。']):
     win?(stars===3?'三顆愛心全保住，滿分過關！':pick(['過關！下一關繼續。','穩穩過關，往下一關前進。','過關了！錯的那幾題記得看一下解析。'])):
     A.boss?pick(['魔王比較硬，混合題本來就難。先看錯題，再回前面的關卡複習一次。','差一點就打倒了！把錯題弄懂，再來一次一定可以。']):
@@ -717,14 +753,15 @@ function advFinish(){
   <section class="card result">
     ${A.boss?`<div class="bossic${win?'':' atk'}" style="font-size:76px;${win?'filter:grayscale(1);opacity:.45;transform:rotate(-90deg)':''}" aria-hidden="true">${T.boss}</div>`:''}
     <div class="bigstars">${[0,1,2].map(i=>`<span style="color:${i<stars?'var(--brass)':'var(--line)'}">★</span>`).join('')}</div>
-    <div class="score" style="font-family:var(--serif);font-size:clamp(34px,9vw,48px)">${win?(A.boss?'打倒魔王！':'過關！'):'挑戰失敗'}</div>
+    <div class="score" style="font-family:var(--serif);font-size:clamp(34px,9vw,48px)">${win?(A.king?'冊王達成！':A.boss?'打倒魔王！':'過關！'):'挑戰失敗'}</div>
     <b>${msg}</b>
     <span class="hint">答對 ${r} / ${n} 題・剩下 ${Q.hearts} 顆愛心${A.boss?'・魔王血量 '+Q.hp:''}・獲得 ${gain} XP${stars>old&&old?'・刷新最佳紀錄':''}</span>
+    ${win&&A.king?`<div class="reward"><div class="badge" aria-hidden="true">🏆</div><b>🏆 得到「${bookName(A.book)} 冊王」徽章！</b><span>整冊 20 題混合通過，另外加 3 顆星</span></div>`:''}
     ${win&&A.boss?`<div class="reward"><div class="badge" aria-hidden="true">${T.badge}</div><b>🏅 得到「${T.name}」徽章！</b></div>`:''}
     <div class="btns">${nextOk?`<button class="btn primary" id="advNext">下一關 →</button>`:''}<button class="btn${nextOk?'':' primary'}" id="again">${win?'再玩一次':'再試一次'}</button>${Q.wrongNow.length?`<button class="btn" id="review">看錯題（${Q.wrongNow.length}）</button>`:''}<a class="btn" href="${Q.meta.back}">回地圖</a></div>
   </section>
-  ${win&&A.boss?classCta():win?'':ctaBox()}`;
-  if(win&&(A.boss||stars===3))confetti();
+  ${win&&(A.boss||A.king)?classCta():win?'':ctaBox()}`;
+  if(win&&(A.boss||A.king||stars===3))confetti();
   const meta=Q.meta,wn=Q.wrongNow;
   $('#again').onclick=()=>{if(!startAdv(A.bi,A.i))route()};
   if($('#advNext'))$('#advNext').onclick=()=>location.hash='#/adv/'+A.bi+'/'+(A.i+1);
@@ -795,7 +832,8 @@ const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 const RM=()=>matchMedia('(prefers-reduced-motion: reduce)').matches;
 const ZWINS=()=>Object.keys(TOPP).reduce((o,k)=>(o[k]=0,o),{});   // 之後再加對手，舊存檔也不會變成 NaN
 function topRec(){const d={sel:'hawk',opp:'easy',src:null,wins:ZWINS(),plays:0,losses:0,unlocked:['hawk','turtle'],
-    wpn:[],wsel:'none',arena:'bowl',lch:[],lsel:'basic',spent:0,easy:null,aw:{},ach:{perfect:0,hazard:0}};
+    wpn:[],wsel:'none',arena:'bowl',lch:[],lsel:'basic',spent:0,easy:null,aw:{},ach:{perfect:0,hazard:0},
+    streak:0,best:0};   // streak＝目前連勝（輸了歸零），best＝最高連勝紀錄
   if(!S.top||!S.top.__ok){S.top=Object.assign(d,S.top||{});S.top.wins=Object.assign(ZWINS(),S.top.wins);S.top.ach=Object.assign({perfect:0,hazard:0},S.top.ach);
     Object.defineProperty(S.top,'__ok',{value:1,enumerable:false})}
   return S.top}
@@ -1122,7 +1160,7 @@ function viewTop(){
   <h2>🌀 陀螺對戰<small>${GNAME[g]}・數學題充能</small></h2>
   <div class="tlobby">
   <section class="tbox"><p class="hint" style="margin:0">先答數學題幫陀螺<b>充能</b>（${CHARGE_SEC} 秒內最多 10 題），答對越多、連對越多，陀螺就轉得越久、撞得越大力，每連對 3 題還多一次必殺技！<b>連對 6 題或全對</b>還能抽一件武器。題目難度跟著對手：新手${DTXT[1]}、高手${DTXT[2]}、冠軍以上${DTXT[3]}。</p>
-    <div class="trec"><span class="chip" title="總勝場決定段位，最後一階無上限。再贏 ${rk.next-wins} 場升上「${rk.nextName}」">${rk.ic} 段位 <b>${rk.name}</b>・再 ${rk.next-wins} 場</span><span class="chip">🏆 勝場 <b>${wins}</b></span><span class="chip">⚔️ 對戰 <b>${R.plays}</b> 場</span><span class="chip">🌀 陀螺 <b>${R.unlocked.length}</b> / ${TOPS.length}</span><span class="chip">🗡️ 武器 <b>${R.wpn.length}</b> / ${WPN.length}</span><span class="chip" title="累積星星減掉兌換用掉的">⭐ 可兌換 <b>${av}</b></span></div></section>
+    <div class="trec"><span class="chip" title="總勝場決定段位，最後一階無上限。再贏 ${rk.next-wins} 場升上「${rk.nextName}」">${rk.ic} 段位 <b>${rk.name}</b>・再 ${rk.next-wins} 場</span><span class="chip">🏆 勝場 <b>${wins}</b></span><span class="chip" title="連續贏幾場，輸一場就歸零">🔥 連勝 <b>${R.streak||0}</b>・最高 <b>${R.best||0}</b></span><span class="chip">⚔️ 對戰 <b>${R.plays}</b> 場</span><span class="chip">🌀 陀螺 <b>${R.unlocked.length}</b> / ${TOPS.length}</span><span class="chip">🗡️ 武器 <b>${R.wpn.length}</b> / ${WPN.length}</span><span class="chip" title="累積星星減掉兌換用掉的">⭐ 可兌換 <b>${av}</b></span></div></section>
   <section class="tbox"><h3>① 選我的陀螺</h3>
     <div class="tsel"><canvas id="tBig" width="132" height="132" aria-hidden="true"></canvas>
       <div class="info"><b>${t.ic} ${t.name}${w?`<span class="wtag">＋${w.ic}${w.name}</span>`:''}</b><span class="hint" style="margin:0">${t.desc}・必殺技「${t.sp}」</span>${sb('攻擊',ws.atk,ws.atk-t.atk)}${sb('防禦',ws.def,ws.def-t.def)}${sb('耐力',ws.sta,ws.sta-t.sta)}</div></div>
@@ -1343,6 +1381,10 @@ function topResult(st){
   st.dead=true;cancelAnimationFrame(st.raf);if(st.off)st.off();TOPRUN=null;
   const arBefore=ARENAS.filter(arenaOpen).map(a=>a.id),lBefore=LCH.filter(lchOpen).map(l=>l.id);
   R.plays++;if(win){R.wins[k]++;R.aw[st.A.id]=(R.aw[st.A.id]||0)+1}else R.losses++;
+  // 連勝：贏了加一，輸了歸零；破紀錄另外標出來
+  const stBefore=R.streak||0,bestBefore=R.best||0;
+  R.streak=win?stBefore+1:0;R.best=Math.max(bestBefore,R.streak);
+  const newBest=win&&R.streak>bestBefore&&R.streak>=2,streakLost=!win&&stBefore>=2;
   if(st.lres&&st.lres.perfect)R.ach.perfect++;if(win&&end.hz)R.ach.hazard++;
   const stars=win?({easy:1,pro:2,champ:3,master:4,legend:5}[k]||1):0,gain=ctx.right*5+(win?20+stars*20:10);S.stars+=stars;S.xp+=gain;
   if(!S.days.includes(today()))S.days.push(today());S.days=S.days.slice(-60);
@@ -1384,6 +1426,9 @@ function topResult(st){
     ${newL.map(l=>`<div class="reward"><b>🎯 解鎖新發射器：${l.name}</b><span>${l.desc}</span></div>`).join('')}
     ${newOpp?`<div class="reward"><b>${newOpp[1].ic} 新對手出現：${newOpp[1].name}「${newOpp[1].who}」</b><span>充能題目會變成${DTXT[newOpp[1].d]}</span></div>`:''}
     ${rankUp?`<div class="reward"><b>${rkNow.ic} 段位提升：${rkNow.name}</b><span>總勝場 ${winsAll()} 場，再贏 ${rkNow.next-winsAll()} 場升上「${rkNow.nextName}」</span></div>`:''}
+    ${newBest?`<div class="reward"><b>🔥 新的連勝紀錄：${R.streak} 連勝！</b><span>再輸一場就歸零，撐住</span></div>`
+      :win&&R.streak>=2?`<div class="reward"><b>🔥 ${R.streak} 連勝中</b><span>最高紀錄 ${R.best} 連勝</span></div>`
+      :streakLost?`<div class="reward"><b>連勝中斷：${stBefore} 連勝結束</b><span>最高紀錄還留著（${R.best} 連勝），重新開始累積</span></div>`:''}
     <div class="btns"><button class="btn primary" id="tAgain">⚡ ${win?'再充能挑戰':'再充能一次'}</button>${ctx.wrong.length?`<button class="btn" id="review">看錯題（${ctx.wrong.length}）</button>`:''}<a class="btn" href="#/top">換陀螺／武器／擂台</a></div>
   </section>
   ${win&&(k==='champ'||k==='legend')?classCta():''}`;
