@@ -324,3 +324,10 @@ footer .brand small{color:#c7cedb}
   .hero.slim .cta{margin-top:14px}.hero.slim .cta .btn-line{display:none}.hero.slim .cta .btn{padding:9px 18px;font-size:14px}
   .band.play{padding:20px 0 48px}.band.play .shead{margin-bottom:18px}
 }
+
+/* 頁尾「家長常看」：在地搜尋常用的詞，給 Google 也給家長 */
+.flinks{display:flex;flex-wrap:wrap;align-items:center;gap:8px 18px;margin-top:34px;padding-top:20px;border-top:1px solid rgba(255,255,255,.12);font-size:13px}
+.flinks b{color:#fff;margin:0}
+.flinks a{color:#c7cedb;text-decoration:none}
+.flinks a:hover{color:var(--brass,#c69e46);text-decoration:underline}
+.flinks + .fbottom{margin-top:18px;padding-top:0;border-top:0}

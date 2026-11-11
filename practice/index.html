@@ -1,15 +1,6 @@
 <!doctype html>
 <html lang="zh-Hant-TW">
 <head>
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-NSNBQNLSDN"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'G-NSNBQNLSDN');
-</script>
-
 <meta charset="utf-8">
 <meta name="referrer" content="no-referrer-when-downgrade">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -589,7 +580,7 @@ function viewGame(){
       <span class="go">${dn?'繼續闖關 ▶':'開始闖關 ▶'}</span></a>
     <a class="gcard t" href="#/top"><span class="ic">🌀</span><b>陀螺對戰</b>
       <p>先答數學題幫陀螺充能，答對越多、連對越多，陀螺轉得越久、撞得越大力，再上擂台跟電腦對戰。</p>
-      <div class="chips"><span>🏆 勝場 ${winsAll()}</span><span>⚔️ 對戰 ${R.plays} 場</span><span>🌀 陀螺 ${R.unlocked.length} / ${TOPS.length}</span>${R.wins.champ?'<span>👑 冠軍</span>':''}</div>
+      <div class="chips"><span>🏆 勝場 ${winsAll()}</span><span>⚔️ 對戰 ${R.plays} 場</span><span>🌀 陀螺 ${R.unlocked.length} / ${TOPS.length}</span>${winsAll()?`<span>${rankOf(winsAll()).ic} ${rankOf(winsAll()).name}</span>`:''}</div>
       <span class="go">進入陀螺大廳 ▶</span></a>
   </div>
   <p class="hint">題目跟「單元練習」同一套出題程式，每次都不一樣；答錯的題目一樣會收進單元錯題本。</p>
@@ -741,11 +732,18 @@ const TOPS=[
   {id:'tiger',name:'雷光虎',ic:'🐯',atk:8,def:5,sta:4,col:['#FFE37A','#F29A00','#7A4300'],pat:'bolt',sp:'雷霆猛撲',desc:'攻擊最強，轉得較短',need:{stars:20}},
   {id:'cat',name:'星砂貓',ic:'🐱',atk:5,def:5,sta:8,col:['#E6D4FF','#8A63E8','#3F2A8C'],pat:'star',sp:'星砂迴旋',desc:'轉最久，慢慢磨贏',need:{stars:50}},
   {id:'koi',name:'焰尾鯉',ic:'🐟',atk:7,def:6,sta:5,col:['#FFC2A8','#F25C4B','#8C1F14'],pat:'flame',sp:'烈焰甩尾',desc:'攻守平均的好手',need:{beat:'pro'}},
-  {id:'dragon',name:'霜月龍',ic:'🐉',atk:8,def:7,sta:7,col:['#E3FAFF','#55A8F0','#1D3F8F'],pat:'moon',sp:'霜月龍捲',desc:'冠軍的陀螺，全能型',need:{beat:'champ'}}];
+  {id:'dragon',name:'霜月龍',ic:'🐉',atk:8,def:7,sta:7,col:['#E3FAFF','#55A8F0','#1D3F8F'],pat:'moon',sp:'霜月龍捲',desc:'冠軍的陀螺，全能型',need:{beat:'champ'}},
+  /* 後期陀螺：打倒冠軍之後才開始追 */
+  {id:'wolf',name:'蒼牙狼',ic:'🐺',atk:9,def:6,sta:7,col:['#CFE4FF','#3F6AD8','#16255C'],pat:'bolt',sp:'蒼牙連咬',desc:'攻擊破表，打速度戰最強',need:{stars:100}},
+  {id:'phoenix',name:'焰羽凰',ic:'🔥',atk:8,def:6,sta:8,col:['#FFE0A8','#F2762B','#8C2A0E'],pat:'flame',sp:'焰羽重生',desc:'耐力高又能打，久戰不虛',need:{beat:'master'}},
+  {id:'void',name:'無界星',ic:'🌌',atk:9,def:8,sta:8,col:['#D8CCFF','#6A4FD8','#241046'],pat:'star',sp:'無界崩星',desc:'傳說的陀螺，沒有弱點',need:{beat:'legend'}}];
 const TOPP={
   easy:{name:'新手',who:'阿星',ic:'🙂',top:'cat',w:null,mul:.8,dash:.22,noise:.9,sp:0,avoid:.4,perf:.1,need:null,d:1},
   pro:{name:'高手',who:'小雷',ic:'😎',top:'tiger',w:'saw',mul:1,dash:.55,noise:.4,sp:1,avoid:.9,perf:.35,need:'easy',d:2},
-  champ:{name:'冠軍',who:'龍王',ic:'👑',top:'dragon',w:'shield',mul:1.1,dash:.9,noise:.12,sp:2,smart:true,avoid:1.4,perf:.6,need:'pro',d:3}};
+  champ:{name:'冠軍',who:'龍王',ic:'👑',top:'dragon',w:'shield',mul:1.1,dash:.9,noise:.12,sp:2,smart:true,avoid:1.4,perf:.6,need:'pro',d:3},
+  master:{name:'宗師',who:'無影',ic:'🥷',top:'wolf',w:'magnet',mul:1.1,dash:1.0,noise:.08,sp:2,smart:true,avoid:1.5,perf:.75,need:'champ',d:3},
+  /* legend 的數值用 window.__topSim 跑過 120 場校過：好充能約三成勝率、完美發射＋滿充能約九成、普通充能幾乎不會贏 */
+  legend:{name:'傳說',who:'零',ic:'🌌',top:'void',w:'spike',mul:1.12,dash:1.05,noise:.05,sp:3,smart:true,avoid:1.55,perf:.72,need:'master',d:3}};
 const DTXT={1:'基礎題',2:'中等題',3:'進階題'};
 /* 武器（陀螺外圈配件）：mod＝數值增減，tr＝小特性 */
 const WPN=[
@@ -754,32 +752,45 @@ const WPN=[
   {id:'rotor',name:'迴旋翼',ic:'🍃',mod:{sta:1,atk:-1},k:0.93,short:'耐力+1 攻擊-1',tr:'轉速掉得比較慢',price:12,get:'draw'},
   {id:'balance',name:'平衡輪',ic:'⚖️',mod:{sta:1,atk:-1},k:1.35,short:'耐力+1 攻擊-1',tr:'在場邊不容易被撞出界',price:12,get:'draw'},
   {id:'magnet',name:'磁力爪',ic:'🧲',mod:{atk:1,sta:-1},k:260,short:'攻擊+1 耐力-1',tr:'撞到時吸住對手一下，再用力甩出去',price:30,get:'pro'},
-  {id:'spike',name:'尖刺錘',ic:'🔨',mod:{atk:2,sta:-1},k:2.7,short:'攻擊+2 耐力-1',tr:'必殺技傷害大增',price:30,get:'champ'}];
+  {id:'spike',name:'尖刺錘',ic:'🔨',mod:{atk:2,sta:-1},k:2.7,short:'攻擊+2 耐力-1',tr:'必殺技傷害大增',price:30,get:'champ'},
+  {id:'drill',name:'貫穿錐',ic:'🗜️',mod:{atk:2,def:-1},k:3.0,short:'攻擊+2 防禦-1',tr:'衝刺命中時幾乎把對手直接推出界',price:60,get:'master'},
+  {id:'gyro',name:'迴天軸',ic:'🌀',mod:{def:2,sta:2,atk:-2},k:.45,short:'防禦+2 耐力+2 攻擊-2',tr:'幾乎撞不動，專門靠轉得久取勝',price:60,get:'legend'}];
 /* 擂台 */
 const ARENAS=[
   {id:'bowl',name:'經典碗場',ic:'🥣',desc:'標準的碗狀競技場，沒有機關',K:4.2,fr:.42,out:1,need:null},
   {id:'rock',name:'岩石峽谷',ic:'🪨',desc:'場上有 3 顆岩石，撞上會反彈、掉轉速',K:4.2,fr:.42,out:1,need:{beat:'easy'}},
   {id:'vortex',name:'旋風漩渦',ic:'🌪️',desc:'中間一圈氣流帶會越轉越快，把陀螺甩開',K:4.2,fr:.42,out:1,need:{wins:3}},
   {id:'ice',name:'冰面擂台',ic:'🧊',desc:'地面很滑、滑得遠，邊緣比較容易出界',K:3.6,fr:.2,out:.88,need:{beat:'pro'}},
-  {id:'volcano',name:'火山擂台',ic:'🌋',desc:'場邊熱點會輪流噴發，碰到掉轉速；中央最安全',K:4.2,fr:.42,out:1,need:{wins:8}}];
+  {id:'volcano',name:'火山擂台',ic:'🌋',desc:'場邊熱點會輪流噴發，碰到掉轉速；中央最安全',K:4.2,fr:.42,out:1,need:{wins:8}},
+  /* 後期擂台：沒有機關，純粹靠場地物理拉開難度 */
+  {id:'storm',name:'雷雲擂台',ic:'⛈️',desc:'碗很淺、滑得遠，稍微被推一下就滑到邊緣，沒有犯錯空間',K:3.2,fr:.26,out:.82,need:{wins:15}},
+  {id:'abyss',name:'無界深淵',ic:'🌌',desc:'場地最小、最難站穩，打倒傳說才開放',K:5.2,fr:.5,out:.75,need:{beat:'legend'}}];
 /* 發射器：lo～hi＝完美區間，pmax＝力道上限，swing＝擺動速度，pb＝完美發射的轉速加成 */
 const LCH=[
   {id:'basic',name:'晴空標準型',desc:'各方面平均，好上手',lo:.80,hi:.95,pmax:1,swing:1.6,pb:.08,col:['#9BE0FF','#1A86A8','#0B4A66'],need:null},
   {id:'steady',name:'龜殼穩定型',desc:'完美區間最寬、擺得慢，力道上限稍低',lo:.74,hi:.96,pmax:.94,swing:1.1,pb:.08,col:['#C8F09A','#3C8A3F','#1F4D24'],need:{wins:2}},
   {id:'power',name:'火箭強力型',desc:'力道上限最高，但完美區間很窄',lo:.86,hi:.93,pmax:1.12,swing:2,pb:.08,col:['#FFC2A8','#F25C4B','#8C1F14'],need:{beat:'pro'}},
-  {id:'swirl',name:'風車迴轉型',desc:'完美發射時，轉速加成最多',lo:.80,hi:.94,pmax:.97,swing:1.6,pb:.15,col:['#E6D4FF','#8A63E8','#3F2A8C'],need:{price:20}}];
+  {id:'swirl',name:'風車迴轉型',desc:'完美發射時，轉速加成最多',lo:.80,hi:.94,pmax:.97,swing:1.6,pb:.15,col:['#E6D4FF','#8A63E8','#3F2A8C'],need:{price:20}},
+  {id:'storm',name:'雷霆競技型',desc:'力道上限和完美加成都最高，但區間極窄、擺得最快，給熟手用',lo:.88,hi:.94,pmax:1.15,swing:2.4,pb:.16,col:['#CFE4FF','#3F6AD8','#16255C'],need:{beat:'master'}}];
 const topById=id=>TOPS.find(t=>t.id===id)||TOPS[0];
 const wById=id=>WPN.find(w=>w.id===id)||null;
 const arById=id=>ARENAS.find(a=>a.id===id)||ARENAS[0];
 const lchById=id=>LCH.find(l=>l.id===id)||LCH[0];
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 const RM=()=>matchMedia('(prefers-reduced-motion: reduce)').matches;
-function topRec(){const d={sel:'hawk',opp:'easy',src:null,wins:{easy:0,pro:0,champ:0},plays:0,losses:0,unlocked:['hawk','turtle'],
+const ZWINS=()=>Object.keys(TOPP).reduce((o,k)=>(o[k]=0,o),{});   // 之後再加對手，舊存檔也不會變成 NaN
+function topRec(){const d={sel:'hawk',opp:'easy',src:null,wins:ZWINS(),plays:0,losses:0,unlocked:['hawk','turtle'],
     wpn:[],wsel:'none',arena:'bowl',lch:[],lsel:'basic',spent:0,easy:null,aw:{},ach:{perfect:0,hazard:0}};
-  if(!S.top||!S.top.__ok){S.top=Object.assign(d,S.top||{});S.top.wins=Object.assign({easy:0,pro:0,champ:0},S.top.wins);S.top.ach=Object.assign({perfect:0,hazard:0},S.top.ach);
+  if(!S.top||!S.top.__ok){S.top=Object.assign(d,S.top||{});S.top.wins=Object.assign(ZWINS(),S.top.wins);S.top.ach=Object.assign({perfect:0,hazard:0},S.top.ach);
     Object.defineProperty(S.top,'__ok',{value:1,enumerable:false})}
   return S.top}
-const winsAll=()=>{const w=topRec().wins;return w.easy+w.pro+w.champ};
+const winsAll=()=>{const w=topRec().wins;return Object.keys(TOPP).reduce((s,k)=>s+(w[k]||0),0)};
+/* 段位：全部解鎖之後還有東西可以追，最後一階無上限 */
+const RANKS=[[0,'見習','🔰'],[3,'練習生','🥉'],[8,'好手','🥈'],[15,'高手','🥇'],[25,'達人','🏅'],[40,'大師','🏆'],[60,'宗師','🎖️'],[90,'傳說','👑']];
+function rankOf(w){let i=0;for(let j=0;j<RANKS.length;j++)if(w>=RANKS[j][0])i=j;
+  const[need,name,ic]=RANKS[i];
+  if(i===RANKS.length-1){const lv=Math.floor((w-need)/30)+1;return{name:name+(lv>1?' ★'+lv:''),ic,next:need+lv*30,nextName:name+' ★'+(lv+1)}}
+  return{name,ic,next:RANKS[i+1][0],nextName:RANKS[i+1][1]}}
 const availStars=()=>Math.max(0,S.stars-(topRec().spent||0));
 const easyMode=()=>!!topRec().easy;      // 國高中預設拉繩模式
 function topUnlockCheck(){const R=topRec(),fresh=[];
@@ -808,6 +819,15 @@ function drawWeapon(c,r,id){
   else if(id==='spike'){c.beginPath();c.arc(0,0,r*1.04,0,7);c.strokeStyle='#374151';c.lineWidth=r*.14;c.stroke();
     for(let i=0;i<6;i++){c.save();c.rotate(i/6*Math.PI*2);c.beginPath();c.moveTo(r*.98,-r*.15);c.lineTo(r*1.46,0);c.lineTo(r*.98,r*.15);c.closePath();c.fillStyle='#4B5563';c.fill();c.strokeStyle='#111827';c.lineWidth=lw;c.stroke();
       c.beginPath();c.arc(r*1.36,0,r*.06,0,7);c.fillStyle='#F97316';c.fill();c.restore()}}
+  else if(id==='drill'){/* 貫穿錐：三支長錐，攻擊型 */
+    for(let i=0;i<3;i++){c.save();c.rotate(i/3*Math.PI*2);c.beginPath();c.moveTo(r*.92,-r*.22);c.lineTo(r*1.62,0);c.lineTo(r*.92,r*.22);c.closePath();
+      const g=c.createLinearGradient(r*.92,0,r*1.62,0);g.addColorStop(0,'#E2E8F0');g.addColorStop(1,'#64748B');c.fillStyle=g;c.fill();c.strokeStyle='#1E293B';c.lineWidth=lw;c.stroke();
+      c.beginPath();c.moveTo(r*1.05,-r*.1);c.lineTo(r*1.42,0);c.strokeStyle='rgba(255,255,255,.8)';c.lineWidth=lw;c.stroke();c.restore()}
+    c.beginPath();c.arc(0,0,r*.95,0,7);c.strokeStyle='#334155';c.lineWidth=r*.1;c.stroke()}
+  else if(id==='gyro'){/* 迴天軸：雙層同心環，防守型 */
+    [1.08,1.26].forEach((k,j)=>{c.beginPath();c.arc(0,0,r*k,0,7);c.strokeStyle=j?'#38BDF8':'#0EA5E9';c.lineWidth=r*(j?.06:.1);c.stroke()});
+    c.strokeStyle='#0369A1';c.lineWidth=r*.05;for(let i=0;i<6;i++){const a=i/6*Math.PI*2;c.beginPath();c.moveTo(Math.cos(a)*r*1.08,Math.sin(a)*r*1.08);c.lineTo(Math.cos(a)*r*1.26,Math.sin(a)*r*1.26);c.stroke()}
+    for(let i=0;i<3;i++){const a=i/3*Math.PI*2+.5;c.beginPath();c.arc(Math.cos(a)*r*1.17,Math.sin(a)*r*1.17,r*.1,0,7);c.fillStyle='#E0F2FE';c.fill();c.strokeStyle='#0369A1';c.lineWidth=lw;c.stroke()}}
   else if(id==='balance'){c.strokeStyle='#DBEAFE';c.lineWidth=r*.07;for(let i=0;i<4;i++){const a=i/4*Math.PI*2+Math.PI/4;c.beginPath();c.moveTo(Math.cos(a)*r*.9,Math.sin(a)*r*.9);c.lineTo(Math.cos(a)*r*1.24,Math.sin(a)*r*1.24);c.stroke()}
     c.beginPath();c.arc(0,0,r*1.24,0,7);c.strokeStyle='#2563EB';c.lineWidth=r*.08;c.stroke();
     for(let i=0;i<4;i++){const a=i/4*Math.PI*2+Math.PI/4;c.beginPath();c.arc(Math.cos(a)*r*1.24,Math.sin(a)*r*1.24,r*.12,0,7);c.fillStyle='#fff';c.fill();c.strokeStyle='#2563EB';c.lineWidth=lw;c.stroke()}}
@@ -880,6 +900,14 @@ function drawArena(c,A,t,fight){
       c.lineWidth=st===1?5:3;c.strokeStyle=st===1?`rgba(255,${140+Math.round(80*Math.abs(Math.sin(t*12)))},40,1)`:'#FF7A1A';c.stroke();
       if(st===1){c.beginPath();c.arc(v.x,v.y,VENT.r,0,7);c.strokeStyle='rgba(255,180,60,.7)';c.setLineDash([5,5]);c.lineWidth=2;c.stroke();c.setLineDash([])}});
     edge('#FFD166');lab='rgba(255,255,255,.3)'}
+  else if(id==='storm'){bg([[0,'#EEF4FF'],[.65,'#A9BEEA'],[.88,'#43579E'],[1,'#16255C']]);
+    c.strokeStyle='rgba(255,246,194,.9)';c.lineWidth=4;c.lineCap='round';c.lineJoin='round';
+    [[150,95],[265,120],[110,265],[290,270]].forEach(([x,y])=>{c.beginPath();c.moveTo(x,y);c.lineTo(x-10,y+18);c.lineTo(x+4,y+18);c.lineTo(x-8,y+40);c.stroke()});
+    rings('rgba(255,255,255,.22)');edge('#FFE37A',[16,10]);lab='rgba(22,37,92,.4)'}
+  else if(id==='abyss'){bg([[0,'#E6DEFF'],[.5,'#8E79E0'],[.82,'#3B2473'],[1,'#120826']]);
+    c.strokeStyle='rgba(255,255,255,.3)';c.lineWidth=1.5;[40,75,115,160].forEach(r=>{c.beginPath();c.arc(200,200,r,0,7);c.stroke()});
+    c.fillStyle='rgba(255,255,255,.85)';[[135,140],[268,165],[160,282],[282,258],[205,118],[118,215]].forEach(([x,y],i)=>{c.beginPath();c.arc(x,y,i%2?1.8:2.8,0,7);c.fill()});
+    edge('#C9B6FF');lab='rgba(255,255,255,.32)'}
   c.fillStyle=lab;c.font='900 16px "Noto Sans TC",sans-serif';c.textAlign='center';c.fillText(A.name,200,id==='volcano'?208:205);
   c.restore()}
 function paintArenaThumb(cv,A){if(!cv)return;const d=fitCanvas(cv),c=cv.getContext('2d'),s=cv.width/d/400;c.setTransform(d*s,0,0,d*s,0,0);c.clearRect(0,0,400,400);drawArena(c,A,3.4,A.id==='volcano')}
@@ -1058,14 +1086,14 @@ function viewTop(){
   const books=BOOKS[g];if(R.src!=='mix'&&!books.includes(R.src))R.src='mix';
   if(!R.unlocked.includes(R.sel))R.sel='hawk';if(!oppOpen(R.opp))R.opp='easy';
   if(!wOwned(R.wsel))R.wsel='none';if(!arenaOpen(arById(R.arena)))R.arena='bowl';if(!lchOpen(lchById(R.lsel)))R.lsel='basic';
-  const t=topById(R.sel),w=wById(R.wsel),A=arById(R.arena),wins=winsAll(),av=availStars(),easy=easyMode(),ws=wStats(t,w);
+  const t=topById(R.sel),w=wById(R.wsel),A=arById(R.arena),wins=winsAll(),av=availStars(),easy=easyMode(),ws=wStats(t,w),rk=rankOf(wins);
   const sb=(lab,v,d)=>`<div class="sbar"><span>${lab}</span><div class="bar"><i style="width:${v*10}%"></i></div><em>${v}${d?`<sup style="color:${d>0?'var(--good)':'var(--bad)'}">${d>0?'+':''}${d}</sup>`:''}</em></div>`;
   const buy=(kind,id,price)=>av>=price?`<button class="buy" data-buy="${kind}:${id}" data-p="${price}">⭐${price} 兌換</button>`:`<small>（目前 ⭐${av}）</small>`;
   $('#view').innerHTML=`<a class="back" href="#/game">← 闖關對戰</a>
   <h2>🌀 陀螺對戰<small>${GNAME[g]}・數學題充能</small></h2>
   <div class="tlobby">
-  <section class="tbox"><p class="hint" style="margin:0">先答數學題幫陀螺<b>充能</b>（${CHARGE_SEC} 秒內最多 10 題），答對越多、連對越多，陀螺就轉得越久、撞得越大力，每連對 3 題還多一次必殺技！<b>連對 6 題或全對</b>還能抽一件武器。題目難度跟著對手：新手${DTXT[1]}、高手${DTXT[2]}、冠軍${DTXT[3]}。</p>
-    <div class="trec"><span class="chip">🏆 勝場 <b>${wins}</b></span><span class="chip">⚔️ 對戰 <b>${R.plays}</b> 場</span><span class="chip">🌀 陀螺 <b>${R.unlocked.length}</b> / ${TOPS.length}</span><span class="chip">🗡️ 武器 <b>${R.wpn.length}</b> / ${WPN.length}</span><span class="chip" title="累積星星減掉兌換用掉的">⭐ 可兌換 <b>${av}</b></span></div></section>
+  <section class="tbox"><p class="hint" style="margin:0">先答數學題幫陀螺<b>充能</b>（${CHARGE_SEC} 秒內最多 10 題），答對越多、連對越多，陀螺就轉得越久、撞得越大力，每連對 3 題還多一次必殺技！<b>連對 6 題或全對</b>還能抽一件武器。題目難度跟著對手：新手${DTXT[1]}、高手${DTXT[2]}、冠軍以上${DTXT[3]}。</p>
+    <div class="trec"><span class="chip" title="總勝場決定段位，最後一階無上限。再贏 ${rk.next-wins} 場升上「${rk.nextName}」">${rk.ic} 段位 <b>${rk.name}</b>・再 ${rk.next-wins} 場</span><span class="chip">🏆 勝場 <b>${wins}</b></span><span class="chip">⚔️ 對戰 <b>${R.plays}</b> 場</span><span class="chip">🌀 陀螺 <b>${R.unlocked.length}</b> / ${TOPS.length}</span><span class="chip">🗡️ 武器 <b>${R.wpn.length}</b> / ${WPN.length}</span><span class="chip" title="累積星星減掉兌換用掉的">⭐ 可兌換 <b>${av}</b></span></div></section>
   <section class="tbox"><h3>① 選我的陀螺</h3>
     <div class="tsel"><canvas id="tBig" width="132" height="132" aria-hidden="true"></canvas>
       <div class="info"><b>${t.ic} ${t.name}${w?`<span class="wtag">＋${w.ic}${w.name}</span>`:''}</b><span class="hint" style="margin:0">${t.desc}・必殺技「${t.sp}」</span>${sb('攻擊',ws.atk,ws.atk-t.atk)}${sb('防禦',ws.def,ws.def-t.def)}${sb('耐力',ws.sta,ws.sta-t.sta)}</div></div>
@@ -1074,7 +1102,7 @@ function viewTop(){
   <section class="tbox" id="tWpn"><h3>② 武器庫<small>　陀螺外圈可以裝一件配件</small></h3>
     <div class="wlist"><button class="wpick" data-w="none" aria-pressed="${R.wsel==='none'}"><span class="none" aria-hidden="true">⭕</span><span>不裝</span><small>原本的樣子</small></button>
     ${WPN.map(x=>wOwned(x.id)?`<button class="wpick" data-w="${x.id}" aria-pressed="${R.wsel===x.id}"><canvas width="56" height="56" aria-hidden="true"></canvas><span>${x.ic} ${x.name}</span><small>${x.short}</small></button>`
-      :`<div class="wpick lock" data-w="${x.id}"><canvas width="56" height="56" aria-hidden="true"></canvas><span>🔒 ${x.name}</span><small>${x.short}</small><small>${x.get==='draw'?'充能抽獎':x.get==='pro'?'打倒高手送':'打倒冠軍送'}</small>${buy('w',x.id,x.price)}</div>`).join('')}</div>
+      :`<div class="wpick lock" data-w="${x.id}"><canvas width="56" height="56" aria-hidden="true"></canvas><span>🔒 ${x.name}</span><small>${x.short}</small><small>${x.get==='draw'?'充能抽獎':'打倒'+(TOPP[x.get]?TOPP[x.get].name:'冠軍')+'送'}</small>${buy('w',x.id,x.price)}</div>`).join('')}</div>
     <p class="hint" style="margin:0">${w?`<b>${w.ic} ${w.name}</b>：${w.short}・${w.tr}`:'沒有裝武器。充能時<b>連對 6 題以上或全對</b>可以抽一件；打倒高手、冠軍各送一件；也可以用星星換。'}</p></section>
   <section class="tbox"><h3>③ 選對手</h3>
     <div class="opps">${Object.entries(TOPP).map(([k,o])=>{const on=oppOpen(k);return`<button class="opp${on?'':' lock'}" data-o="${k}" aria-pressed="${k===R.opp}"${on?'':' aria-disabled="true"'}><span class="ic">${on?o.ic:'🔒'}</span>${o.name}<small>${on?o.who+'・'+topById(o.top).name+(o.w?'＋'+wById(o.w).name:''):'先打倒'+TOPP[o.need].name}</small><small>充能：${DTXT[o.d]}</small>${R.wins[k]?`<small>贏過 ${R.wins[k]} 次</small>`:''}</button>`}).join('')}</div></section>
@@ -1287,17 +1315,22 @@ function topResult(st){
   const arBefore=ARENAS.filter(arenaOpen).map(a=>a.id),lBefore=LCH.filter(lchOpen).map(l=>l.id);
   R.plays++;if(win){R.wins[k]++;R.aw[st.A.id]=(R.aw[st.A.id]||0)+1}else R.losses++;
   if(st.lres&&st.lres.perfect)R.ach.perfect++;if(win&&end.hz)R.ach.hazard++;
-  const stars=win?{easy:1,pro:2,champ:3}[k]:0,gain=ctx.right*5+(win?20+stars*20:10);S.stars+=stars;S.xp+=gain;
+  const stars=win?({easy:1,pro:2,champ:3,master:4,legend:5}[k]||1):0,gain=ctx.right*5+(win?20+stars*20:10);S.stars+=stars;S.xp+=gain;
   if(!S.days.includes(today()))S.days.push(today());S.days=S.days.slice(-60);
   // 打倒高手／冠軍：固定送武器
-  let gw=null,gwStar=false;if(first&&(k==='pro'||k==='champ')){const id=k==='pro'?'magnet':'spike';if(!R.wpn.includes(id)){R.wpn.push(id);gw=wById(id)}else{S.stars+=3;gwStar=true}}
+  const GIFT={pro:'magnet',champ:'spike',master:'drill',legend:'gyro'};
+  let gw=null,gwStar=false;if(first&&GIFT[k]){const id=GIFT[k];if(!R.wpn.includes(id)){R.wpn.push(id);gw=wById(id)}else{S.stars+=3;gwStar=true}}
   const fresh=topUnlockCheck();
   const newAr=ARENAS.filter(a=>arenaOpen(a)&&!arBefore.includes(a.id)),newL=LCH.filter(l=>lchOpen(l)&&!lBefore.includes(l.id));
   save();header();
-  const newOpp=first&&k!=='champ'?Object.entries(TOPP).find(([kk,o])=>o.need===k):null;
+  const newOpp=first?Object.entries(TOPP).find(([kk,o])=>o.need===k):null;
+  const rkBefore=rankOf(winsAll()-(win?1:0)),rkNow=rankOf(winsAll()),rankUp=win&&rkNow.name!==rkBefore.name;
   const how={out:'把對手撞出場外！',time:'時間到，你的陀螺轉得比較久！',stop:'對手的陀螺停下來了！'}[end.how];
   const howL={out:'被撞出場外了…',time:'時間到，對手轉得比較久…',stop:'陀螺停下來了…'}[end.how];
-  const msg=win?(k==='champ'?'你打倒了冠軍龍王！數學題的能量撐起整場比賽，你就是新冠軍！':pick(['答題的能量讓陀螺超有力，漂亮的勝利！','勝利！你的陀螺轉得好穩。','贏了！下一位對手在等你。'])):
+  const BIGWIN={champ:'你打倒了冠軍龍王！數學題的能量撐起整場比賽，你就是新冠軍！',
+    master:'宗師無影敗下陣了！能走到這裡，代表你那些題目是真的算得出來，不是運氣。',
+    legend:'傳說「零」被你打倒了。這是這個遊戲最強的對手，到這裡已經沒有人比你更強——接下來比的是勝場段位。'};
+  const msg=win?(BIGWIN[k]?BIGWIN[k]:pick(['答題的能量讓陀螺超有力，漂亮的勝利！','勝利！你的陀螺轉得好穩。','贏了！下一位對手在等你。'])):
     pick(['差一點就贏了！多答對幾題、多連對幾題，陀螺會更有力。','沒關係！再充能一次，連對越多必殺技越多。','對手很強，把錯題看懂再充能一次。']);
   const ach=[];if(st.lres&&st.lres.perfect)ach.push('✨ 完美發射');
   if(win){if(end.hz)ach.push({rock:'🪨 機關擊退・撞岩石',vortex:'🌪️ 機關擊退・漩渦甩飛',volcano:'🌋 機關擊退・火山噴發'}[st.A.id]||'⚙️ 機關擊退');
@@ -1321,9 +1354,10 @@ function topResult(st){
     ${newAr.map(a=>`<div class="reward"><b>${a.ic} 解鎖新擂台：${a.name}</b><span>${a.desc}</span></div>`).join('')}
     ${newL.map(l=>`<div class="reward"><b>🎯 解鎖新發射器：${l.name}</b><span>${l.desc}</span></div>`).join('')}
     ${newOpp?`<div class="reward"><b>${newOpp[1].ic} 新對手出現：${newOpp[1].name}「${newOpp[1].who}」</b><span>充能題目會變成${DTXT[newOpp[1].d]}</span></div>`:''}
+    ${rankUp?`<div class="reward"><b>${rkNow.ic} 段位提升：${rkNow.name}</b><span>總勝場 ${winsAll()} 場，再贏 ${rkNow.next-winsAll()} 場升上「${rkNow.nextName}」</span></div>`:''}
     <div class="btns"><button class="btn primary" id="tAgain">⚡ ${win?'再充能挑戰':'再充能一次'}</button>${ctx.wrong.length?`<button class="btn" id="review">看錯題（${ctx.wrong.length}）</button>`:''}<a class="btn" href="#/top">換陀螺／武器／擂台</a></div>
   </section>
-  ${win&&k==='champ'?classCta():''}`;
+  ${win&&(k==='champ'||k==='legend')?classCta():''}`;
   paintThumb($('#tBig'),me,0,st.mw?st.mw.id:null);document.querySelectorAll('.tnew').forEach(cv=>paintThumb(cv,topById(cv.dataset.t)));
   if(gw)paintThumb($('#tGw'),me,.3,gw.id);
   if(win)confetti();else beep(false);

@@ -20,7 +20,7 @@ from datetime import datetime, timezone
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 BASE = "https://wade-chuang.github.io/jenfoo/"
 SKIP_DIRS = {".git", "img", "assets", "pdf", "data", "tools"}
-SKIP_FILES = {"count.html"}
+SKIP_FILES = {"count.html", "404.html"}
 TOP = 0.8          # 各專區首頁
 INNER = 0.5        # 教材內頁
 
