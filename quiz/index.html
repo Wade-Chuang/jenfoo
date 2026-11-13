@@ -232,7 +232,7 @@ window.MathJax={
         <p>國小・國中・高中・技高數學練習卷｜選單元・選難度・一鍵出卷</p>
       </div>
     </div>
-    <div class="cta"><a href="../" style="color:#E9E2D0;text-decoration:none;margin-right:14px">← 正賦文理官網</a>卡關了？加 LINE 問莊老師　<b>@486liyzu</b></div>
+    <div class="cta"><a href="../" style="color:#E9E2D0;text-decoration:none;margin-right:14px">← 正賦文理官網</a>卡關了？加 LINE 問莊老師　<b>@chuanglaomath</b></div>
   </div>
 </header>
 
@@ -4394,7 +4394,7 @@ const GRADES=STAGES.flatMap(s=>s.g);
 const CN=Array.from({length:30},(_,i)=>{const d='一二三四五六七八九';const n=i+1;return n<10?d[n-1]:n===10?'十':n<20?'十'+d[n-11]:d[Math.floor(n/10)-1]+'十'+(n%10?d[n%10-1]:'')});
 const DIFF_NAME={1:'基礎',2:'標準',3:'挑戰',mix:'混合'};
 const DIFF_HINT={1:'課本例題程度，適合剛學完或補救。',2:'段考基本題程度。',3:'段考進階題，含括號、分數與綜合運算。',mix:'每個單元由易到難：基礎約四成、標準約四成、挑戰約兩成。'};
-const LINE_URL='https://line.me/R/ti/p/@486liyzu';
+const LINE_URL='https://line.me/R/ti/p/@chuanglaomath';
 
 const state={sel:new Set(['int-add','lin-eq']),diff:'mix',n:20,seed:newSeed(),withAns:true,showTag:false,stage:'國中'};
 try{const s=JSON.parse(localStorage.getItem('jf-quiz')||'null');if(s){state.sel=new Set(s.sel.filter(id=>U.some(u=>u.id===id)));if(!state.sel.size)state.sel.add('int-add');state.diff=s.diff;state.n=s.n;state.withAns=s.withAns;state.showTag=s.showTag;if(s.stage&&STAGES.some(x=>x.k===s.stage))state.stage=s.stage}}catch(e){}
@@ -4496,7 +4496,7 @@ function render(){
 
   const sheet=$('sheet');sheet.innerHTML=`
     <div class="mhead">${LOGO}<div class="mtitle"><div class="school">正賦文理短期補習班</div><h3>數學練習卷</h3></div>
-      <div class="qr"><span>卡關加 LINE<br>問莊老師<br>@486liyzu</span><span class="code">${qr}</span></div></div>
+      <div class="qr"><span>卡關加 LINE<br>問莊老師<br>@chuanglaomath</span><span class="code">${qr}</span></div></div>
     <div class="meta"><span>${grades}｜${esc(scope)}</span><span>難度：${DIFF_NAME[state.diff]}　共 ${total} 題　卷號 ${state.seed}</span></div>
     <div class="fields"><span>班級<i style="width:18mm"></i></span><span>座號<i style="width:12mm"></i></span><span>姓名<i style="width:30mm"></i></span><span>得分<i style="width:16mm"></i></span></div>
     <div class="qs" id="qs"></div>
@@ -4517,7 +4517,7 @@ function render(){
     <div class="mhead">${LOGO}<div class="mtitle"><div class="school">正賦文理短期補習班</div><h3>解答</h3></div><div></div></div>
     <div class="meta"><span>${grades}｜${esc(scope)}</span><span>難度：${DIFF_NAME[state.diff]}　共 ${total} 題　卷號 ${state.seed}</span></div>
     <div id="aqs"></div>
-    <div class="cta-box"><span class="code">${qr}</span><div><b>哪一題卡住了？</b><p>拍照傳 LINE 給莊老師（@486liyzu），告訴我們卷號與題號，幫你看哪一步出錯。</p><p>正賦文理短期補習班｜只教數學・小五到高三・在地 16 年</p></div></div>
+    <div class="cta-box"><span class="code">${qr}</span><div><b>哪一題卡住了？</b><p>拍照傳 LINE 給莊老師（@chuanglaomath），告訴我們卷號與題號，幫你看哪一步出錯。</p><p>正賦文理短期補習班｜只教數學・小五到高三・在地 16 年</p></div></div>
     <div class="cta-box"><span class="code">${ytq}</span><div><b>看影片學這個單元</b><p>手機掃 QR code，看莊老師在 YouTube 的講解影片。覺得有幫助，請訂閱「莊老數學教室」、按讚、分享給同學，你的支持是我們繼續免費出題的動力！</p><p>YouTube：youtube.com/@chuanglaomath　出題網站：wade-chuang.github.io/jenfoo/quiz</p></div></div>`;
   const aqs=$('aqs');
   sections.forEach((s,i)=>{
