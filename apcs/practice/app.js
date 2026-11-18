@@ -51,7 +51,7 @@ const Gen = {
   w: null, ready: null, catalog: null,
   init() {
     if (!this.ready) {
-      this.w = new Worker('py-worker.js?v=1118163313');
+      this.w = new Worker('py-worker.js?v=1118164916');
       this.ready = callWorker(this.w, { type: 'init', files: BUNDLE.gens }).then((r) => (this.catalog = r.catalog));
     }
     return this.ready;
@@ -61,7 +61,7 @@ const Gen = {
 };
 const Runner = {
   py: null, pyReady: null, cpp: null, spare: null,
-  makePy() { const w = new Worker('py-worker.js?v=1118163313'); return callWorker(w, { type: 'init' }).then(() => w); },
+  makePy() { const w = new Worker('py-worker.js?v=1118164916'); return callWorker(w, { type: 'init' }).then(() => w); },
   getPy() {
     if (!this.pyReady) { this.pyReady = this.spare || this.makePy(); this.spare = null; this.pyReady.then((w) => (this.py = w)); }
     return this.pyReady;
@@ -72,7 +72,7 @@ const Runner = {
     if (!inputs.length) return [];
     if (maxTle <= 0) { const rs = inputs.map(() => ({ out: '', err: '', sec: 0, tle: true, skipped: true })); rs.forEach((r, i) => onEach && onEach(i, r)); return rs; }
     if (lang === 'py' && inputs.length > 1) this.warmSpare();
-    const w = lang === 'py' ? await this.getPy() : (this.cpp || (this.cpp = new Worker('cpp-worker.js?v=1118163313')));
+    const w = lang === 'py' ? await this.getPy() : (this.cpp || (this.cpp = new Worker('cpp-worker.js?v=1118164916')));
     return new Promise((resolve) => {
       const id = Math.random(); const results = []; let timer = null; let cur = 0;
       const arm = () => {
@@ -163,7 +163,8 @@ views.home = () => {
     <div class="card"><h3>拿分策略</h3>
       <p>每題第 1 子題組通常 <b>60 分</b>，條件比較簡單（例如 n = 1）。<br>三題都先把第 1 子題組拿下＝<b>180 分</b>，已經超過 150。</p>
       <p class="muted small">建議：觀念題每天 10 題暖身 → 實作每天 1 題 → 週末一回完整三題（120 分鐘）。<br>錯題記得到「錯題本」重做，弱點章節回「觀念學習」複習。</p>
-      <div class="row"><button class="btn gold" data-go="impl">開始實作練習</button><button class="btn ghost" data-go="reading">先做觀念題</button></div></div>
+      <div class="row"><button class="btn gold" data-go="impl">開始實作練習</button><button class="btn ghost" data-go="reading">先做觀念題</button></div>
+      <p class="small muted" style="margin-top:12px">想看影片從頭學？<a href="../">APCS 12 單元講解影片＋講義（官網 APCS 專區）</a></p></div>
   </div>`;
 };
 

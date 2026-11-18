@@ -164,3 +164,7 @@ footer a{color:var(--gold)}
 table.list{width:100%;border-collapse:collapse}
 table.list th,table.list td{padding:8px 10px;border-bottom:1px solid var(--line);text-align:left;font-size:14.5px}
 table.list th{color:var(--sub);font-weight:600}
+
+.nav .navlink{color:var(--gold);text-decoration:none;padding:8px 14px;border-radius:999px;white-space:nowrap;border:1px solid rgba(201,162,39,.5)}
+.nav .navlink:hover{background:rgba(201,162,39,.15)}
+footer .small a{color:var(--gold)}
