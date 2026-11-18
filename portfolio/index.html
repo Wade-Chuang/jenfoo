@@ -1,0 +1,1208 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="referrer" content="no-referrer-when-downgrade">
+<title>備審小幫手｜莊老數學教室</title>
+<meta name="description" content="免費、不用登入、資料不上傳的備審引導寫作工具：一題一題整理高中經歷，寫出學習歷程反思、就讀動機、未來計畫，健檢打分數、看範例牆、練面試。莊老數學教室｜正賦文理免費提供。">
+<meta property="og:title" content="備審小幫手｜不用從空白頁開始寫">
+<meta property="og:description" content="一題一題問你，把經歷整理成備審草稿；健檢打分數、範例牆、面試抽題。免費、不用登入、資料不上傳。">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#16223a">
+<style>
+:root{
+  --ink:#16223a;--ink-2:#4a566e;--paper:#f6f5f1;--surface:#fff;--line:#e0e3e1;
+  --brass:#a8822a;--brass-soft:#f2ebd9;--navy:#16223a;--warn:#b4441f;--warn-soft:#fbe9e2;--ok:#2f7a4b;--ok-soft:#e3f2e8;--mid:#b07d10;--mid-soft:#fbf1d6;
+  --serif:"Noto Serif TC","Songti TC","PMingLiU",serif;
+  --sans:"Noto Sans TC","Microsoft JhengHei","PingFang TC",sans-serif;
+  --radius:14px;--shadow:0 1px 0 rgba(22,34,58,.04),0 14px 30px -22px rgba(22,34,58,.45);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --ink:#e8ecef;--ink-2:#a7b0bf;--paper:#0f1522;--surface:#172033;--line:#2a3448;--brass:#d8b35a;--brass-soft:#2b2718;--navy:#0b1220;--warn:#f08a65;--warn-soft:#3a2219;--ok:#6fcf97;--ok-soft:#173226;--mid:#e9c46a;--mid-soft:#332a12;color-scheme:dark}}
+:root[data-theme="dark"]{--ink:#e8ecef;--ink-2:#a7b0bf;--paper:#0f1522;--surface:#172033;--line:#2a3448;--brass:#d8b35a;--brass-soft:#2b2718;--navy:#0b1220;--warn:#f08a65;--warn-soft:#3a2219;--ok:#6fcf97;--ok-soft:#173226;--mid:#e9c46a;--mid-soft:#332a12;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font:400 16px/1.8 var(--sans);-webkit-font-smoothing:antialiased}
+h1,h2,h3{font-family:var(--serif);margin:0;line-height:1.35}
+p{margin:0}
+a{color:inherit}
+button,input,select,textarea{font:inherit;color:inherit}
+.wrap{max-width:1080px;margin:0 auto;padding:0 16px}
+header.top{background:var(--navy);color:#fff}
+header.top .wrap{display:flex;align-items:center;gap:12px;min-height:60px}
+.brand{font:700 18px/1 var(--serif);text-decoration:none;color:#fff}
+.brand small{display:block;font:400 12px/1.4 var(--sans);color:#c9d1de;margin-top:4px}
+.top .saved{margin-left:auto;font-size:13px;color:#c9d1de}
+.top a.home{font-size:14px;color:#e7d3a0;text-decoration:none;white-space:nowrap}
+@media(max-width:520px){.top .saved{display:none}.top a.home{margin-left:auto}}
+nav.tabs{position:sticky;top:0;z-index:5;background:var(--surface);border-bottom:1px solid var(--line)}
+nav.tabs .wrap{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none}
+nav.tabs .wrap::-webkit-scrollbar{display:none}
+nav.tabs a{flex:0 0 auto;padding:13px 11px;text-decoration:none;color:var(--ink-2);font-weight:700;font-size:15px;border-bottom:3px solid transparent}
+nav.tabs a.on{color:var(--ink);border-color:var(--brass)}
+nav.tabs a .n{display:inline-block;min-width:20px;padding:0 6px;margin-left:4px;border-radius:99px;background:var(--brass-soft);color:var(--brass);font-size:12px;line-height:20px;text-align:center}
+main{padding:28px 0 60px}
+section.view{display:none}
+section.view.on{display:block}
+.label{font:700 13px/1 var(--sans);letter-spacing:.14em;color:var(--brass);margin-bottom:10px}
+.lead{color:var(--ink-2);font-size:17px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow)}
+.grid{display:grid;gap:16px}
+@media(min-width:760px){.g2{grid-template-columns:1fr 1fr}.g3{grid-template-columns:repeat(3,1fr)}.write-grid{grid-template-columns:minmax(0,1.35fr) minmax(0,1fr)}}
+.btn{display:inline-flex;align-items:center;gap:6px;border:2px solid transparent;border-radius:999px;padding:9px 18px;font-weight:700;cursor:pointer;background:var(--brass);color:#fff;text-decoration:none;font-size:15px}
+.btn:hover{filter:brightness(1.07)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.ghost{background:transparent;border-color:var(--line);color:var(--ink)}
+.btn.navy{background:var(--navy);color:#fff}
+.btn.small{padding:5px 12px;font-size:14px}
+.btn.danger{background:transparent;border-color:transparent;color:var(--warn)}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.sp{flex:1}
+label.f{display:block;font-weight:700;font-size:14px;margin:12px 0 4px}
+label.f small{font-weight:400;color:var(--ink-2)}
+input[type=text],input[type=number],input[type=date],select,textarea{width:100%;border:1px solid var(--line);border-radius:10px;padding:9px 12px;background:var(--paper)}
+textarea{resize:vertical;min-height:84px;line-height:1.75}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--brass);outline-offset:1px}
+.muted{color:var(--ink-2);font-size:14px}
+.pill{display:inline-block;padding:1px 10px;border-radius:99px;background:var(--brass-soft);color:var(--brass);font-size:13px;font-weight:700}
+.empty{border:2px dashed var(--line);border-radius:var(--radius);padding:28px;text-align:center;color:var(--ink-2)}
+.notice{background:var(--brass-soft);border-radius:12px;padding:12px 16px;font-size:14px}
+.item{border:1px solid var(--line);border-radius:12px;padding:14px 16px;background:var(--surface)}
+.item h3{font-size:17px}
+.item .meta{font-size:13px;color:var(--ink-2)}
+.list{display:grid;gap:10px}
+.q{margin-bottom:16px}
+.q .qt{font-weight:700}
+.q .hint{font-size:13px;color:var(--ink-2);margin:2px 0 6px}
+.seg{display:flex;gap:6px;flex-wrap:wrap;margin:14px 0}
+.seg button{border:1px solid var(--line);background:var(--surface);border-radius:99px;padding:6px 14px;cursor:pointer;font-weight:700;font-size:14px}
+.seg button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.seg button .ok{color:var(--ok)}
+.seg button.on .ok{color:#8fe0ad}
+.seg.small button{padding:3px 12px;font-size:13px}
+.counter{font-size:14px;font-weight:700}
+.counter.over{color:var(--warn)}
+.bar{height:8px;border-radius:99px;background:var(--line);overflow:hidden;margin-top:6px}
+.bar i{display:block;height:100%;background:var(--brass);transition:width .2s}
+.bar.over i{background:var(--warn)}
+.tip{border-left:4px solid var(--warn);background:var(--warn-soft);padding:8px 12px;border-radius:0 10px 10px 0;font-size:14px;margin-bottom:8px}
+.tip.good{border-color:var(--ok);background:var(--ok-soft)}
+.tip.info{border-color:var(--brass);background:var(--brass-soft)}
+.tip b{display:block}
+.ref{font-size:14px;border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin-bottom:8px;background:var(--paper)}
+.ref .rt{font-weight:700}
+.chk{display:flex;gap:8px;align-items:flex-start;font-size:14px;margin:4px 0}
+.chk input{margin-top:6px}
+.prog{display:flex;align-items:center;gap:10px}
+.prog .bar{flex:1;margin:0}
+details.ex{border:1px solid var(--line);border-radius:12px;margin-bottom:16px;background:var(--surface)}
+details.ex summary{cursor:pointer;padding:10px 16px;font-weight:700;font-size:15px}
+details.ex .exb{padding:0 16px 14px;display:grid;gap:10px}
+@media(min-width:760px){details.ex .exb{grid-template-columns:1fr 1fr}}
+.ex-bad,.ex-good{border-radius:10px;padding:10px 12px;font-size:14px}
+.ex-bad{background:var(--warn-soft)}.ex-good{background:var(--ok-soft)}
+.ex-bad b,.ex-good b{display:block;margin-bottom:2px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button,.chips span{border:1px dashed var(--brass);background:transparent;color:var(--brass);border-radius:99px;padding:3px 12px;font-size:14px}
+.chips button{cursor:pointer}
+.chips button:hover{background:var(--brass-soft)}
+.chips span.hit{border-style:solid;background:var(--brass-soft)}
+.tl{position:relative;padding-left:22px;display:grid;gap:12px}
+.tl::before{content:"";position:absolute;left:6px;top:6px;bottom:6px;width:2px;background:var(--line)}
+.tl .st{position:relative}
+.tl .st::before{content:"";position:absolute;left:-22px;top:7px;width:14px;height:14px;border-radius:50%;background:var(--surface);border:3px solid var(--brass)}
+.tl .st b{display:block}
+.iq{border:1px solid var(--line);border-radius:12px;background:var(--surface);margin-bottom:8px}
+.iq summary{cursor:pointer;padding:10px 14px;font-weight:700;list-style:none;display:flex;gap:8px;align-items:flex-start}
+.iq summary::-webkit-details-marker{display:none}
+.iq summary .tag{flex:0 0 auto;margin-top:3px}
+.iq .iqb{padding:0 14px 12px}
+.drill{text-align:center;padding:26px 20px}
+.drill .dq{font:700 clamp(20px,4vw,26px)/1.5 var(--serif);margin:10px 0 16px}
+.drill .clock{font:700 44px/1 var(--sans);color:var(--brass);font-variant-numeric:tabular-nums}
+.drill .clock.end{color:var(--warn)}
+.drill audio{margin-top:12px;max-width:100%}
+/* 首頁 */
+.hero{display:grid;gap:22px;align-items:center}
+@media(min-width:860px){.hero{grid-template-columns:1.2fr 1fr}}
+.by{display:inline-flex;align-items:center;gap:8px;font-size:14px;font-weight:700;color:var(--brass);background:var(--brass-soft);border-radius:99px;padding:4px 14px;margin-bottom:14px}
+.trust{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
+.trust span{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--surface);border-radius:99px;padding:5px 14px;font-size:14px;font-weight:700}
+.feat{display:grid;gap:12px;grid-template-columns:repeat(2,1fr)}
+@media(min-width:760px){.feat{grid-template-columns:repeat(4,1fr)}}
+.feat a{display:block;text-decoration:none;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:16px;box-shadow:var(--shadow);transition:transform .15s}
+.feat a:hover{transform:translateY(-2px)}
+.feat .ic{font-size:26px;line-height:1}
+.feat b{display:block;margin:8px 0 2px;font-size:16px}
+.feat span{font-size:13px;color:var(--ink-2);line-height:1.6;display:block}
+.badges{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.badge{text-align:center;font-size:12px;line-height:1.4;padding:8px 4px;border-radius:12px;border:1px solid var(--line);background:var(--paper);color:var(--ink-2)}
+.badge .bi{font-size:24px;display:block;filter:grayscale(1);opacity:.35}
+.badge.on{background:var(--brass-soft);border-color:var(--brass);color:var(--ink);font-weight:700}
+.badge.on .bi{filter:none;opacity:1}
+.quote{border-left:4px solid var(--brass);padding:4px 0 4px 16px;font-family:var(--serif);font-size:18px;line-height:1.8}
+.quote small{display:block;font:400 14px/1.6 var(--sans);color:var(--ink-2);margin-top:6px}
+/* 健檢分數 */
+.score{display:flex;align-items:center;gap:14px;margin-bottom:12px}
+.ring{--p:0;--c:var(--warn);width:78px;height:78px;border-radius:50%;background:conic-gradient(var(--c) calc(var(--p)*1%),var(--line) 0);display:grid;place-items:center;flex:0 0 auto}
+.ring b{width:62px;height:62px;border-radius:50%;background:var(--surface);display:grid;place-items:center;font:700 24px/1 var(--sans)}
+.dims{flex:1;display:grid;gap:3px}
+.dim{display:grid;grid-template-columns:64px 1fr 30px;gap:6px;align-items:center;font-size:12px}
+.dim .bar{margin:0;height:6px}
+.light{display:inline-block;padding:0 10px;border-radius:99px;font-size:13px;font-weight:700}
+.light.g{background:var(--ok-soft);color:var(--ok)}.light.y{background:var(--mid-soft);color:var(--mid)}.light.r{background:var(--warn-soft);color:var(--warn)}
+/* 範例牆 */
+.exwall{display:grid;gap:14px}
+@media(min-width:860px){.exwall{grid-template-columns:1fr 1fr}}
+.exc{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow)}
+.exc .body{font-size:15px;line-height:1.95;margin:10px 0}
+.exc mark{background:var(--brass-soft);color:inherit;border-radius:4px;padding:0 2px}
+.exc mark sup{color:var(--brass);font-weight:700;margin-left:1px}
+.exc ol{margin:0;padding-left:22px;font-size:14px;color:var(--ink-2)}
+.exc ol li::marker{color:var(--brass);font-weight:700}
+/* 比較表 */
+.cmp{overflow-x:auto}
+.cmp table{border-collapse:collapse;width:100%;min-width:560px;font-size:14px}
+.cmp th,.cmp td{border:1px solid var(--line);padding:8px 10px;vertical-align:top;text-align:left;white-space:pre-wrap}
+.cmp th{background:var(--brass-soft);width:110px}
+.cta{margin-top:40px;text-align:center}
+.cta .row{justify-content:center}
+.btn.yt{background:#e62117}.btn.line{background:#06c755}
+.more{margin-top:28px;display:grid;gap:16px}
+@media(min-width:760px){.more{grid-template-columns:1.3fr 1fr}}
+footer{border-top:1px solid var(--line);padding:22px 0;color:var(--ink-2);font-size:13px;text-align:center;line-height:1.9}
+footer a{color:var(--ink-2)}
+dialog{border:none;border-radius:var(--radius);padding:0;max-width:640px;width:calc(100% - 32px);background:var(--surface);color:var(--ink);box-shadow:0 30px 80px -20px rgba(0,0,0,.5)}
+dialog::backdrop{background:rgba(10,15,25,.55)}
+dialog .dh{padding:16px 20px;border-bottom:1px solid var(--line)}
+dialog .db{padding:4px 20px 18px;max-height:70vh;overflow:auto}
+dialog .df{padding:12px 20px;border-top:1px solid var(--line);display:flex;gap:10px;justify-content:flex-end}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(120px);background:var(--navy);color:#fff;padding:10px 18px;border-radius:99px;font-size:14px;transition:transform .25s;z-index:50;max-width:calc(100% - 32px);text-align:center}
+.toast.on{transform:translateX(-50%) translateY(0)}
+.peer-q{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line);font-size:15px}
+.peer-q .seg{margin:0}
+#printArea{display:none}
+@media print{
+  body{background:#fff;color:#000}
+  header,nav,main,footer,.toast{display:none!important}
+  #printArea{display:block;font:12pt/1.9 "Microsoft JhengHei",sans-serif;color:#000}
+  #printArea h1{font-size:18pt;margin-bottom:4pt}
+  #printArea h2{font-size:14pt;margin:18pt 0 6pt;border-bottom:1.5pt solid #a8822a;padding-bottom:3pt}
+  #printArea .pm{color:#555;font-size:10pt;margin-bottom:12pt}
+  #printArea p{text-indent:2em;margin:0 0 6pt;white-space:pre-wrap}
+  @page{size:A4;margin:20mm 18mm}
+}
+</style>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-NSNBQNLSDN"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-NSNBQNLSDN');
+</script>
+<link rel="canonical" href="https://wade-chuang.github.io/jenfoo/portfolio/">
+<meta property="og:url" content="https://wade-chuang.github.io/jenfoo/portfolio/">
+</head>
+<body>
+<header class="top"><div class="wrap">
+  <a class="brand" href="#home">備審小幫手<small>莊老數學教室｜正賦文理 免費提供</small></a>
+  <span class="saved" id="savedAt"></span>
+  <a class="home" href="https://wade-chuang.github.io/jenfoo/learn/" target="_blank" rel="noopener">更多免費資源 →</a>
+</div></header>
+
+<nav class="tabs" aria-label="功能"><div class="wrap">
+  <a href="#home" data-v="home">開始</a>
+  <a href="#targets" data-v="targets">目標校系<span class="n" id="nTargets">0</span></a>
+  <a href="#items" data-v="items">素材庫<span class="n" id="nItems">0</span></a>
+  <a href="#write" data-v="write">寫作＋健檢</a>
+  <a href="#examples" data-v="examples">範例牆</a>
+  <a href="#interview" data-v="interview">面試練習</a>
+  <a href="#dates" data-v="dates">時程</a>
+  <a href="#export" data-v="export">匯出</a>
+</div></nav>
+
+<main class="wrap">
+
+<!-- 開始 -->
+<section class="view" id="v-home">
+  <div class="hero">
+    <div>
+      <div class="by">🎓 莊老數學教室｜正賦文理 免費提供</div>
+      <h1 style="font-size:clamp(28px,5.4vw,42px)">備審，不用從空白頁開始寫。</h1>
+      <p class="lead" style="margin-top:12px;max-width:600px">一題一題問你，把高中三年的經歷整理成草稿；寫完馬上健檢打分數，看範例學寫法，最後抽題練面試。</p>
+      <div class="trust"><span>💯 完全免費</span><span>🙅 不用登入</span><span>🔒 資料不上傳</span><span>✍️ 不代寫、不撞稿</span></div>
+      <div class="row" style="margin-top:22px">
+        <a class="btn" id="homeNext" href="#targets">開始寫 →</a>
+        <button class="btn ghost" id="loadDemo">先看範例怎麼用</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="row"><h2 style="font-size:19px">你的進度</h2><span class="sp"></span><span class="muted" id="badgeCount"></span></div>
+      <div id="homeProgress" style="margin-top:12px"></div>
+      <div id="homeNextTip" class="tip info" style="margin-top:10px"></div>
+      <div class="badges" id="badges" style="margin-top:12px"></div>
+    </div>
+  </div>
+
+  <h2 style="font-size:22px;margin:36px 0 14px">一個網站，從整理到面試</h2>
+  <div class="feat">
+    <a href="#items"><span class="ic">📦</span><b>素材庫</b><span>五個問題把每件經歷挖深，小事也能寫出亮點。</span></a>
+    <a href="#write"><span class="ic">✍️</span><b>引導寫作</b><span>四段備審一題一題問，回答完一鍵組成草稿。</span></a>
+    <a href="#write"><span class="ic">🩺</span><b>健檢打分數</b><span>五個面向紅黃綠燈，空泛句、重複詞馬上標出來。</span></a>
+    <a href="#examples"><span class="ic">🧩</span><b>範例牆</b><span>依學群篩選，每篇都標出「這句好在哪」。</span></a>
+    <a href="#targets"><span class="ic">⚖️</span><b>校系比較</b><span>三個校系並排比，看清楚哪一系最適合你。</span></a>
+    <a href="#interview"><span class="ic">🎤</span><b>面試練習</b><span>依你的備審出題，計時抽題、錄音回聽。</span></a>
+    <a href="#export"><span class="ic">📄</span><b>Word／PDF</b><span>一鍵匯出，自己再排版也方便。</span></a>
+    <a href="#" id="featPeer"><span class="ic">🤝</span><b>請同學幫看</b><span>傳一張檢核表給朋友，照表給你回饋。</span></a>
+  </div>
+
+  <div class="more">
+    <div class="card">
+      <label class="f" for="stuName" style="margin-top:0">你的名字 <small>（只會出現在匯出的檔案上，不會上傳）</small></label>
+      <input type="text" id="stuName" placeholder="例如：王小明" autocomplete="off">
+      <div class="notice" style="margin-top:14px">
+        🔒 <b>資料只存在這台裝置的瀏覽器裡</b>，老師和其他人都看不到。換電腦、清除瀏覽紀錄之前，請先到「匯出」下載備份檔。<br>
+        ✍️ 草稿是用<b>你自己的回答</b>組成的。教授想看的是你的話，照抄範例或請 AI 代寫，很容易寫得空泛又跟別人撞稿。
+      </div>
+    </div>
+    <div class="card">
+      <div class="quote">「每年都有學生拿著空白的自述來問我：老師，我要寫什麼？這個網站裡的問題，就是我平常會問他們的那些。」<small>── 莊老師（莊老數學教室｜正賦文理）</small></div>
+    </div>
+  </div>
+</section>
+
+<!-- 目標校系 -->
+<section class="view" id="v-targets">
+  <div class="row"><div><div class="label">STEP 1</div><h2 style="font-size:26px">想申請的校系</h2></div><span class="sp"></span><button class="btn" id="addTarget">＋ 新增校系</button></div>
+  <p class="muted" style="margin-top:8px">每個校系看重的東西不一樣，請以各校系公告的「審查資料準備指引」與簡章為準，每年都可能改。</p>
+  <div class="row" style="margin:12px 0 18px">
+    <a class="btn ghost small" href="https://collego.edu.tw/" target="_blank" rel="noopener">ColleGo! 查學群與校系</a>
+    <a class="btn ghost small" href="https://www.cac.edu.tw/" target="_blank" rel="noopener">大學甄選入學委員會</a>
+  </div>
+  <div class="list" id="targetList"></div>
+  <div id="cmpWrap" style="margin-top:22px"></div>
+</section>
+
+<!-- 素材庫 -->
+<section class="view" id="v-items">
+  <div class="row"><div><div class="label">STEP 2</div><h2 style="font-size:26px">素材庫</h2></div><span class="sp"></span><button class="btn" id="addItem">＋ 新增一件經歷</button></div>
+  <p class="muted" style="margin-top:8px">先求多，再求好。小事也寫進來，寫作時再挑。</p>
+  <div class="card" style="margin-top:14px;padding:14px 16px">
+    <div class="muted" style="margin-bottom:8px">想不到？點一個開始：</div>
+    <div class="chips" id="itemChips"></div>
+  </div>
+  <div class="card" style="margin-top:12px;padding:14px 16px;display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+    <div style="flex:1;min-width:220px"><b>🧭 自主學習計畫小精靈</b><div class="muted">很多校系都會看自主學習。八個問題幫你把「自己學了什麼」整理成完整的計畫與成果。</div></div>
+    <button class="btn navy small" id="addSelfLearn">開始整理</button>
+  </div>
+  <input type="text" id="itemSearch" placeholder="🔍 搜尋素材（標題或內容）" style="margin-top:14px" hidden>
+  <div class="row" style="margin:14px 0" id="itemFilter"></div>
+  <div class="list" id="itemList"></div>
+</section>
+
+<!-- 寫作 -->
+<section class="view" id="v-write">
+  <div class="label">STEP 3–4</div>
+  <div class="row"><h2 style="font-size:26px">寫作＋健檢</h2><span class="sp"></span>
+    <label class="muted" for="writeTarget">正在寫：</label>
+    <select id="writeTarget" style="width:auto;min-width:200px"></select>
+  </div>
+  <div id="writeBody"></div>
+</section>
+
+<!-- 範例牆 -->
+<section class="view" id="v-examples">
+  <div class="label">學寫法</div>
+  <h2 style="font-size:26px">範例牆</h2>
+  <p class="muted" style="margin-top:8px">每篇都標出「這句好在哪」。<b>全部是虛構的示範</b>，看的是寫法，內容一定要換成你自己的經歷，照抄會被看出來。</p>
+  <div class="row" style="margin-top:14px">
+    <select id="exGroup" style="width:auto"></select>
+    <div class="seg small" id="exSec" style="margin:0"></div>
+  </div>
+  <div class="exwall" id="exWall" style="margin-top:16px"></div>
+</section>
+
+<!-- 面試練習 -->
+<section class="view" id="v-interview">
+  <div class="label">STEP 5</div>
+  <div class="row"><h2 style="font-size:26px">面試練習</h2><span class="sp"></span>
+    <label class="muted" for="ivTarget">校系：</label>
+    <select id="ivTarget" style="width:auto;min-width:200px"></select>
+  </div>
+  <p class="muted" style="margin-top:8px">教授會從你的備審資料出題。題目分三種：<b>背景</b>（你做過什麼）、<b>動機</b>（為什麼是這一系）、<b>臨場</b>（臨時反應）。先寫下回答重點，再抽題計時說出來。</p>
+  <div id="ivBody" style="margin-top:16px"></div>
+</section>
+
+<!-- 時程 -->
+<section class="view" id="v-dates">
+  <div class="row"><div><div class="label">倒數</div><h2 style="font-size:26px">我的時程</h2></div><span class="sp"></span><button class="btn" id="addDate">＋ 新增日期</button></div>
+  <p class="muted" style="margin-top:8px">個人申請各階段日期以甄選委員會當年度公告為準；各校系的備審上傳截止日、面試日也不同，請一個一個加進來。</p>
+  <div class="grid g2" style="margin-top:16px;align-items:start">
+    <div class="list" id="dateList"></div>
+    <div class="card">
+      <h3 style="font-size:18px;margin-bottom:12px">建議的準備順序</h3>
+      <div class="tl">
+        <div class="st"><b>學測前</b><span class="muted">素材庫整理完、每個經歷五題寫齊；決定 3～6 個想申請的校系。</span></div>
+        <div class="st"><b>學測考完那週</b><span class="muted">對照成績調整校系清單，開始寫就讀動機（最需要依校系改寫）。</span></div>
+        <div class="st"><b>成績公布後</b><span class="muted">每個校系的四段草稿完成，健檢都到綠燈，請老師或同學讀一遍。</span></div>
+        <div class="st"><b>第一階段放榜後</b><span class="muted">依通過的校系精修，上傳前對照格式與頁數；同時開始練面試。</span></div>
+        <div class="st"><b>面試前一週</b><span class="muted">每天抽題計時練 10 題、錄音回聽，把自己的備審從頭到尾再讀一次。</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 匯出 -->
+<section class="view" id="v-export">
+  <div class="label">完成</div>
+  <h2 style="font-size:26px">匯出與備份</h2>
+  <div class="grid g2" style="margin-top:18px">
+    <div class="card">
+      <h3 style="font-size:19px">匯出這個校系的草稿</h3>
+      <p class="muted" style="margin:6px 0 12px">Word 檔可以再自己排版；PDF 是在列印視窗選「另存為 PDF」。上傳前請對照該系的格式與頁數規定。</p>
+      <select id="exportTarget"></select>
+      <div id="exportCheck" style="margin-top:12px"></div>
+      <div class="row" style="margin-top:12px">
+        <button class="btn" id="doDocx">下載 Word 檔</button>
+        <button class="btn ghost" id="doPrint">列印／存 PDF</button>
+        <button class="btn ghost" id="doCopyAll">複製全部文字</button>
+      </div>
+      <div class="tip info" style="margin-top:14px"><b>想請同學幫你看？</b>把 Word 檔傳給他，再按下面的按鈕，把「同學檢核表」的連結也傳過去，他照表勾一勾就能給你具體回饋。<button class="btn small navy" style="margin-top:8px" data-peer-share>傳檢核表給同學</button></div>
+    </div>
+    <div class="card">
+      <h3 style="font-size:19px">備份檔</h3>
+      <p class="muted" style="margin:6px 0 12px">把全部資料存成一個檔案，換電腦或換手機時再讀回來。</p>
+      <div class="row">
+        <button class="btn" id="doBackup">下載備份</button>
+        <label class="btn ghost" style="cursor:pointer">讀取備份<input type="file" id="doRestore" accept=".json,application/json" hidden></label>
+      </div>
+      <hr style="border:none;border-top:1px solid var(--line);margin:18px 0">
+      <button class="btn danger small" id="doReset">清除這台裝置上的全部資料</button>
+    </div>
+  </div>
+</section>
+
+<!-- 同學檢核表 -->
+<section class="view" id="v-peer">
+  <div class="by">🤝 同學請你幫忙看備審</div>
+  <h2 style="font-size:26px">備審同學檢核表</h2>
+  <p class="muted" style="margin-top:8px">一邊讀同學傳給你的備審，一邊照下面每一題勾選。最後按「複製回饋」傳回給他。這張表不會記錄任何內容。</p>
+  <div class="card" style="margin-top:16px">
+    <div id="peerList"></div>
+    <label class="f" for="peerGood">寫得最好的一句或一段是？</label>
+    <textarea id="peerGood" rows="2" placeholder="例如：第二段秤廚餘的故事很有畫面"></textarea>
+    <label class="f" for="peerFix">最想建議他改的一個地方？</label>
+    <textarea id="peerFix" rows="2" placeholder="例如：最後一段太像口號，可以寫具體想修的課"></textarea>
+    <div class="row" style="margin-top:14px"><button class="btn" id="peerCopy">複製回饋，傳給同學</button><span class="muted" id="peerScore"></span></div>
+  </div>
+  <div class="card" style="margin-top:16px;text-align:center">
+    <p style="font-weight:700">你也要準備備審嗎？</p>
+    <p class="muted">免費、不用登入、資料不上傳。一題一題問你，寫完還能健檢和練面試。</p>
+    <a class="btn" href="#home" style="margin-top:10px">我也要用備審小幫手 →</a>
+  </div>
+</section>
+
+<div class="cta">
+  <p style="font-weight:700">覺得有用嗎？分享給同班同學，大家一起寫得出來。</p>
+  <div class="row" style="margin-top:12px">
+    <button class="btn navy" id="shareBtn">分享給同學</button>
+    <a class="btn line" href="https://line.me/R/ti/p/@chuanglaomath" target="_blank" rel="noopener">加 LINE 官方帳號 @chuanglaomath</a>
+    <a class="btn yt" href="https://www.youtube.com/@chuanglaomath?sub_confirmation=1" target="_blank" rel="noopener">▶ 訂閱 YouTube</a>
+  </div>
+  <div class="card" style="margin-top:22px;text-align:left;display:flex;gap:14px;align-items:center;flex-wrap:wrap">
+    <div style="flex:1;min-width:220px"><b>學測數學還要衝？</b><div class="muted">莊老數學教室的學測每日一題、真題詳解、線上練習，也都免費。</div></div>
+    <a class="btn ghost" href="https://wade-chuang.github.io/jenfoo/learn/" target="_blank" rel="noopener">看免費數學資源 →</a>
+  </div>
+</div>
+</main>
+
+<footer><div class="wrap">
+  備審小幫手 由 <b>莊老數學教室｜正賦文理短期補習班</b> 免費提供（宜蘭羅東・府教終字第0990094303號）<br>
+  <a href="https://line.me/R/ti/p/@chuanglaomath" target="_blank" rel="noopener">LINE 官方帳號 @chuanglaomath</a>　<a href="https://www.youtube.com/@chuanglaomath" target="_blank" rel="noopener">YouTube @chuanglaomath</a>　<a href="https://www.instagram.com/jf_chuang/" target="_blank" rel="noopener">IG @jf_chuang</a>　<a href="https://www.facebook.com/profile.php?id=100054212841294" target="_blank" rel="noopener">FB 粉絲專頁</a><br>
+  各校系規定請以官方公告為準；本工具不代寫、不保證錄取。
+</div></footer>
+
+<dialog id="dlg"><form method="dialog">
+  <div class="dh"><h3 id="dlgTitle" style="font-size:19px"></h3></div>
+  <div class="db" id="dlgBody"></div>
+  <div class="df"><button class="btn ghost" value="cancel" formnovalidate>取消</button><button class="btn" value="ok" id="dlgOk">儲存</button></div>
+</form></dialog>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<div id="printArea"></div>
+
+<script>
+/* ===== 資料 ===== */
+const KEY='jenfoo-portfolio-v1';
+function uid(){return Math.random().toString(36).slice(2,9)}
+const blank=()=>({name:'',targets:[],items:[],drafts:{},interview:{},cmp:[],dates:[{id:uid(),title:'116 學年度學測',date:'2027-01-22'}]});
+let S;
+try{S=Object.assign(blank(),JSON.parse(localStorage.getItem(KEY))||{})}catch(e){S=blank()}
+function save(){
+  try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}
+  renderCounts();
+  const t=new Date();$('#savedAt').textContent='✓ 已自動儲存 '+String(t.getHours()).padStart(2,'0')+':'+String(t.getMinutes()).padStart(2,'0');
+}
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function toast(t){const e=$('#toast');e.textContent=t;e.classList.add('on');clearTimeout(e._t);e._t=setTimeout(()=>e.classList.remove('on'),2400)}
+const countChars=t=>(t||'').replace(/\s/g,'').length;
+
+/* ===== 內容設定 ===== */
+const GROUPS=['資訊','工程','數理化','醫藥衛生','生命科學','生物資源','地球與環境','建築與設計','藝術','社會與心理','大眾傳播','外語','文史哲','教育','法政','管理','財經','遊憩與運動'];
+const GROUP_TIPS={
+  '資訊':'數學與資訊課的表現、自己寫過的程式或作品、解決一個實際問題的過程。',
+  '工程':'數學物理的基礎、動手做的作品（專題、創客、科展）、失敗後怎麼修正。',
+  '數理化':'對一個現象追根究柢的經驗、探究或實驗報告、自己延伸讀的內容。',
+  '醫藥衛生':'生物化學的基礎、和人互動的服務經驗、對生命與照顧的具體體會。',
+  '生命科學':'生物課的探究或實驗、觀察紀錄、對某個生命現象的好奇與追問。',
+  '生物資源':'和農林漁牧、食品或動植物有關的實作或觀察、對產業問題的想法。',
+  '地球與環境':'地科、地理的探究、戶外觀察或資料分析、對環境議題的具體行動。',
+  '建築與設計':'作品集與設計過程、觀察生活空間或物件的習慣、手繪或軟體能力。',
+  '藝術':'持續創作的作品與歷程、展演經驗、你怎麼看待自己的作品。',
+  '社會與心理':'觀察人與群體的經驗、服務或訪談、讀過的相關書籍帶來的想法。',
+  '大眾傳播':'自己做過的內容（影片、刊物、社群）、對媒體現象的觀察與反思。',
+  '外語':'語言能力證明、跨文化交流經驗、用外語完成的一件事。',
+  '文史哲':'閱讀與寫作的累積、對一段歷史或一個問題的思考、自己的觀點。',
+  '教育':'教別人的經驗（課輔、帶營隊）、對學習這件事的觀察。',
+  '法政':'對公共議題的關注與討論、模擬聯合國或辯論、把規則想清楚的經驗。',
+  '管理':'幹部或活動籌辦經驗、團隊合作與溝通、處理預算或時程的例子。',
+  '財經':'數學與數據能力、對經濟或金融現象的觀察、實際處理錢或數字的經驗。',
+  '遊憩與運動':'運動或休閒相關的專長與經歷、帶活動的經驗、對健康與體能的理解。'
+};
+const GROUP_KW={
+  '資訊':['程式','邏輯','演算法','資料','解決問題','自學','除錯'],
+  '工程':['設計','實作','測試','改良','數據','團隊','原理'],
+  '數理化':['觀察','假設','實驗','推理','驗證','數據','探究'],
+  '醫藥衛生':['同理','照顧','觀察','細心','責任','溝通','生命'],
+  '生命科學':['觀察','實驗','紀錄','好奇','生物','探究','分析'],
+  '生物資源':['田野','觀察','實作','永續','產業','食品','環境'],
+  '地球與環境':['觀測','地圖','資料','環境','永續','田野','分析'],
+  '建築與設計':['觀察','空間','設計','草圖','使用者','作品','美感'],
+  '藝術':['創作','作品','表現','練習','風格','展演','美感'],
+  '社會與心理':['觀察','訪談','同理','人際','服務','反思','行為'],
+  '大眾傳播':['企劃','採訪','拍攝','剪輯','媒體','表達','觀點'],
+  '外語':['閱讀','口說','翻譯','文化','交流','寫作','表達'],
+  '文史哲':['閱讀','思考','觀點','寫作','歷史','論證','文本'],
+  '教育':['教學','陪伴','引導','耐心','學習','觀察','課輔'],
+  '法政':['議題','規則','辯論','公共','權利','論證','思辨'],
+  '管理':['規劃','領導','溝通','協調','預算','時程','團隊'],
+  '財經':['數據','分析','數學','市場','理財','邏輯','統計'],
+  '遊憩與運動':['訓練','體能','團隊','帶領','活動','健康','紀律']
+};
+const TYPES=['課程學習成果','幹部經驗','競賽表現','社團活動','志工服務','檢定證照','自主學習','營隊・講座・參訪','其他'];
+const CHIPS=[['一份自己滿意的報告或作業','課程學習成果'],['當過的幹部','幹部經驗'],['參加過的比賽','競賽表現'],['社團裡做過的一件事','社團活動'],['服務學習或志工','志工服務'],['考過的檢定','檢定證照'],['自己讀完的一本書','自主學習'],['自學的一個軟體或技能','自主學習'],['參加過的營隊或講座','營隊・講座・參訪'],['打工或家裡幫忙的經驗','其他']];
+const STAR=[
+  ['s','當時是什麼情況？','什麼課、什麼活動、你負責什麼。'],
+  ['a','你具體做了哪些事？','動詞越具體越好：查資料、寫程式、訪問、設計、帶隊⋯⋯'],
+  ['d','遇到什麼困難？','卡關、失敗、意見不合、時間不夠都算。'],
+  ['r','結果呢？有數字或成果嗎？','名次、人數、時數、作品、老師回饋。'],
+  ['l','你學到什麼？和想讀的領域有什麼關係？','不要只寫「學到很多」，寫出一個改變。']
+];
+const SECTIONS={
+  reflect:{name:'學習歷程反思',limit:800,fws:{
+    story:{name:'故事型',qs:[
+      ['高中三年，哪一門課或哪一件事讓你改變最多？','可以從素材庫挑一件，寫出它是什麼。'],
+      ['那時候遇到什麼困難或挫折？','越具體越好，例如「第一次段考數學只考 42 分」。'],
+      ['你怎麼處理？做了哪些具體的事？','列出兩三個動作。'],
+      ['結果怎樣？有數字或成果可以說嗎？','進步幾分、完成什麼作品、得到什麼回饋。'],
+      ['回頭看，你學到什麼？之後做事的方式有什麼不同？','寫「改變」，不要寫「收穫良多」。']]},
+    four:{name:'四步反思',qs:[
+      ['學到什麼？','這件事讓你學會了哪個具體的知識或技能？'],
+      ['發現什麼？','過程中你發現了自己的什麼特質、優點或盲點？'],
+      ['改變什麼？','之後你的做法或想法有什麼不一樣？舉一個例子。'],
+      ['怎麼用到未來？','這個改變，會怎麼幫你讀想申請的科系？']]},
+    cer:{name:'主張＋證據',qs:[
+      ['主張：用一句話說出你是什麼樣的學習者。','例如「我是會把問題拆小的人」。'],
+      ['證據一：哪一件事可以證明？','寫出時間、做了什麼、結果。'],
+      ['證據二：還有哪一件事？','最好是不同類型的經歷（課內＋課外）。'],
+      ['推論：這些證據為什麼能支持你的主張？和科系有什麼關係？','']]}
+  },ex:[['我在高中三年學到了很多，也培養了解決問題的能力，讓我受益良多。','高二第一次段考數學 42 分。我把錯題分成「觀念不懂」和「算錯」兩類，每週各補三題，期末考到 78 分。從那之後，我遇到問題會先分類，再決定先處理哪一類。']]},
+  motive:{name:'就讀動機',limit:800,fws:{base:{name:'',qs:[
+    ['你第一次對這個領域有感覺，是什麼時候？發生了什麼事？','一個畫面、一個場景，不要寫「從小就很有興趣」。'],
+    ['後來你做了哪些事，確認自己是真的喜歡？','修課、讀書、營隊、自學、做專題⋯⋯'],
+    ['這個系的哪門課、哪個研究方向或特色吸引你？','去系網查課程地圖，寫出課名。'],
+    ['你的哪些能力或經驗，剛好適合這個系？','連回素材庫裡的經歷。']]}},
+  ex:[['我從小就對電腦非常有興趣，希望能進入貴系學習，實現我的夢想。','高二做午餐剩食探究時，15 天的資料用手算到半夜。我第一次想：如果寫個程式，一秒就算完了。後來我自學 Python 寫出班級抽籤程式。貴系大一的「程式設計」和大二的「資料結構」，正是我想把這些土法煉鋼的做法變成真正方法的地方。']]},
+  plan:{name:'未來學習計畫與生涯規劃',limit:800,fws:{base:{name:'',qs:[
+    ['錄取後到入學前，你打算先準備什麼？','先修哪個科目、讀什麼書、練什麼技能。'],
+    ['大一、大二想修哪些課？想參加什麼？','寫課名、社團、系上活動。'],
+    ['大三、大四想往哪個方向深入？','專題、實習、交換、雙主修⋯⋯'],
+    ['畢業後想成為什麼樣的人？為什麼？','可以有兩條路，但要說出理由。']]}},
+  ex:[['進入大學後我會努力學習，充實自己，將來成為對社會有貢獻的人。','入學前：把微積分先修課程看完、用 Python 完成一個小型資料分析。大一大二：修好程式設計與離散數學，參加系上程式競賽社。大三：找教授做資料分析相關專題，暑假爭取實習。']]},
+  multi:{name:'多元表現綜整心得',limit:800,fws:{base:{name:'',qs:[
+    ['你所有的多元表現裡，有沒有一條共同的線？','同一個興趣、同一種能力、同一種個性。'],
+    ['挑兩三件最能代表你的，各寫一句你在裡面做了什麼。',''],
+    ['這些經驗合起來，讓你成為什麼樣的人？',''],
+    ['和你想讀的科系有什麼關係？','']]}},
+  ex:[['我參加了很多活動，包括社團、志工、競賽，這些經驗都讓我成長很多。','我的多元表現都繞著同一件事：把亂七八糟的資料整理清楚。探究課整理 15 天的剩食紀錄、社團幫學弟妹排每週進度、志工時幫圖書館整理借閱統計。這讓我確定，我喜歡的是用方法讓事情變清楚。']]}
+};
+const VAGUE=['從小就','從小到大','一直以來','非常有興趣','很有興趣','十分有興趣','深感興趣','受益良多','獲益良多','收穫良多','學到了很多','學到很多','讓我成長','使我成長','成長很多','培養了','熱愛','夢寐以求','努力不懈','精益求精','印象深刻','全力以赴','與眾不同','充實自己','對社會有貢獻','實現我的夢想','實現夢想'];
+const COMMON_BI=new Set(['我們','自己','這個','一個','因為','所以','但是','可以','沒有','時候','什麼','他們','就是','這些','如果','也是','還是','的時','了我','是我','我在','我的','我也','在這','讓我','我會','我想','希望','學習','老師','同學','高中','大學']);
+
+/* 範例牆：全部為自行撰寫的虛構示範 */
+const EXAMPLES=[
+ {g:'資訊',sec:'motive',title:'把手算變成程式',parts:[['高二探究課，我們秤了 15 天的午餐廚餘，','場景具體：時間、課程、數字'],['資料多到用試算表算到半夜。','用一個小痛點帶出動機，比「從小就有興趣」有畫面'],['我上網自學 Python，花兩個週末寫出能自動整理紀錄的小程式。','行動＋時間，證明是真的喜歡，不是嘴上說'],['讀了貴系的課程地圖後，我最想修大二的「資料結構」，','寫出課名，教授知道你真的查過'],['因為我想知道，怎麼讓程式在資料變成十倍時還跑得動。','用一個自己想解的問題收尾，帶出學習方向']]},
+ {g:'醫藥衛生',sec:'reflect',title:'在病房學會等待',parts:[['高二暑假，我在醫院做了 40 小時的志工，','時數讓經歷可信'],['最常做的事是推輪椅、陪長輩等檢查。','誠實寫小事，比誇大的「救人」更真'],['有一位奶奶每次都問同一個問題，我一開始很不耐煩。','寫出自己的缺點與真實情緒'],['後來護理師告訴我，她是因為害怕才一直問。','轉折點：一句話改變想法'],['從那之後，我回答前會先蹲下來看著對方。','具體的行為改變，比「學會同理心」有說服力']]},
+ {g:'管理',sec:'multi',title:'三件事的共同線',parts:[['我的多元表現看起來很雜，但都在做同一件事：讓一群人準時完成任務。','開頭就點出共同線，教授一眼抓到重點'],['當畢旅總召時，我用共用表單追 42 個人的繳費進度；','角色＋工具＋數字'],['社團成發前，我把排練拆成每週目標；','第二件經歷，類型不同但呼應同一能力'],['班級義賣，我先算成本才決定定價，最後淨賺 3,200 元。','有成果數字'],['這讓我想讀管理，學更有系統的方法。','連回科系，收得乾淨']]},
+ {g:'外語',sec:'motive',title:'看懂一封回信',parts:[['高一我寫信給一位日本作家，問他書裡的一句話。','獨特的起點，不是「喜歡日劇」'],['三個月後收到回信，我只看得懂一半。','具體的挫折，帶出學習需求'],['為了看懂另一半，我開始每天讀 20 分鐘日文新聞，','持續行動＋頻率'],['高三考過 N3。','有證明'],['我想讀貴系，是想學的不只是語言，而是那一半我還看不懂的文化。','把動機提升到科系層次，結尾有餘韻']]},
+ {g:'工程',sec:'plan',title:'分階段的學習計畫',parts:[['入學前：用 Arduino 完成一台能自動避障的小車，補強電路基礎。','入學前就有具體準備'],['大一、大二：把「普通物理」和「工程數學」讀紮實，參加系上機器人社。','寫課名與社團，看得出查過'],['大三：找教授做感測器相關專題，','往一個方向深入'],['暑假爭取到工廠實習，','學用結合'],['看看自己設計的東西在真實產線上會遇到什麼問題。','說出「為什麼」，計畫才有靈魂']]},
+ {g:'社會與心理',sec:'reflect',title:'一次失敗的訪談',parts:[['公民課的社區訪談，我第一次訪問里長就冷場。','直接從失敗開始，很吸引人'],['我準備了 10 題，卻只問到第 3 題就問不下去。','數字讓畫面清楚'],['回去重聽錄音，我發現問題都只能回答「是」或「不是」。','有自我檢討的過程'],['第二次我改成「可以說說當時的情況嗎？」，','具體的調整方法'],['那次訪談錄了 50 分鐘。我開始好奇：為什麼換一句話，人就願意說？','用一個新的問題收尾，自然連到心理學']]},
+ {g:'財經',sec:'plan',title:'把數學用在錢上',parts:[['入學前：把微積分先修課看完，再讀一本入門的經濟學書。','先補數學，呼應財經需要的能力'],['大一、大二：修好「統計學」和「會計學」，參加投資研究社練習看財報。','課名＋社團'],['大三：想修程式相關的選修，學用資料分析市場。','結合趨勢，看得出思考'],['畢業後，我想成為能把數字講清楚的人，','目標具體，不是「對社會有貢獻」'],['讓家人看得懂自己的保單和貸款。','回到生活，真誠有溫度']]},
+ {g:'文史哲',sec:'motive',title:'一本書的註腳',parts:[['讀《史記》白話本時，我最常翻的是註腳。','獨特的切入點，馬上顯出閱讀習慣'],['同一件事，司馬遷和後人的說法常常不一樣。','具體的觀察'],['我開始做筆記，比較不同版本的記載，一年寫了 60 頁。','持續行動＋數量'],['貴系的「史學方法」課，','寫出課名'],['正是我想學的：怎麼判斷哪一種說法比較可信。','把好奇心變成想學的能力']]}
+];
+const SECNAME={reflect:'學習歷程反思',motive:'就讀動機',plan:'未來計畫',multi:'多元表現綜整'};
+
+/* ===== 路由 ===== */
+const VIEWS=['home','targets','items','write','examples','interview','dates','export','peer'];
+function route(){
+  const v=(location.hash||'#home').slice(1).split('/')[0];
+  const ok=VIEWS.includes(v)?v:'home';
+  stopDrill();stopRec();
+  document.querySelectorAll('section.view').forEach(s=>s.classList.toggle('on',s.id==='v-'+ok));
+  document.querySelectorAll('nav.tabs a').forEach(a=>{const on=a.dataset.v===ok;a.classList.toggle('on',on);if(on){a.setAttribute('aria-current','page');a.scrollIntoView({block:'nearest',inline:'nearest'})}else a.removeAttribute('aria-current')});
+  ({home:renderHome,targets:renderTargets,items:renderItems,write:renderWrite,examples:renderExamples,interview:renderInterview,dates:renderDates,export:renderExport,peer:renderPeer})[ok]();
+  window.scrollTo(0,0);
+}
+addEventListener('hashchange',route);
+function go(h){if(location.hash==='#'+h)route();else location.hash='#'+h}
+function renderCounts(){$('#nTargets').textContent=S.targets.length;$('#nItems').textContent=S.items.length}
+
+/* ===== 對話框 ===== */
+function openDlg(title,html,onOk,okText='儲存'){
+  $('#dlgTitle').textContent=title;$('#dlgBody').innerHTML=html;$('#dlgOk').textContent=okText;
+  const d=$('#dlg');d.returnValue='';
+  d.onclose=()=>{if(d.returnValue==='ok')onOk(d)};
+  d.showModal();
+  setTimeout(()=>d.querySelector('input[type=text],textarea')?.focus(),30);
+}
+function readForm(d){const o={};d.querySelectorAll('[name]').forEach(e=>o[e.name]=e.value.trim());return o}
+
+/* ===== 草稿資料 ===== */
+function draftOf(tid,k){S.drafts[tid]=S.drafts[tid]||{};const d=S.drafts[tid][k]=S.drafts[tid][k]||{text:'',limit:SECTIONS[k].limit,items:[]};
+  const fwKeys=Object.keys(SECTIONS[k].fws);if(!d.fw||!fwKeys.includes(d.fw))d.fw=fwKeys[0];
+  if(!d.ansBy){d.ansBy={};d.ansBy[fwKeys[0]]=Array.isArray(d.answers)?d.answers:[];delete d.answers}
+  if(!d.items)d.items=[];return d}
+const answersOf=d=>d.ansBy[d.fw]||(d.ansBy[d.fw]=[]);
+const secDone=(tid,k)=>countChars(S.drafts[tid]?.[k]?.text)>=100;
+
+/* ===== 健檢（規則式，五個面向） ===== */
+function deptCore(t){let s=t.dept||'';for(let i=0;i<2;i++)s=s.replace(/(學士學位學程|學位學程|學程|學系|系|組)$/,'');return s}
+function analyze(t,d,sec){
+  const txt=d.text||'',n=countChars(txt);
+  if(n<50)return null;
+  const tips=[];const dim={};
+  const sents=txt.split(/[。！？\n]/).map(s=>s.trim()).filter(Boolean);
+  const paras=txt.split(/\n+/).filter(p=>p.trim());
+  const dc=deptCore(t),kw=GROUP_KW[t.group]||[];
+  // 具體度
+  const vague=VAGUE.filter(w=>txt.includes(w));
+  const nums=(txt.match(/[0-9０-９一二兩三四五六七八九十百千]+\s*(分|名|人|次|小時|天|週|周|個月|月|件|篇|頁|%|％|位|場|組|題|年|元|頁)/g)||[]).length;
+  let c=100-vague.length*15;if(n>=200&&nums===0)c-=25;else if(nums>=2)c+=5;
+  dim['具體度']=c;
+  if(vague.length)tips.push(['具體度','空泛的說法：'+vague.map(w=>'「'+w+'」').join(''),'這些話每個人都會寫。換成一個只有你才有的例子。',vague[0]]);
+  if(n>=200&&nums===0)tips.push(['具體度','沒有任何數字','加一個數字會更有說服力：幾人的團隊、幾小時、進步幾分、第幾名。']);
+  // 連結科系
+  const kwHit=kw.filter(k=>txt.includes(k));
+  let l=50+Math.min(kwHit.length,3)*10;
+  const deptHit=(dc&&txt.includes(dc))||txt.includes('貴系')||txt.includes('本系');
+  if(deptHit)l+=15;
+  const courseHit=/(「[^」]{2,12}」|課程|課|教授|實驗室|專題|研究)/.test(txt);if(courseHit)l+=5;
+  if(sec==='motive'&&!deptHit){l-=25;tips.push(['連結科系',`沒提到「${dc||'科系'}」`,'就讀動機要讓教授知道你寫的就是他們系，而不是每一系都能用的一篇。'])}
+  if(sec==='motive'&&!/(課|教授|老師|實驗室|研究|特色|學程)/.test(txt)){l-=15;tips.push(['連結科系','沒提到系上的課或特色','去系網看課程地圖，寫出一兩個吸引你的課名。'])}
+  if(sec==='plan'&&!/(課|修|專題|實習|交換|研究|競賽|證照)/.test(txt)){l-=20;tips.push(['連結科系','計畫不夠具體','寫出想修的課名、想做的專題或實習。'])}
+  if(kwHit.length<2&&n>=150)tips.push(['連結科系',`${t.group}學群的能力關鍵字用得少`,'右邊有這個學群常看的能力，挑跟你經歷有關的寫進去（不用硬塞）。']);
+  dim['連結科系']=l;
+  // 反思深度
+  const hasStruggle=/(困難|失敗|挫折|卡關|不會|錯|問題|不耐煩|冷場|退步|來不及|衝突)/.test(txt);
+  const hasChange=/(改變|發現|從此|之後|從那|才知道|意識到|學會|開始|改成|下一次|後來)/.test(txt);
+  const hasRole=/(負責|擔任|帶領|我做|我設計|我寫|主導|規劃)/.test(txt);
+  let r=40+(hasStruggle?20:0)+(hasChange?25:0)+(hasRole?15:0);
+  if(sec==='plan')r=Math.max(r,70);
+  if((sec==='reflect'||sec==='multi')&&!hasStruggle)tips.push(['反思深度','沒寫到困難或挫折','寫出卡關的地方和你怎麼調整，比只寫成果更能看出你的成長。']);
+  if((sec==='reflect'||sec==='motive')&&!hasChange)tips.push(['反思深度','看不出「改變」','寫一句「從那之後，我⋯⋯」，讓教授看到你哪裡不一樣了。']);
+  if(!hasRole&&(sec==='reflect'||sec==='multi'))tips.push(['反思深度','看不出你的角色','寫清楚你負責什麼、做了什麼，不要只寫「我們」。']);
+  dim['反思深度']=r;
+  // 可讀性
+  let rd=100;
+  const long=sents.filter(s=>countChars(s)>70);
+  if(long.length){rd-=long.length*10;tips.push(['可讀性',`有 ${long.length} 句超過 70 字`,'「'+long[0].slice(0,22)+'⋯」太長了，拆成兩句比較好讀。',long[0]])}
+  const bigP=paras.filter(p=>countChars(p)>260);
+  if(bigP.length){rd-=10;tips.push(['可讀性',`有 ${bigP.length} 段超過 260 字`,'一段講一件事，太長的段落教授容易跳過。'])}
+  const iStart=sents.filter(s=>s.startsWith('我')).length;
+  if(sents.length>=5&&iStart/sents.length>.45){rd-=15;tips.push(['可讀性',`${iStart} / ${sents.length} 句用「我」開頭`,'換幾句改用時間、事件或結果開頭，例如「高二上的探究課，⋯」。'])}
+  const freq={};const clean=txt.replace(/[^一-鿿]/g,' ');
+  for(let i=0;i<clean.length-1;i++){const b=clean.slice(i,i+2);if(/\s/.test(b)||COMMON_BI.has(b))continue;freq[b]=(freq[b]||0)+1}
+  const rep=Object.entries(freq).filter(([w,c])=>c>=Math.max(4,Math.round(n/120))&&!dc.includes(w)).sort((a,b)=>b[1]-a[1]).slice(0,3);
+  if(rep.length){rd-=10;tips.push(['可讀性','重複的詞：'+rep.map(([w,c])=>`「${w}」${c}次`).join('、'),'換個說法，或把重複的句子合併。',rep[0][0]])}
+  const gx=(txt.match(/貴系/g)||[]).length;
+  if(gx>3){rd-=5;tips.push(['可讀性',`「貴系」出現 ${gx} 次`,'寫一兩次就好，其他地方直接寫課名或系上特色。','貴系'])}
+  dim['可讀性']=rd;
+  // 結構完整
+  const lim=d.limit||0;let st=100;
+  if(lim&&n>lim){st-=30;tips.push(['結構完整',`超過字數 ${n-lim} 字`,'先刪重複的意思和形容詞。'])}
+  else if(lim&&n<lim*.5){st-=20;tips.push(['結構完整',`只寫了上限的 ${Math.round(n/lim*100)}%`,'字數不用寫滿，但太短通常代表例子還不夠，補一個具體經歷。'])}
+  if(paras.length<2&&n>=200){st-=15;tips.push(['結構完整','整篇只有一段','分成三到四段：開頭、經歷、轉折、和科系的連結。'])}
+  if(sec==='plan'&&!/(入學前|大一|大二|大三|大四|畢業|短期|中期|長期)/.test(txt)){st-=20;tips.push(['結構完整','沒有分階段','用「入學前／大一大二／大三大四／畢業後」分段，教授一眼就看得懂。'])}
+  if(d.items.length===0&&S.items.length){st-=10;tips.push(['結構完整','還沒選素材','右下方勾選這段要用到的經歷，寫的時候對照比較不會漏。'])}
+  dim['結構完整']=st;
+  Object.keys(dim).forEach(k=>dim[k]=Math.max(10,Math.min(100,Math.round(dim[k]))));
+  let score=Math.round(Object.values(dim).reduce((a,b)=>a+b,0)/5);
+  // 太短的草稿最多黃燈：例子不夠，分數再漂亮也不算完成
+  const shortCap=lim?lim*.5:300;
+  if(n<shortCap&&score>72){score=72;if(!tips.some(x=>x[1].startsWith('只寫了上限')))tips.unshift(['結構完整','篇幅還太短，最高只能到黃燈','把例子寫完整（過程、困難、改變），寫到一半以上再來衝綠燈。'])}
+  return {score,dim,tips,kwHit};
+}
+const lightOf=s=>s>=80?['g','綠燈','很不錯，可以請同學幫你看看了']:s>=60?['y','黃燈','方向對了，照下面的提示再修一輪']:['r','紅燈','先把下面標出的問題處理掉'];
+const colorOf=s=>s>=80?'var(--ok)':s>=60?'var(--mid)':'var(--warn)';
+
+/* ===== 首頁 ===== */
+function allScores(){const out=[];S.targets.forEach(t=>Object.keys(SECTIONS).forEach(k=>{const d=S.drafts[t.id]?.[k];if(d){const a=analyze(t,d,k);if(a)out.push(a.score)}}));return out}
+function badgeList(){
+  const nt=S.targets.length,ni=S.items.length,full=S.items.filter(i=>itemScore(i)===5).length;
+  const anySec=S.targets.some(t=>Object.keys(SECTIONS).some(k=>secDone(t.id,k)));
+  const allSec=S.targets.some(t=>Object.keys(SECTIONS).every(k=>secDone(t.id,k)));
+  const green=allScores().some(s=>s>=80);
+  const ivN=Object.values(S.interview||{}).reduce((a,o)=>a+Object.values(o).filter(v=>countChars(v)>=10).length,0);
+  return [['🎯','定好目標',nt>=1],['📦','素材收藏家',ni>=6],['🔍','細節控',full>=3],['✍️','第一段完成',anySec],['🟢','健檢綠燈',green],['🏆','四段全套',allSec],['⚖️','比較達人',nt>=3],['🎤','面試暖身',ivN>=5]];
+}
+function renderHome(){
+  $('#stuName').value=S.name||'';
+  const nt=S.targets.length,ni=S.items.length,full=S.items.filter(i=>itemScore(i)===5).length;
+  let done=0;S.targets.forEach(t=>Object.keys(SECTIONS).forEach(k=>{if(secDone(t.id,k))done++}));
+  const all=nt*4;
+  const rows=[['目標校系',nt?nt+' 個':'還沒填',nt?1:0],['素材庫',`${ni} 件，寫齊 ${full} 件`,Math.min(full/6,1)],['草稿',all?`${done} / ${all} 段`:'先新增校系',all?done/all:0]];
+  $('#homeProgress').innerHTML=rows.map(r=>`<div style="margin-bottom:8px"><div class="row"><b style="font-size:14px">${r[0]}</b><span class="sp"></span><span class="muted">${r[1]}</span></div><div class="bar"><i style="width:${Math.round(r[2]*100)}%"></i></div></div>`).join('');
+  let href,label,tip;
+  if(!nt){href='#targets';label='開始寫 →';tip='下一步：新增一個最想去的校系。'}
+  else if(!S.targets.some(t=>t.focus)){href='#targets';label='補校系重點 →';tip='下一步：到 ColleGo 查準備指引，把校系看重的重點抄進來。'}
+  else if(ni<6){href='#items';label='繼續整理素材 →';tip=`下一步：素材庫再加 ${6-ni} 件，小事也算。`}
+  else if(done<all){href='#write';label='繼續寫作 →';tip=`下一步：還有 ${all-done} 段草稿沒寫，先寫就讀動機。`}
+  else{href='#interview';label='開始練面試 →';tip='草稿都寫好了！接下來練面試，再匯出。'}
+  $('#homeNext').href=href;$('#homeNext').textContent=label;$('#homeNextTip').textContent=tip;
+  const bl=badgeList();$('#badgeCount').textContent=`徽章 ${bl.filter(b=>b[2]).length} / ${bl.length}`;
+  $('#badges').innerHTML=bl.map(([i,n,on])=>`<div class="badge ${on?'on':''}" title="${n}"><span class="bi">${i}</span>${n}</div>`).join('');
+}
+$('#stuName').addEventListener('input',e=>{S.name=e.target.value;save()});
+
+/* ===== 目標校系＋比較 ===== */
+function targetForm(t={}){
+  return `<label class="f">學校</label><input type="text" name="school" required value="${esc(t.school)}" placeholder="例如：國立臺灣大學">
+  <label class="f">科系</label><input type="text" name="dept" required value="${esc(t.dept)}" placeholder="例如：資訊工程學系">
+  <label class="f">學群</label><select name="group">${GROUPS.map(g=>`<option ${t.group===g?'selected':''}>${g}</option>`).join('')}</select>
+  <label class="f">這個系看重什麼？ <small>從「審查資料準備指引」抄重點，寫作時會一直顯示在旁邊</small></label>
+  <textarea name="focus" rows="3" placeholder="例如：重視數學、物理課程表現；希望看到程式或專題的自主學習">${esc(t.focus)}</textarea>
+  <label class="f">吸引你的課程或特色 <small>選填，看系網課程地圖</small></label>
+  <textarea name="courses" rows="2" placeholder="例如：大二資料結構、大三專題、可以修 AI 學程">${esc(t.courses)}</textarea>
+  <label class="f">第二階段要交／要考什麼 <small>選填，看簡章</small></label>
+  <textarea name="stage2" rows="2" placeholder="例如：備審＋個人面試 10 分鐘">${esc(t.stage2)}</textarea>`;
+}
+$('#addTarget').onclick=()=>openDlg('新增校系',targetForm(),d=>{const o=readForm(d);if(!o.school||!o.dept){toast('學校和科系都要填');return}S.targets.push({id:uid(),...o});save();renderTargets();toast('已新增')});
+function renderTargets(){
+  const el=$('#targetList');
+  if(!S.targets.length){el.innerHTML=`<div class="empty">還沒有校系。按右上角「新增校系」，先寫一個最想去的。</div>`;$('#cmpWrap').innerHTML='';return}
+  S.cmp=(S.cmp||[]).filter(id=>S.targets.some(t=>t.id===id));
+  el.innerHTML=S.targets.map(t=>{
+    const done=Object.keys(SECTIONS).filter(k=>secDone(t.id,k)).length,pk=t.pick||{course:[],multi:[]};
+    return `<div class="item"><div class="row"><div><h3>${esc(t.school)}　${esc(t.dept)}</h3><div class="meta"><span class="pill">${esc(t.group)}學群</span>　草稿 ${done}/4 段　上傳清單：課程成果 ${pk.course.length}/3・多元表現 ${pk.multi.length}/10</div></div><span class="sp"></span>
+    <button class="btn ghost small" data-act="pick" data-id="${t.id}">上傳清單</button>
+    <label class="chk" style="margin:0 6px 0 0"><input type="checkbox" data-cmp="${t.id}" ${S.cmp.includes(t.id)?'checked':''}>比較</label>
+    <button class="btn small" data-act="write" data-id="${t.id}">寫作</button>
+    <button class="btn ghost small" data-act="edit" data-id="${t.id}">編輯</button>
+    <button class="btn ghost small" data-act="copy" data-id="${t.id}" title="把草稿複製一份給另一個校系">複製</button>
+    <button class="btn danger small" data-act="del" data-id="${t.id}">刪除</button></div>
+    ${t.focus?`<p class="muted" style="margin-top:8px;white-space:pre-wrap">看重：${esc(t.focus)}</p>`:`<p class="muted" style="margin-top:8px">⚠ 還沒填「這個系看重什麼」</p>`}</div>`}).join('');
+  renderCmp();
+}
+function renderCmp(){
+  const w=$('#cmpWrap');const ts=S.cmp.map(id=>S.targets.find(t=>t.id===id)).filter(Boolean);
+  if(S.targets.length<2){w.innerHTML='';return}
+  if(!ts.length){w.innerHTML=`<div class="tip info"><b>⚖️ 校系比較</b>勾選上面最多 3 個校系的「比較」，就能並排看哪一系最適合你。</div>`;return}
+  const rows=[['學群',t=>t.group+'學群'],['看重什麼',t=>t.focus||'（還沒填）'],['課程特色',t=>t.courses||'（還沒填）'],['第二階段',t=>t.stage2||'（還沒填）'],['相關素材',t=>{const n=S.items.filter(i=>i.groups.includes(t.group)).length;return `${n} 件和${t.group}學群有關`}],['草稿進度',t=>`${Object.keys(SECTIONS).filter(k=>secDone(t.id,k)).length} / 4 段`]];
+  w.innerHTML=`<h3 style="font-size:19px;margin-bottom:10px">⚖️ 校系比較</h3><div class="cmp card" style="padding:0"><table><tr><th></th>${ts.map(t=>`<th style="width:auto">${esc(t.school)}<br>${esc(t.dept)}</th>`).join('')}</tr>${rows.map(([n,f])=>`<tr><th>${n}</th>${ts.map(t=>`<td>${esc(f(t))}</td>`).join('')}</tr>`).join('')}</table></div><p class="muted" style="margin-top:8px">相關素材越多，代表你的經歷越能支撐這一系的備審。</p>`;
+}
+$('#targetList').addEventListener('change',e=>{const c=e.target.closest('[data-cmp]');if(!c)return;
+  if(c.checked){if(S.cmp.length>=3){c.checked=false;toast('最多比較 3 個校系');return}S.cmp.push(c.dataset.cmp)}else S.cmp=S.cmp.filter(x=>x!==c.dataset.cmp);save();renderCmp()});
+$('#targetList').addEventListener('click',e=>{
+  const b=e.target.closest('[data-act]');if(!b)return;const t=S.targets.find(x=>x.id===b.dataset.id);if(!t)return;
+  if(b.dataset.act==='write'){S.cur=t.id;save();go('write')}
+  if(b.dataset.act==='pick'){
+    const pk=t.pick=t.pick||{course:[],multi:[]};
+    const courses=S.items.filter(i=>i.type==='課程學習成果'),multis=S.items.filter(i=>i.type!=='課程學習成果');
+    const row=(it,kind)=>`<label class="chk"><input type="checkbox" data-pk="${kind}" value="${it.id}" ${pk[kind].includes(it.id)?'checked':''}><span><b>${esc(it.title)}</b> <span class="muted">${esc(it.type)}${it.groups.includes(t.group)?'・和本系學群有關':''}</span></span></label>`;
+    const sort=a=>a.slice().sort((x,y)=>(y.groups.includes(t.group)?1:0)-(x.groups.includes(t.group)?1:0));
+    const st=k=>secDone(t.id,k)?'✅ 已完成':'⬜ 還沒寫';
+    openDlg(`上傳清單｜${t.school} ${t.dept}`,`<p class="muted" style="margin-top:10px">從素材庫挑出要勾選給這個系看的項目。一般上限是課程學習成果 3 件、多元表現 10 件，實際以各校系簡章為準。和本系學群有關的會排在前面。</p>
+      <h4 style="margin:14px 0 4px">📘 課程學習成果（最多 3）</h4>${courses.length?sort(courses).map(i=>row(i,'course')).join(''):'<p class="muted">素材庫裡還沒有「課程學習成果」類型的經歷。</p>'}
+      <h4 style="margin:14px 0 4px">🌟 多元表現（最多 10）</h4>${multis.length?sort(multis).map(i=>row(i,'multi')).join(''):'<p class="muted">素材庫裡還沒有其他經歷。</p>'}
+      <h4 style="margin:14px 0 4px">✍️ 文字稿</h4><div class="muted">學習歷程反思 ${st('reflect')}<br>就讀動機 ${st('motive')}<br>未來學習計畫與生涯規劃 ${st('plan')}<br>多元表現綜整心得 ${st('multi')}</div>
+      <p class="muted" style="margin-top:10px">修課紀錄由學校上傳，不用自己準備；記得上傳前再到學習歷程資料庫確認勾選。</p>`,d=>{
+        const c=[...d.querySelectorAll('[data-pk="course"]:checked')].map(x=>x.value),m=[...d.querySelectorAll('[data-pk="multi"]:checked')].map(x=>x.value);
+        if(c.length>3||m.length>10){toast(`超過上限：課程成果 ${c.length}/3、多元表現 ${m.length}/10，請再刪減`);return}
+        t.pick={course:c,multi:m};save();renderTargets();toast('上傳清單已更新');
+      });
+    $('#dlgBody').addEventListener('change',e=>{const c=e.target.closest('[data-pk]');if(!c)return;const k=c.dataset.pk,max=k==='course'?3:10,n=$('#dlgBody').querySelectorAll(`[data-pk="${k}"]:checked`).length;if(n>max){c.checked=false;toast(`${k==='course'?'課程學習成果':'多元表現'}最多 ${max} 件`)}});
+  }
+  if(b.dataset.act==='edit')openDlg('編輯校系',targetForm(t),d=>{Object.assign(t,readForm(d));save();renderTargets()});
+  if(b.dataset.act==='del'){if(!confirm(`刪除「${t.school} ${t.dept}」和它的所有草稿？`))return;S.targets=S.targets.filter(x=>x.id!==t.id);delete S.drafts[t.id];delete S.interview[t.id];save();renderTargets()}
+  if(b.dataset.act==='copy')openDlg('複製成新校系',`<p class="muted" style="margin-top:10px">會把「${esc(t.school)} ${esc(t.dept)}」的四段草稿複製過去，你再依新校系修改（就讀動機一定要改）。</p>`+targetForm({group:t.group}),d=>{
+    const o=readForm(d);if(!o.school||!o.dept){toast('學校和科系都要填');return}
+    const id=uid();S.targets.push({id,...o});S.drafts[id]=JSON.parse(JSON.stringify(S.drafts[t.id]||{}));save();renderTargets();toast('已複製，記得改寫就讀動機');
+  },'複製');
+});
+
+/* ===== 素材庫 ===== */
+let itemFilter='全部';
+function itemForm(it={star:{},groups:[]}){
+  return `<label class="f">這件事叫什麼？</label><input type="text" name="title" required value="${esc(it.title)}" placeholder="例如：數學探究報告——用統計分析校園午餐剩食">
+  <div class="grid g2" style="gap:0 12px"><div><label class="f">類型</label><select name="type">${TYPES.map(x=>`<option ${it.type===x?'selected':''}>${x}</option>`).join('')}</select></div>
+  <div><label class="f">時間</label><input type="text" name="when" value="${esc(it.when)}" placeholder="例如：高二上"></div></div>
+  ${STAR.map(([k,q,h])=>`<label class="f">${q} <small>${h}</small></label><textarea name="star_${k}" rows="2">${esc(it.star?.[k])}</textarea>`).join('')}
+  <label class="f">跟哪些學群有關？ <small>可複選</small></label>
+  <div style="display:flex;flex-wrap:wrap;gap:4px 14px">${GROUPS.map(g=>`<label class="chk" style="margin:0"><input type="checkbox" data-g="${g}" ${it.groups?.includes(g)?'checked':''}>${g}</label>`).join('')}</div>`;
+}
+function readItem(d){const o=readForm(d);const it={title:o.title,type:o.type,when:o.when,star:{},groups:[]};STAR.forEach(([k])=>it.star[k]=o['star_'+k]);d.querySelectorAll('[data-g]:checked').forEach(c=>it.groups.push(c.dataset.g));return it}
+function newItem(pre={},ph){openDlg('新增一件經歷',itemForm({star:{},groups:[],...pre}),d=>{const it=readItem(d);if(!it.title){toast('要寫這件事的名稱');return}S.items.push({id:uid(),...it});save();renderItems();toast('已放進素材庫')});if(ph)setTimeout(()=>{const i=$('#dlg [name=title]');if(i)i.placeholder='例如：'+ph},40)}
+$('#addItem').onclick=()=>newItem();
+$('#itemChips').innerHTML=CHIPS.map(([t],i)=>`<button data-i="${i}">＋ ${t}</button>`).join('');
+$('#itemChips').addEventListener('click',e=>{const b=e.target.closest('[data-i]');if(!b)return;const [t,ty]=CHIPS[b.dataset.i];newItem({type:ty},t)});
+function itemScore(it){return STAR.filter(([k])=>countChars(it.star?.[k])>=8).length}
+function renderItems(){
+  const types=['全部',...TYPES.filter(t=>S.items.some(i=>i.type===t))];
+  if(!types.includes(itemFilter))itemFilter='全部';
+  $('#itemFilter').innerHTML=S.items.length>3?types.map(t=>`<button class="btn small ${t===itemFilter?'':'ghost'}" data-f="${t}">${t}</button>`).join(''):'';
+  const qq=($('#itemSearch').value||'').trim();
+  $('#itemSearch').hidden=S.items.length<5;
+  const list=S.items.filter(i=>(itemFilter==='全部'||i.type===itemFilter)&&(!qq||(i.title+Object.values(i.star||{}).join('')).includes(qq)));
+  const el=$('#itemList');
+  if(!S.items.length){el.innerHTML=`<div class="empty">素材庫是空的。點上面任何一個開始，或按「新增一件經歷」。</div>`;return}
+  if(!list.length){el.innerHTML=`<div class="empty">找不到符合的素材。</div>`;return}
+  el.innerHTML=list.map(it=>{const sc=itemScore(it);return `<div class="item"><div class="row"><div><h3>${esc(it.title)}</h3><div class="meta"><span class="pill">${esc(it.type)}</span>　${esc(it.when||'')}　${it.groups.map(esc).join('・')}</div></div><span class="sp"></span>
+    <button class="btn ghost small" data-act="edit" data-id="${it.id}">編輯</button><button class="btn danger small" data-act="del" data-id="${it.id}">刪除</button></div>
+    <div class="prog" style="margin-top:8px"><span class="muted">完整度 ${sc}/5</span><div class="bar"><i style="width:${sc*20}%"></i></div></div>
+    ${sc<5?`<p class="muted" style="margin-top:4px">還沒寫：${STAR.filter(([k])=>countChars(it.star?.[k])<8).map(x=>x[1]).join('、')}</p>`:''}</div>`}).join('');
+}
+$('#itemFilter').addEventListener('click',e=>{const b=e.target.closest('[data-f]');if(b){itemFilter=b.dataset.f;renderItems()}});
+$('#itemSearch').addEventListener('input',renderItems);
+const SELF=[['title','你自學的主題是什麼？','例如：用 Python 分析校園午餐剩食'],['why','為什麼想學？是什麼事情讓你開始？','一個具體的起點'],['goal','你給自己訂的目標是什麼？','做到什麼程度算完成'],['how','用了哪些方法和資源？','線上課程、書、請教誰、做實驗⋯⋯'],['time','花了多久？怎麼安排時間？','例如：8 週，每週六下午 3 小時'],['hard','中間遇到什麼困難？怎麼調整？','卡關、計畫延誤、方法不對都算'],['out','最後做出了什麼？','作品、報告、程式、數據、證照'],['learn','學到什麼？和想讀的科系有什麼關係？','寫出一個改變']];
+$('#addSelfLearn').onclick=()=>openDlg('🧭 自主學習計畫小精靈',`<p class="muted" style="margin-top:10px">每題兩三句就好。完成後會放進素材庫（類型：自主學習），寫作時可以直接引用。</p>`+SELF.map(([k,q,h])=>`<label class="f">${q} <small>${h}</small></label>${k==='title'?`<input type="text" name="${k}" placeholder="${h}">`:`<textarea name="${k}" rows="2" placeholder="${h}"></textarea>`}`).join('')+`<label class="f">跟哪些學群有關？</label><div style="display:flex;flex-wrap:wrap;gap:4px 14px">${GROUPS.map(g=>`<label class="chk" style="margin:0"><input type="checkbox" data-g="${g}">${g}</label>`).join('')}</div>`,d=>{
+  const o=readForm(d);if(!o.title){toast('要寫自學的主題');return}
+  const groups=[...d.querySelectorAll('[data-g]:checked')].map(c=>c.dataset.g);
+  S.items.push({id:uid(),title:'自主學習：'+o.title,type:'自主學習',when:'',groups,star:{s:[o.why,o.goal&&('目標：'+o.goal)].filter(Boolean).join(' '),a:[o.how,o.time&&('（'+o.time+'）')].filter(Boolean).join(''),d:o.hard,r:o.out,l:o.learn}});
+  save();renderItems();toast('已放進素材庫');
+},'放進素材庫');
+$('#itemList').addEventListener('click',e=>{
+  const b=e.target.closest('[data-act]');if(!b)return;const it=S.items.find(x=>x.id===b.dataset.id);if(!it)return;
+  if(b.dataset.act==='edit')openDlg('編輯經歷',itemForm(it),d=>{Object.assign(it,readItem(d));save();renderItems()});
+  if(b.dataset.act==='del'){if(!confirm(`刪除「${it.title}」？`))return;S.items=S.items.filter(x=>x.id!==it.id);Object.values(S.drafts).forEach(t=>Object.values(t).forEach(d=>d.items=(d.items||[]).filter(x=>x!==it.id)));save();renderItems()}
+});
+
+/* ===== 寫作 ===== */
+let curSec='reflect',lastAns=0;
+function renderWrite(){
+  const sel=$('#writeTarget'),body=$('#writeBody');
+  if(!S.targets.length){sel.innerHTML='';body.innerHTML=`<div class="empty" style="margin-top:16px">先到「目標校系」新增一個校系，才能開始寫。<br><a class="btn" style="margin-top:12px" href="#targets">去新增</a></div>`;return}
+  if(!S.targets.find(t=>t.id===S.cur))S.cur=S.targets[0].id;
+  sel.innerHTML=S.targets.map(t=>`<option value="${t.id}" ${t.id===S.cur?'selected':''}>${esc(t.school)} ${esc(t.dept)}</option>`).join('');
+  const t=S.targets.find(x=>x.id===S.cur),d=draftOf(t.id,curSec),sec=SECTIONS[curSec],fws=Object.entries(sec.fws),qs=sec.fws[d.fw].qs,ans=answersOf(d);
+  const tabs=Object.entries(SECTIONS).map(([k,v])=>`<button class="${k===curSec?'on':''}" data-sec="${k}">${secDone(t.id,k)?'<span class="ok">✓</span> ':''}${v.name}</button>`).join('');
+  const related=S.items.filter(i=>i.groups.includes(t.group)),others=S.items.filter(i=>!i.groups.includes(t.group));
+  const pick=it=>`<label class="chk"><input type="checkbox" data-item="${it.id}" ${d.items.includes(it.id)?'checked':''}><span><b>${esc(it.title)}</b> <span class="muted">${esc(it.type)}</span></span></label>`;
+  body.innerHTML=`<div class="seg">${tabs}</div>
+  <details class="ex"><summary>💡 看看空泛 vs 具體的寫法差在哪（更多請看「範例牆」）</summary><div class="exb">${sec.ex.map(([b,g])=>`<div class="ex-bad"><b>✗ 空泛</b>${esc(b)}</div><div class="ex-good"><b>✓ 具體</b>${esc(g)}</div>`).join('')}</div></details>
+  <div class="grid write-grid">
+    <div>
+      <div class="card">
+        <div class="row"><h3 style="font-size:19px">① 先回答問題</h3><span class="sp"></span>
+        ${fws.length>1?`<div class="seg small" style="margin:0" id="fwSeg">${fws.map(([k,v])=>`<button class="${k===d.fw?'on':''}" data-fw="${k}">${v.name}</button>`).join('')}</div>`:''}</div>
+        <p class="muted" style="margin:4px 0 14px">${fws.length>1?'可以切換三種反思寫法，挑最適合你的經歷的那一種。':''}想到什麼先寫，不用管文筆。每題寫兩三句就好。</p>
+        ${qs.map(([q,h],i)=>`<div class="q"><label class="qt" for="ans${i}">${i+1}. ${q}</label>${h?`<div class="hint">${h}</div>`:''}<textarea id="ans${i}" data-ans="${i}" rows="3">${esc(ans[i])}</textarea></div>`).join('')}
+        <div class="row"><button class="btn" id="compose">把回答組成草稿 ↓</button>${d.prev!=null?'<button class="btn ghost small" id="undo">復原上一版草稿</button>':''}</div>
+      </div>
+      <div class="card" style="margin-top:16px">
+        <div class="row"><h3 style="font-size:19px">② 修改草稿</h3><span class="sp"></span>
+          <label class="muted">字數上限 <input type="number" id="limit" min="0" step="50" value="${d.limit||''}" style="width:90px;padding:4px 8px"></label></div>
+        <p class="muted" style="margin:4px 0 10px">把句子接順、刪掉重複的話。字數上限請看該系規定。</p>
+        <textarea id="draft" rows="14" placeholder="按上面「把回答組成草稿」，或直接在這裡寫。" aria-label="${sec.name}草稿">${esc(d.text)}</textarea>
+        <div class="row" style="margin-top:6px"><span class="counter" id="cnt"></span><span class="sp"></span><button class="btn ghost small" id="snapDraft" title="把現在的草稿存成一個版本，之後可以拿回來">存一版</button><button class="btn ghost small" id="histDraft">版本紀錄${(d.versions||[]).length?`（${d.versions.length}）`:''}</button><button class="btn ghost small" id="copyDraft">複製</button></div>
+        <div class="bar" id="cntBar"><i></i></div>
+      </div>
+    </div>
+    <div>
+      <div class="card">
+        <div class="row"><h3 style="font-size:17px">🩺 草稿健檢</h3><span class="sp"></span><button class="btn small navy" id="scoreCard" hidden>做成績卡</button></div>
+        <div id="health" style="margin-top:10px"></div>
+      </div>
+      <div class="card" style="margin-top:16px">
+        <h3 style="font-size:17px">🎯 ${esc(t.dept)}看重</h3>
+        <p class="muted" style="margin-top:6px;white-space:pre-wrap">${t.focus?esc(t.focus):'還沒填。到「目標校系」→編輯，把準備指引的重點抄進來。'}</p>
+        <p class="muted" style="margin-top:10px"><b>${esc(t.group)}學群常見方向：</b>${esc(GROUP_TIPS[t.group]||'')}</p>
+        <div class="muted" style="margin:10px 0 6px"><b>常看的能力關鍵字</b>（實心＝你已經寫到）</div>
+        <div class="chips" id="kwChips"></div>
+        <p class="muted" style="font-size:12px;margin-top:8px">一般參考，仍以校系準備指引為準。</p>
+      </div>
+      <div class="card" style="margin-top:16px">
+        <h3 style="font-size:17px">📦 這段要用哪些素材？</h3>
+        ${S.items.length?`${related.length?`<div class="muted" style="margin:8px 0 2px">和${esc(t.group)}學群有關</div>${related.map(pick).join('')}`:''}${others.length?`<div class="muted" style="margin:10px 0 2px">其他</div>${others.map(pick).join('')}`:''}`:'<p class="muted" style="margin-top:6px">素材庫還是空的。<a href="#items">先去新增</a></p>'}
+        <div id="refs" style="margin-top:12px"></div>
+      </div>
+    </div>
+  </div>`;
+  body.querySelectorAll('[data-sec]').forEach(b=>b.onclick=()=>{curSec=b.dataset.sec;renderWrite()});
+  body.querySelectorAll('[data-fw]').forEach(b=>b.onclick=()=>{d.fw=b.dataset.fw;save();renderWrite()});
+  body.querySelectorAll('[data-ans]').forEach(ta=>{ta.addEventListener('input',()=>{lastAns=+ta.dataset.ans;ans[ta.dataset.ans]=ta.value;save()});['focus','click'].forEach(ev=>ta.addEventListener(ev,()=>lastAns=+ta.dataset.ans))});
+  body.querySelectorAll('[data-item]').forEach(c=>c.addEventListener('change',()=>{d.items=[...body.querySelectorAll('[data-item]:checked')].map(x=>x.dataset.item);save();renderRefs(t,d,ans);updateDraftUI(t,d)}));
+  $('#draft').addEventListener('input',e=>{d.text=e.target.value;save();updateDraftUI(t,d)});
+  $('#limit').addEventListener('input',e=>{d.limit=+e.target.value||0;save();updateDraftUI(t,d)});
+  $('#compose').onclick=()=>{
+    const parts=ans.map(a=>(a||'').trim()).filter(Boolean);
+    if(!parts.length){toast('先回答至少一題');return}
+    if(countChars(d.text)>0){d.prev=d.text;snapshot(d,'組成草稿前自動存')}
+    d.text=parts.map(p=>/[。！？」』）)]$/.test(p)?p:p+'。').join('\n\n');
+    save();renderWrite();$('#draft').focus();toast(d.prev!=null?'已組成草稿（舊草稿可以按「復原」拿回來）':'已組成草稿，接著把句子接順');
+  };
+  const u=$('#undo');if(u)u.onclick=()=>{const cur=d.text;d.text=d.prev;d.prev=cur;save();renderWrite();toast('已換回上一版')};
+  $('#copyDraft').onclick=()=>copyText(d.text);
+  $('#snapDraft').onclick=()=>{if(!countChars(d.text)){toast('草稿還是空的');return}snapshot(d,'手動存');save();renderWrite();toast('已存一版')};
+  $('#histDraft').onclick=()=>{
+    const vs=d.versions||[];
+    if(!vs.length){toast('還沒有存過版本，按「存一版」試試');return}
+    openDlg('版本紀錄',`<p class="muted" style="margin-top:10px">最多保留 10 版。按「換回這一版」前，現在的草稿會先自動存起來。</p>`+vs.map((v,i)=>{const a=analyze(t,{...d,text:v.text},curSec);return `<div class="ref"><div class="row"><b>${esc(v.at)}</b><span class="muted">${esc(v.note)}・${countChars(v.text)} 字${a?`・${a.score} 分`:''}</span><span class="sp"></span><button type="button" class="btn ghost small" data-rv="${i}">換回這一版</button></div><div class="muted" style="margin-top:4px">${esc(v.text.slice(0,80))}${v.text.length>80?'⋯':''}</div></div>`}).join(''),()=>{},'關閉');
+    $('#dlgBody').querySelectorAll('[data-rv]').forEach(b=>b.onclick=()=>{const v=vs[+b.dataset.rv];snapshot(d,'換版前自動存');d.text=v.text;save();$('#dlg').close();renderWrite();toast('已換回 '+v.at+' 的版本')});
+  };
+  $('#scoreCard').onclick=()=>makeScoreCard(t,d);
+  $('#health').onclick=e=>{const tp=e.target.closest('[data-find]');if(!tp)return;const ta=$('#draft'),f=tp.dataset.find,i=ta.value.indexOf(f);if(i<0)return;
+    ta.focus();ta.setSelectionRange(i,i+f.length);const lines=ta.value.slice(0,i).split('\n').length;ta.scrollTop=Math.max(0,(lines-3)*parseFloat(getComputedStyle(ta).lineHeight||28));ta.scrollIntoView({block:'center',behavior:'smooth'});toast('已在草稿裡選取，直接打字就能改掉')};
+  renderRefs(t,d,ans);updateDraftUI(t,d);
+}
+function snapshot(d,note){
+  if(!countChars(d.text))return;d.versions=d.versions||[];
+  if(d.versions[0]&&d.versions[0].text===d.text)return;
+  const n=new Date(),at=`${n.getMonth()+1}/${n.getDate()} ${String(n.getHours()).padStart(2,'0')}:${String(n.getMinutes()).padStart(2,'0')}`;
+  d.versions.unshift({at,note,text:d.text});d.versions=d.versions.slice(0,10);
+}
+$('#writeTarget').addEventListener('change',e=>{S.cur=e.target.value;save();renderWrite()});
+function renderRefs(t,d,ans){
+  const el=$('#refs');if(!el)return;
+  const its=d.items.map(id=>S.items.find(i=>i.id===id)).filter(Boolean);
+  el.innerHTML=its.map(it=>`<div class="ref"><div class="row"><span class="rt">${esc(it.title)}</span><span class="sp"></span><button class="btn ghost small" data-ins="${it.id}" title="把這件經歷的重點放進你正在回答的題目">放進回答</button></div>${STAR.filter(([k])=>it.star[k]).map(([k,q])=>`<div><span class="muted">${q.replace(/？.*/,'')}：</span>${esc(it.star[k])}</div>`).join('')}</div>`).join('');
+  el.querySelectorAll('[data-ins]').forEach(b=>b.onclick=()=>{
+    const it=S.items.find(i=>i.id===b.dataset.ins);
+    const txt=[it.star.s,it.star.a,it.star.r].filter(Boolean).join('');
+    if(!txt){toast('這件經歷還沒寫內容');return}
+    const ta=document.querySelector(`[data-ans="${lastAns}"]`);if(!ta)return;
+    ta.value=(ta.value.trim()?ta.value.trim()+'\n':'')+txt;ans[lastAns]=ta.value;save();
+    ta.focus();ta.scrollIntoView({block:'center',behavior:'smooth'});toast(`已放進第 ${lastAns+1} 題，記得改成自己的話`);
+  });
+}
+function updateDraftUI(t,d){
+  const n=countChars(d.text),lim=d.limit||0,over=lim&&n>lim;
+  $('#cnt').textContent=lim?`${n} / ${lim} 字`:`${n} 字`;
+  $('#cnt').classList.toggle('over',!!over);
+  $('#cntBar').classList.toggle('over',!!over);
+  $('#cntBar i').style.width=lim?Math.min(n/lim*100,100)+'%':'0';
+  const a=analyze(t,d,curSec);
+  const kw=GROUP_KW[t.group]||[];
+  $('#kwChips').innerHTML=kw.map(k=>`<span class="${(d.text||'').includes(k)?'hit':''}">${k}</span>`).join('');
+  $('#scoreCard').hidden=!a;
+  if(!a){$('#health').innerHTML='<p class="muted">草稿寫到 50 字以上就會開始健檢打分數。</p>';return}
+  if(!d.best||a.score>d.best){if(d.best&&a.score>=80&&d.best<80)toast('🟢 這一段到綠燈了！');d.best=a.score;save()}
+  const [lc,ln,lt]=lightOf(a.score);
+  $('#health').innerHTML=`<div class="score"><div class="ring" style="--p:${a.score};--c:${colorOf(a.score)}"><b>${a.score}</b></div>
+    <div class="dims">${Object.entries(a.dim).map(([k,v])=>`<div class="dim"><span>${k}</span><div class="bar"><i style="width:${v}%;background:${colorOf(v)}"></i></div><span>${v}</span></div>`).join('')}</div></div>
+    <p style="margin-bottom:10px"><span class="light ${lc}">${ln}</span> <span class="muted">${lt}</span></p>
+    ${d.best?`<p class="muted" style="margin:-4px 0 10px">這一段的最高分：${d.best} 分</p>`:''}
+    ${a.tips.length?a.tips.slice().sort((p,q)=>(q[3]?1:0)-(p[3]?1:0)).map(([dm,x,y,f])=>`<div class="tip"${f?` data-find="${esc(f)}" style="cursor:pointer" title="點一下，在草稿裡標出來"`:''}><b>${esc(x)}</b>${esc(y)}${f?'<span class="muted" style="display:block;font-size:12px;margin-top:2px">👆 點一下，在草稿裡標出位置</span>':''}</div>`).join(''):`<div class="tip good"><b>沒有發現明顯問題 👍</b>大聲唸一遍，唸起來卡卡的地方再改，也可以請同學用檢核表幫你看。</div>`}`;
+}
+
+/* ===== 成績卡（不含草稿內容，可分享到限動） ===== */
+function makeScoreCard(t,d){
+  const a=analyze(t,d,curSec);if(!a)return;
+  openDlg('做一張健檢成績卡',`<p class="muted" style="margin-top:10px">卡片只會顯示分數和五個面向，<b>不會出現你的草稿內容</b>，可以放心分享到 IG 限動。</p>
+    <label class="chk"><input type="checkbox" id="scShowDept">卡片上顯示校系名稱</label>
+    <canvas id="scCanvas" width="1080" height="1350" style="width:100%;border-radius:12px;margin-top:10px;border:1px solid var(--line)"></canvas>`,()=>{
+      $('#scCanvas').toBlob(b=>saveFile('備審健檢成績卡.png',b),'image/png');
+    },'下載圖片');
+  const draw=()=>drawScoreCard($('#scCanvas'),t,a,$('#scShowDept').checked);
+  $('#scShowDept').onchange=draw;draw();
+}
+function drawScoreCard(cv,t,a,showDept){
+  const x=cv.getContext('2d'),W=1080,H=1350,F='"Microsoft JhengHei","PingFang TC","Noto Sans TC",sans-serif';
+  x.fillStyle='#16223a';x.fillRect(0,0,W,H);
+  x.fillStyle='#a8822a';x.fillRect(0,0,W,14);x.fillRect(0,H-14,W,14);
+  x.textAlign='center';x.fillStyle='#e7d3a0';x.font=`700 40px ${F}`;x.fillText('我的備審健檢',W/2,130);
+  x.fillStyle='#c9d1de';x.font=`400 34px ${F}`;x.fillText(SECTIONS[curSec].name+(showDept?'｜'+t.school+' '+t.dept:''),W/2,190);
+  // 分數圓環
+  const cx=W/2,cy=390,R=150;x.lineWidth=28;x.strokeStyle='#2a3448';x.beginPath();x.arc(cx,cy,R,0,Math.PI*2);x.stroke();
+  const col=a.score>=80?'#6fcf97':a.score>=60?'#e9c46a':'#f08a65';
+  x.strokeStyle=col;x.lineCap='round';x.beginPath();x.arc(cx,cy,R,-Math.PI/2,-Math.PI/2+Math.PI*2*a.score/100);x.stroke();
+  x.fillStyle='#fff';x.font=`700 120px ${F}`;x.textBaseline='middle';x.fillText(a.score,cx,cy-6);x.textBaseline='alphabetic';
+  x.fillStyle=col;x.font=`700 38px ${F}`;x.fillText(lightOf(a.score)[1],cx,cy+R+80);
+  // 雷達圖
+  const keys=Object.keys(a.dim),rx=W/2,ry=935,rr=190;
+  x.lineWidth=2;x.lineCap='butt';
+  for(let ring=1;ring<=4;ring++){x.strokeStyle='#2f3b55';x.beginPath();keys.forEach((k,i)=>{const ang=-Math.PI/2+i*2*Math.PI/keys.length,p=[rx+Math.cos(ang)*rr*ring/4,ry+Math.sin(ang)*rr*ring/4];i?x.lineTo(...p):x.moveTo(...p)});x.closePath();x.stroke()}
+  x.beginPath();keys.forEach((k,i)=>{const ang=-Math.PI/2+i*2*Math.PI/keys.length,v=a.dim[k]/100,p=[rx+Math.cos(ang)*rr*v,ry+Math.sin(ang)*rr*v];i?x.lineTo(...p):x.moveTo(...p)});x.closePath();
+  x.fillStyle='rgba(216,179,90,.35)';x.fill();x.strokeStyle='#d8b35a';x.lineWidth=4;x.stroke();
+  x.font=`700 30px ${F}`;x.fillStyle='#e8ecef';
+  keys.forEach((k,i)=>{const ang=-Math.PI/2+i*2*Math.PI/keys.length,p=[rx+Math.cos(ang)*(rr+62),ry+Math.sin(ang)*(rr+46)];x.fillText(`${k} ${a.dim[k]}`,p[0],p[1]+10)});
+  x.fillStyle='#e7d3a0';x.font=`700 34px ${F}`;x.fillText('免費・不用登入・資料不上傳',W/2,1200);
+  x.fillStyle='#c9d1de';x.font=`400 30px ${F}`;x.fillText('備審小幫手・莊老數學教室｜正賦文理',W/2,1255);
+  x.font=`400 26px ${F}`;x.fillText('YouTube／IG 搜尋 @chuanglaomath・@jf_chuang',W/2,1300);
+}
+
+/* ===== 範例牆 ===== */
+let exG='全部',exS='all';
+function renderExamples(){
+  const gs=['全部',...GROUPS.filter(g=>EXAMPLES.some(e=>e.g===g))];
+  $('#exGroup').innerHTML=gs.map(g=>`<option ${g===exG?'selected':''}>${g==='全部'?'全部學群':g}</option>`).join('');
+  $('#exSec').innerHTML=[['all','全部段落'],...Object.entries(SECNAME)].map(([k,v])=>`<button class="${k===exS?'on':''}" data-exs="${k}">${v}</button>`).join('');
+  const list=EXAMPLES.filter(e=>(exG==='全部'||e.g===exG)&&(exS==='all'||e.sec===exS));
+  $('#exWall').innerHTML=list.length?list.map(e=>`<article class="exc"><div class="row"><span class="pill">${e.g}學群</span><span class="pill">${SECNAME[e.sec]}</span><span class="sp"></span><span class="muted">虛構示範</span></div>
+    <h3 style="font-size:18px;margin-top:10px">${esc(e.title)}</h3>
+    <div class="body">${e.parts.map(([s],i)=>`<mark>${esc(s)}<sup>${i+1}</sup></mark>`).join('')}</div>
+    <div class="muted" style="font-weight:700;margin-bottom:4px">這句好在哪？</div>
+    <ol>${e.parts.map(([,n])=>`<li>${esc(n)}</li>`).join('')}</ol></article>`).join(''):`<div class="empty">這個組合還沒有範例，換一個學群或段落看看。不同學群的寫法道理是一樣的。</div>`;
+}
+$('#exGroup').addEventListener('change',e=>{exG=e.target.value==='全部學群'?'全部':e.target.value;renderExamples()});
+$('#exSec').addEventListener('click',e=>{const b=e.target.closest('[data-exs]');if(b){exS=b.dataset.exs;renderExamples()}});
+
+/* ===== 面試練習 ===== */
+function ivQuestions(t){
+  const qs=[];const dept=t.dept||'本系';
+  qs.push(['背景','請用一分鐘介紹你自己。'],['動機',`為什麼想讀${dept}？`],['背景','你覺得自己最大的優點和缺點是什麼？'],['動機','如果沒有錄取，你會怎麼做？']);
+  const used=new Set();Object.values(S.drafts[t.id]||{}).forEach(d=>(d.items||[]).forEach(id=>used.add(id)));
+  const its=[...used].map(id=>S.items.find(i=>i.id===id)).filter(Boolean);
+  (its.length?its:S.items.filter(i=>i.groups.includes(t.group))).slice(0,5).forEach(it=>{
+    qs.push(['背景',`「${it.title}」裡，你負責的是哪一部分？`]);
+    qs.push(['背景',it.star.d?`你寫到「${it.star.d.slice(0,26)}${it.star.d.length>26?'⋯':''}」，後來怎麼解決？`:`做「${it.title}」時遇到最大的困難是什麼？`]);
+    qs.push(['臨場',`如果「${it.title}」重來一次，你會怎麼做得不一樣？`]);
+  });
+  const plan=S.drafts[t.id]?.plan?.text||'';
+  const course=(plan.match(/「([^」]{2,14})」/)||[])[1];
+  qs.push(['動機',course?`你提到「${course}」，你知道這門課在學什麼嗎？`:`你知道${dept}大一要修哪些課嗎？`]);
+  qs.push(['動機','大學四年你最想完成的一件事是什麼？']);
+  qs.push(['動機',`你覺得讀${dept}需要哪些能力？你準備好了哪些？`]);
+  qs.push(['臨場',`最近有沒有${t.group}領域的新聞或發展讓你印象最深？你怎麼看？`]);
+  qs.push(['臨場','如果分組報告時有組員都不做事，你會怎麼辦？']);
+  qs.push(['臨場','請用一句話說服我們錄取你。']);
+  qs.push(['臨場','最近讀過最有收穫的一本書或一篇文章是什麼？']);
+  qs.push(['臨場','你覺得 AI 會怎麼改變這個領域？']);
+  return qs;
+}
+let drillTimer=null,ivType='全部',rec=null,recChunks=[];
+function stopDrill(){if(drillTimer){clearInterval(drillTimer);drillTimer=null}}
+function stopRec(){try{if(rec&&rec.state==='recording')rec.stop()}catch(e){}}
+function renderInterview(){
+  const sel=$('#ivTarget'),body=$('#ivBody');
+  if(!S.targets.length){sel.innerHTML='';body.innerHTML=`<div class="empty">先新增校系、寫一些草稿，題目會更貼近你。<br><a class="btn" style="margin-top:12px" href="#targets">去新增</a></div>`;return}
+  if(!S.targets.find(t=>t.id===S.cur))S.cur=S.targets[0].id;
+  sel.innerHTML=S.targets.map(t=>`<option value="${t.id}" ${t.id===S.cur?'selected':''}>${esc(t.school)} ${esc(t.dept)}</option>`).join('');
+  const t=S.targets.find(x=>x.id===S.cur),qsAll=ivQuestions(t);
+  S.interview[t.id]=S.interview[t.id]||{};const A=S.interview[t.id];
+  const qs=qsAll.filter(q=>ivType==='全部'||q[0]===ivType);
+  const answered=qsAll.filter(([,q])=>countChars(A[q])>=10).length;
+  const canRec=!!(navigator.mediaDevices&&navigator.mediaDevices.getUserMedia&&window.MediaRecorder);
+  body.innerHTML=`<div class="card drill">
+      <div class="seg small" style="justify-content:center;margin:0 0 6px" id="drillMode"><button class="on" data-m="60">抽題 60 秒</button><button data-m="90">自我介紹 90 秒</button></div>
+      <div class="dq" id="dq">準備好了嗎？</div>
+      <div class="clock" id="clock">60</div>
+      <div class="row" style="justify-content:center;margin-top:14px">
+        <button class="btn" id="drawQ">🎲 抽一題</button><button class="btn ghost" id="stopQ" disabled>停止</button>
+        ${canRec?'<button class="btn ghost" id="recBtn">🎙 錄音</button>':''}
+        <button class="btn ghost" id="shareQ" hidden>分享這題給同學</button>
+      </div>
+      <div id="recOut"></div>
+      ${canRec?'':'<p class="muted" style="margin-top:10px">這個頁面不能錄音，可以用手機的錄音程式錄下自己的回答再重聽。</p>'}
+    </div>
+    <div class="row" style="margin:22px 0 6px"><h3 style="font-size:19px">題目清單</h3><span class="sp"></span><span class="muted">寫好重點 ${answered} / ${qsAll.length} 題</span><button class="btn ghost small" id="ivDocx">下載面試小抄（Word）</button></div>
+    <div class="seg small" id="ivTypes">${['全部','背景','動機','臨場'].map(x=>`<button class="${x===ivType?'on':''}" data-ty="${x}">${x}</button>`).join('')}</div>
+    ${qs.map(([tag,q])=>{const i=qsAll.findIndex(z=>z[1]===q);return `<details class="iq"><summary><span class="pill tag">${tag}</span><span>${esc(q)}</span>${countChars(A[q])>=10?'<span style="margin-left:auto;color:var(--ok)">✓</span>':''}</summary><div class="iqb"><textarea data-q="${i}" rows="3" placeholder="寫重點就好，不用寫成稿：例如「1. 探究課秤廚餘 2. 想用程式 3. 想修資料結構」">${esc(A[q])}</textarea></div></details>`}).join('')}
+    <p class="muted" style="margin-top:12px">小技巧：錄下自己的回答重聽一次，最容易發現「嗯、然後、就是」太多。</p>`;
+  body.querySelectorAll('[data-q]').forEach(ta=>ta.addEventListener('input',()=>{A[qsAll[ta.dataset.q][1]]=ta.value;save()}));
+  body.querySelectorAll('[data-ty]').forEach(b=>b.onclick=()=>{ivType=b.dataset.ty;renderInterview()});
+  $('#ivDocx').onclick=()=>{
+    const done=qsAll.filter(([,q])=>countChars(A[q])>=1);
+    if(!done.length){toast('先在題目下面寫一些回答重點');return}
+    saveFile(`面試小抄_${t.school}${t.dept}.docx`,makeDocx(t,done.map(([tag,q])=>[`【${tag}】${q}`,A[q]]),'面試小抄（回答重點）'));
+  };
+  let mode=60,last=-1,curQ='';
+  body.querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>{mode=+b.dataset.m;body.querySelectorAll('[data-m]').forEach(x=>x.classList.toggle('on',x===b));stopDrill();$('#clock').textContent=mode;$('#clock').classList.remove('end');$('#dq').textContent=mode===90?'90 秒自我介紹：名字、一件最能代表你的事、為什麼是這一系':'準備好了嗎？';$('#drawQ').textContent=mode===90?'▶ 開始計時':'🎲 抽一題'});
+  $('#drawQ').onclick=()=>{
+    stopDrill();
+    if(mode===60){let i;do{i=Math.floor(Math.random()*qsAll.length)}while(qsAll.length>1&&i===last);last=i;curQ=qsAll[i][1];$('#dq').textContent=curQ;$('#shareQ').hidden=false}
+    let s=mode;const c=$('#clock');c.textContent=s;c.classList.remove('end');$('#stopQ').disabled=false;
+    drillTimer=setInterval(()=>{s--;c.textContent=s;if(s<=10)c.classList.add('end');if(s<=0){stopDrill();c.textContent='時間到';$('#stopQ').disabled=true}},1000);
+  };
+  $('#stopQ').onclick=()=>{stopDrill();$('#stopQ').disabled=true};
+  $('#shareQ').onclick=()=>shareLink(`面試練習題：「${curQ}」你會怎麼回答？我在用備審小幫手練面試，免費又不用登入👇`,PAGE_URL);
+  const rb=$('#recBtn');if(rb)rb.onclick=async()=>{
+    if(rec&&rec.state==='recording'){rec.stop();return}
+    try{
+      const stream=await navigator.mediaDevices.getUserMedia({audio:true});
+      recChunks=[];rec=new MediaRecorder(stream);
+      rec.ondataavailable=e=>recChunks.push(e.data);
+      rec.onstop=()=>{stream.getTracks().forEach(t=>t.stop());const url=URL.createObjectURL(new Blob(recChunks,{type:rec.mimeType||'audio/webm'}));const o=$('#recOut');if(o)o.innerHTML=`<audio controls src="${url}"></audio><div class="muted">錄音只在這個頁面播放，不會上傳也不會保存。</div>`;const b=$('#recBtn');if(b)b.textContent='🎙 錄音'};
+      rec.start();rb.textContent='⏹ 停止錄音';toast('開始錄音');
+    }catch(e){toast('沒有取得麥克風權限，可以改用手機錄音');}
+  };
+}
+$('#ivTarget').addEventListener('change',e=>{S.cur=e.target.value;save();stopDrill();renderInterview()});
+
+/* ===== 時程 ===== */
+$('#addDate').onclick=()=>openDlg('新增日期',`<label class="f">事項</label><input type="text" name="title" required placeholder="例如：○○大學○○系 備審上傳截止"><label class="f">日期</label><input type="date" name="date" required>`,d=>{const o=readForm(d);if(!o.title||!o.date){toast('事項和日期都要填');return}S.dates.push({id:uid(),...o});save();renderDates()});
+function renderDates(){
+  const el=$('#dateList'),today=new Date();today.setHours(0,0,0,0);
+  if(!S.dates.length){el.innerHTML='<div class="empty">還沒有日期。</div>';return}
+  el.innerHTML=[...S.dates].sort((a,b)=>a.date.localeCompare(b.date)).map(x=>{
+    const dd=Math.round((new Date(x.date+'T00:00:00')-today)/864e5);
+    const tag=dd>0?`<b style="font-size:22px;color:${dd<=14?'var(--warn)':'var(--brass)'}">${dd}</b> <span class="muted">天後</span>`:dd===0?'<b style="color:var(--warn)">今天</b>':'<span class="muted">已過</span>';
+    return `<div class="item"><div class="row"><div><h3>${esc(x.title)}</h3><div class="meta">${esc(x.date)}</div></div><span class="sp"></span>${tag}<button class="btn danger small" data-del="${x.id}">刪除</button></div></div>`}).join('');
+}
+$('#dateList').addEventListener('click',e=>{const b=e.target.closest('[data-del]');if(b){S.dates=S.dates.filter(x=>x.id!==b.dataset.del);save();renderDates()}});
+
+/* ===== 匯出 ===== */
+function exportSecs(t){return Object.entries(SECTIONS).map(([k,v])=>[v.name,S.drafts[t.id]?.[k]?.text||'',k]).filter(x=>x[1].trim())}
+function curExportTarget(){return S.targets.find(x=>x.id===$('#exportTarget').value)}
+function renderExport(){
+  $('#exportTarget').innerHTML=S.targets.length?S.targets.map(t=>`<option value="${t.id}" ${t.id===S.cur?'selected':''}>${esc(t.school)} ${esc(t.dept)}</option>`).join(''):'<option value="">（還沒有校系）</option>';
+  renderExportCheck();
+}
+function renderExportCheck(){
+  const t=curExportTarget(),el=$('#exportCheck');if(!t){el.innerHTML='';return}
+  el.innerHTML=Object.entries(SECTIONS).map(([k,v])=>{
+    const d=S.drafts[t.id]?.[k],n=countChars(d?.text),a=d&&n>=50?analyze(t,draftOf(t.id,k),k):null,over=d?.limit&&n>d.limit;
+    const st=n<100?`<span style="color:var(--warn)">未完成（${n} 字）</span>`:over?`<span style="color:var(--warn)">超過字數</span>`:a?`<span class="light ${lightOf(a.score)[0]}">${a.score} 分</span> <span class="muted">${n} 字</span>`:`${n} 字`;
+    return `<div class="row" style="font-size:14px;padding:4px 0;border-bottom:1px solid var(--line)"><span>${v.name}</span><span class="sp"></span>${st}</div>`}).join('');
+}
+$('#exportTarget').addEventListener('change',renderExportCheck);
+$('#doPrint').onclick=()=>{
+  const t=curExportTarget();if(!t){toast('先新增校系');return}
+  const secs=exportSecs(t);if(!secs.length){toast('這個校系還沒有草稿');return}
+  $('#printArea').innerHTML=`<h1>${esc(t.school)}　${esc(t.dept)}</h1><div class="pm">${esc(S.name||'')}　備審資料草稿</div>`+secs.map(([n,txt])=>`<h2>${n}</h2>`+txt.split(/\n+/).filter(p=>p.trim()).map(p=>`<p>${esc(p.trim())}</p>`).join('')).join('');
+  try{window.print()}catch(e){toast('這個頁面不能列印，請改用 Word 檔')}
+};
+$('#doCopyAll').onclick=()=>{
+  const t=curExportTarget();if(!t){toast('先新增校系');return}
+  const secs=exportSecs(t);if(!secs.length){toast('這個校系還沒有草稿');return}
+  copyText(`${t.school} ${t.dept}\n\n`+secs.map(([n,txt])=>`【${n}】\n${txt}`).join('\n\n'));
+};
+$('#doDocx').onclick=()=>{
+  const t=curExportTarget();if(!t){toast('先新增校系');return}
+  const secs=exportSecs(t);if(!secs.length){toast('這個校系還沒有草稿');return}
+  saveFile(`備審草稿_${t.school}${t.dept}.docx`,makeDocx(t,secs));
+};
+$('#doBackup').onclick=()=>saveFile(`備審備份_${new Date().toISOString().slice(0,10)}.json`,new Blob([JSON.stringify(S,null,1)],{type:'application/json'}));
+$('#doRestore').onchange=e=>{
+  const f=e.target.files[0];if(!f)return;const r=new FileReader();
+  r.onload=()=>{try{const o=JSON.parse(r.result);if(!Array.isArray(o.targets)||!Array.isArray(o.items))throw 0;if(!confirm('讀取備份會取代目前的資料，確定嗎？'))return;S=Object.assign(blank(),o);save();toast('已讀取備份');route()}catch(_){alert('這不是備審小幫手的備份檔')}};
+  r.readAsText(f);e.target.value='';
+};
+$('#doReset').onclick=()=>{if(!confirm('會清除這台裝置上的全部資料，無法復原。建議先下載備份。確定清除？'))return;S=blank();save();route();toast('已清除')};
+
+/* ===== 同學檢核表 ===== */
+const PEER=['開頭三句就讓你想繼續讀','有具體的例子（時間、數字、做了什麼）','看得出他遇到的困難和怎麼調整','看得出他哪裡「改變」了','讀完知道他為什麼選這一系','沒有空泛的話（例如「受益良多」）','句子好讀、沒有太長','讀起來像他本人在說話'];
+let peerAns={};
+function renderPeer(){
+  peerAns={};
+  $('#peerList').innerHTML=PEER.map((q,i)=>`<div class="peer-q"><span>${i+1}. ${q}</span><div class="seg small" data-pq="${i}"><button data-v="2">有</button><button data-v="1">普通</button><button data-v="0">沒有</button></div></div>`).join('');
+  $('#peerGood').value='';$('#peerFix').value='';$('#peerScore').textContent='';
+  $('#peerList').querySelectorAll('[data-pq]').forEach(g=>g.addEventListener('click',e=>{const b=e.target.closest('[data-v]');if(!b)return;peerAns[g.dataset.pq]=+b.dataset.v;g.querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b));const n=Object.keys(peerAns).length;$('#peerScore').textContent=`已勾 ${n} / ${PEER.length} 題`}));
+}
+$('#peerCopy').onclick=()=>{
+  if(Object.keys(peerAns).length<PEER.length){toast('還有題目沒勾喔');return}
+  const lab=['❌ 沒有','🔸 普通','✅ 有'];
+  const txt='【我幫你看備審的回饋】\n'+PEER.map((q,i)=>`${lab[peerAns[i]]}　${q}`).join('\n')+($('#peerGood').value.trim()?`\n\n👍 寫得最好：${$('#peerGood').value.trim()}`:'')+($('#peerFix').value.trim()?`\n✏️ 建議修改：${$('#peerFix').value.trim()}`:'')+`\n\n（用「備審小幫手」同學檢核表填的）`;
+  copyText(txt);
+};
+function peerLink(){return PAGE_URL.split('#')[0]+'#peer'}
+document.addEventListener('click',e=>{if(e.target.closest('[data-peer-share]'))shareLink('可以幫我看一下備審嗎？照這張檢核表勾一勾就好，大概 5 分鐘 🙏',peerLink())});
+$('#featPeer').onclick=e=>{e.preventDefault();shareLink('可以幫我看一下備審嗎？照這張檢核表勾一勾就好，大概 5 分鐘 🙏',peerLink())};
+
+/* ===== 存檔／複製／分享 ===== */
+let dlCap;
+async function saveFile(name,blob){
+  try{
+    if(window.claude&&typeof window.claude.use==='function'){
+      if(dlCap===undefined)dlCap=await window.claude.use('downloads');
+      if(dlCap){await dlCap.save({filename:name,data:blob});toast('已儲存');return}
+    }
+  }catch(e){if(e&&e.code==='declined')return;if(e&&e.code==='rate_limited'){toast('請稍候再試一次');return}}
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),3000);
+}
+function copyText(s){
+  if(!s||!s.trim()){toast('還沒有內容');return}
+  const fallback=()=>{const ta=document.createElement('textarea');ta.value=s;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();let ok=false;try{ok=document.execCommand('copy')}catch(e){}ta.remove();toast(ok?'已複製，可以貼到 LINE 了':'複製失敗，請手動選取')};
+  if(navigator.clipboard)navigator.clipboard.writeText(s).then(()=>toast('已複製，可以貼到 LINE 了'),fallback);else fallback();
+}
+async function shareLink(text,url){
+  if(navigator.share){try{await navigator.share({title:'備審小幫手',text,url});return}catch(e){if(e&&e.name==='AbortError')return}}
+  copyText(text+'\n'+url);
+}
+
+/* ===== Word（.docx = 不壓縮 zip + OOXML） ===== */
+const CRC=(()=>{const t=new Uint32Array(256);for(let n=0;n<256;n++){let c=n;for(let k=0;k<8;k++)c=c&1?0xEDB88320^(c>>>1):c>>>1;t[n]=c>>>0}return t})();
+function crc32(u){let c=0xFFFFFFFF;for(let i=0;i<u.length;i++)c=CRC[(c^u[i])&255]^(c>>>8);return (c^0xFFFFFFFF)>>>0}
+function zipStore(files){
+  const enc=new TextEncoder(),parts=[],cd=[];let off=0;
+  const u16=v=>[v&255,(v>>8)&255],u32=v=>[v&255,(v>>8)&255,(v>>16)&255,(v>>>24)&255];
+  for(const f of files){
+    const name=enc.encode(f.name),data=enc.encode(f.text),crc=crc32(data);
+    const head=[...u32(0x04034b50),...u16(20),...u16(0x0800),...u16(0),...u16(0),...u16(0x21),...u32(crc),...u32(data.length),...u32(data.length),...u16(name.length),...u16(0)];
+    parts.push(new Uint8Array(head),name,data);
+    cd.push(new Uint8Array([...u32(0x02014b50),...u16(20),...u16(20),...u16(0x0800),...u16(0),...u16(0),...u16(0x21),...u32(crc),...u32(data.length),...u32(data.length),...u16(name.length),...u16(0),...u16(0),...u16(0),...u16(0),...u32(0),...u32(off)]),name);
+    off+=head.length+name.length+data.length;
+  }
+  const cdSize=cd.reduce((s,a)=>s+a.length,0);
+  const end=new Uint8Array([...u32(0x06054b50),...u16(0),...u16(0),...u16(files.length),...u16(files.length),...u32(cdSize),...u32(off),...u16(0)]);
+  return new Blob([...parts,...cd,end],{type:'application/vnd.openxmlformats-officedocument.wordprocessingml.document'});
+}
+function makeDocx(t,secs,sub='備審資料草稿'){
+  const x=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  const font='<w:rFonts w:ascii="Microsoft JhengHei" w:eastAsia="Microsoft JhengHei" w:hAnsi="Microsoft JhengHei"/>';
+  const p=(txt,{sz=24,b=false,color='',indent=false,before=0,after=120}={})=>`<w:p><w:pPr><w:spacing w:before="${before}" w:after="${after}" w:line="400" w:lineRule="auto"/>${indent?'<w:ind w:firstLineChars="200" w:firstLine="480"/>':''}</w:pPr><w:r><w:rPr>${font}${b?'<w:b/>':''}${color?`<w:color w:val="${color}"/>`:''}<w:sz w:val="${sz}"/><w:szCs w:val="${sz}"/></w:rPr><w:t xml:space="preserve">${x(txt)}</w:t></w:r></w:p>`;
+  let body=p(`${t.school}　${t.dept}`,{sz:36,b:true,color:'16223A'})+p(`${S.name||''}　${sub}`,{sz:20,color:'666666',after:240});
+  secs.forEach(([n,txt])=>{body+=p(n,{sz:28,b:true,color:'A8822A',before:240});txt.split(/\n+/).filter(s=>s.trim()).forEach(par=>body+=p(par.trim(),{indent:true}))});
+  const doc=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:body>${body}<w:sectPr><w:pgSz w:w="11906" w:h="16838"/><w:pgMar w:top="1134" w:right="1134" w:bottom="1134" w:left="1134" w:header="567" w:footer="567" w:gutter="0"/></w:sectPr></w:body></w:document>`;
+  return zipStore([
+    {name:'[Content_Types].xml',text:'<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/></Types>'},
+    {name:'_rels/.rels',text:'<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>'},
+    {name:'word/document.xml',text:doc}
+  ]);
+}
+
+/* ===== 範例資料 ===== */
+$('#loadDemo').onclick=()=>{
+  if((S.targets.length||S.items.length)&&!confirm('載入範例會取代目前的資料，確定嗎？'))return;
+  const t1=uid(),t2=uid(),i1=uid(),i2=uid(),i3=uid();
+  S={name:'範例同學',cur:t1,interview:{},cmp:[t1,t2],targets:[
+    {id:t1,school:'範例大學',dept:'資訊工程學系',group:'資訊',focus:'（範例）重視數學與資訊相關課程的表現\n希望看到程式設計或專題的自主學習\n就讀動機要具體，說明為什麼選本系',courses:'大二資料結構、大三專題',stage2:'備審＋個人面試'},
+    {id:t2,school:'範例科技大學',dept:'資訊管理系',group:'管理',focus:'（範例）重視溝通協調與資訊能力\n希望看到幹部或活動籌辦經驗',courses:'系統分析、資料庫',stage2:'備審＋團體面試'}],
+  items:[
+   {id:i1,title:'數學探究報告：用統計看校園午餐剩食',type:'課程學習成果',when:'高二上',groups:['數理化','資訊'],star:{s:'數學課分組探究，我們這組 4 個人選了午餐剩食的題目。',a:'我負責設計紀錄表、連續三週秤廚餘，再用試算表算平均和畫圖。',d:'第一週資料亂七八糟，有幾天忘了秤，數字對不起來。',r:'重新訂紀錄流程後收齊 15 天資料，發現週三剩食最多，報告拿到全班第二。',l:'第一次感覺數學能拿來解決真的問題，也開始想學怎麼用程式處理資料。'}},
+   {id:i2,title:'自學 Python 做班級座位抽籤程式',type:'自主學習',when:'高二下',groups:['資訊'],star:{s:'班上每個月換座位都吵架，我想用程式讓抽籤公平。',a:'看線上課程自學 Python，寫了一個能排除特定組合的抽籤程式。',d:'一開始不知道怎麼處理「某兩人不能坐一起」，程式常跑出錯的結果。',r:'花了兩個週末改好，班上用了 5 個月，沒有人再抱怨。',l:'學到把問題拆小、一步一步測試，也確定自己喜歡寫程式。'}},
+   {id:i3,title:'資訊研究社 副社長',type:'幹部經驗',when:'高二',groups:['資訊','管理'],star:{s:'社團人數少，學弟妹常常來兩次就不來了。',a:'我規劃每週一個 20 分鐘的小作品，讓大家當週就做得出成果。',d:'程度差很多，進度很難抓。',r:'',l:''}}],
+  drafts:{[t1]:{motive:{ansBy:{base:['高二數學探究課，我們秤了三週的廚餘，資料多到用手算不完。','我開始自學 Python，寫了班級座位抽籤程式，班上用了 5 個月。','',''] },fw:'base',text:'',limit:800,items:[i1,i2]}}},
+  dates:[{id:uid(),title:'116 學年度學測',date:'2027-01-22'}]};
+  curSec='motive';save();toast('已載入範例，回答問題後按「組成草稿」試試');go('write');
+};
+
+/* ===== 分享 ===== */
+const PAGE_URL=/^https?:/.test(location.href)&&!/claude\.ai|claudeusercontent/.test(location.host)?location.href.split('#')[0]:'https://claude.ai/artifact/6e7hkh2HcELAQS5huihsUF';
+$('#shareBtn').onclick=()=>shareLink('備審小幫手：一題一題問你，幫你整理備審、健檢打分數、練面試。免費、不用登入、資料不上傳👇',PAGE_URL);
+
+renderCounts();route();
+</script>
+<script src="link_luodian.js?v=1b9f1f5e"></script>
+<div style="text-align:center;font-size:13px;color:#8a93a3;margin:10px 0 24px;line-height:2">
+  <span id="visits" hidden>備審小幫手累計使用 <b id="busuanzi_value_page_pv"></b> 人次</span>
+  <span id="brandTotal" hidden>　正賦全站累計 <b></b> 人次</span>
+  <br><a href="../learn/" style="color:#8a93a3">← 回莊老數學教室・正賦文理 學習中心</a>
+</div>
+<script src="../total.js"></script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<script>
+(function(){var n=0,t=setInterval(function(){var el=document.getElementById('busuanzi_value_page_pv'),v=parseInt(el&&el.textContent,10);
+  if(v>0){clearInterval(t);el.textContent=v.toLocaleString('en-US');document.getElementById('visits').hidden=false}else if(++n>40)clearInterval(t)},500)})();
+</script>
+</body>
+</html>
