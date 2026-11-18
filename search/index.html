@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="zh-Hant-TW"><head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-NSNBQNLSDN"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-NSNBQNLSDN');
+</script>
+<meta charset="utf-8"><meta name="referrer" content="no-referrer-when-downgrade">
+<title>站內搜尋｜正賦文理短期補習班</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="在正賦文理的網站裡找單元、歷屆真題、講義、影片和升學工具：數學練習 164 個單元、技高專業科目、會考統測真題、學測落點分析、備審小幫手、APCS 特訓站。">
+<meta name="theme-color" content="#1b2430">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="正賦文理短期補習班">
+<meta property="og:title" content="站內搜尋｜正賦文理短期補習班">
+<meta property="og:description" content="找單元、真題、講義、影片和升學工具。">
+<meta property="og:image" content="https://wade-chuang.github.io/jenfoo/img/og.jpg">
+<meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+<meta property="og:url" content="https://wade-chuang.github.io/jenfoo/search/">
+<link rel="canonical" href="https://wade-chuang.github.io/jenfoo/search/">
+<link rel="icon" href="../img/logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@600;900&family=Noto+Sans+TC:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="../assets/site.css">
+<style>
+/* 這一頁只有搜尋，版面很單純，樣式就放這裡不進 site.css */
+.sp{max-width:760px;margin:0 auto;padding:0 20px}
+.sp-form{display:flex;gap:10px;margin:22px 0 10px}
+.sp-form input{flex:1;min-width:0;border:1px solid #d8d3c7;border-radius:12px;padding:14px 16px;font-family:inherit;font-size:17px;font-weight:500;line-height:1.4;color:#16223a;background:#fff}
+.sp-form input:focus{outline:2px solid #a8822a;outline-offset:1px}
+.sp-form button{border:0;border-radius:12px;padding:0 22px;background:var(--navy,#16223a);color:#fff;font-family:inherit;font-size:16px;font-weight:700;line-height:1;cursor:pointer}
+.sp-note{color:#5a6070;font-size:14px;margin:0 0 18px}
+.sp-tags button{border:1px solid #e3ded2;background:#faf8f3;border-radius:999px;padding:7px 13px;margin:0 7px 7px 0;font-family:inherit;font-size:14px;font-weight:500;line-height:1;color:#16223a;cursor:pointer}
+.sp-tags button:hover{border-color:#a8822a;color:#a8822a}
+.sp-res{margin:18px 0 0;padding:0;list-style:none}
+.sp-res li{border-top:1px solid #eceae4}
+.sp-res a{display:block;padding:14px 2px;text-decoration:none;color:inherit}
+.sp-res a:hover{background:#faf8f3}
+.sp-res .k{font-size:12px;font-weight:700;color:#a8822a}
+.sp-res b{display:block;font:700 17px/1.4 var(--serif,inherit);margin:1px 0 3px}
+.sp-res b mark{background:#ffe9a8;color:inherit;padding:0 2px;border-radius:3px}
+.sp-res p{margin:0;font-size:14px;color:#5a6070}
+.sp-empty{padding:30px 0;color:#5a6070}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">跳到主要內容</a>
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="../"><img src="../img/logo.png" width="36" height="36" alt="">正賦文理<small>短期補習班</small></a>
+    <nav aria-label="主選單"><a href="../">首頁</a><a href="../classes/">班別課程</a><a href="../teacher/">莊老師</a><a href="../learn/">學習中心</a><a href="../news/">最新消息</a></nav>
+    <div class="top-cta"><a class="btn btn-gold small" href="../practice/">免費練習</a></div>
+  </div>
+</header>
+
+<main id="main">
+<section class="band">
+  <div class="sp">
+    <p class="label">站內搜尋</p>
+    <h1 style="margin:.1em 0 .3em">要找什麼？</h1>
+    <p class="sp-note">單元、歷屆真題、講義、影片、升學工具都在裡面。打「三角函數」「因式分解」「落點」都可以。</p>
+    <form class="sp-form" role="search" action="./" method="get">
+      <input id="q" name="q" type="search" placeholder="例如：三角函數、會考真題、備審" aria-label="搜尋站內" autocomplete="off" autofocus>
+      <button type="submit">搜尋</button>
+    </form>
+    <div class="sp-tags" id="tags"></div>
+    <div id="out"></div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap fgrid">
+    <div>
+      <a class="brand" href="../"><img src="../img/logo.png" width="32" height="32" alt="">正賦文理<small>短期補習班</small></a>
+      <p>宜蘭羅東・數學專門。國中以上由莊老師親自授課。</p>
+    </div>
+    <div>
+      <b>聯絡</b>
+      <p>宜蘭縣羅東鎮純精路二段 262 號<br><a href="tel:039558652">03-955-8652</a>・LINE <a href="https://line.me/R/ti/p/@chuanglaomath" target="_blank" rel="noopener">@chuanglaomath</a></p>
+    </div>
+    <div>
+      <b>追蹤</b>
+      <p><a href="https://www.youtube.com/@chuanglaomath" target="_blank" rel="noopener">YouTube 莊老數學教室</a><br><a href="https://www.instagram.com/jf_chuang/" target="_blank" rel="noopener">Instagram @jf_chuang</a><br><a href="https://www.facebook.com/profile.php?id=100054212841294" target="_blank" rel="noopener">Facebook 粉絲專頁</a></p>
+    </div>
+  </div>
+  <div class="wrap fbottom">
+    <span>© 2026 私立正賦文理短期補習班　府教終字第 0990094303 號</span>
+    <span class="visits" id="brandTotal" hidden>正賦全站累計 <b></b> 人次</span><script src="../total.js"></script>
+  </div>
+</footer>
+
+<script>
+/* 這一頁和右上角放大鏡用的是同一份索引（assets/search-index.json）與同一套比對規則，
+   差別只在這裡有網址 ?q=，可以把搜尋結果貼給別人。 */
+(function(){
+  var HOT=["落點分析","備審","APCS","三角函數","因式分解","會考真題","練習卷","段考重點"];
+  var q=document.getElementById('q'),out=document.getElementById('out'),DATA=null;
+  var esc=function(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})};
+  var terms=function(s){return s.toLowerCase().replace(/\s+/g,' ').trim().split(' ').filter(Boolean)};
+  function score(r,ts){var t=r.t.toLowerCase(),s=(r.s||'').toLowerCase(),d=(r.d||'').toLowerCase(),k=(r.k||'').toLowerCase(),sum=0;
+    for(var i=0;i<ts.length;i++){var x=ts[i],p=t.indexOf(x);
+      if(p===0)sum+=100;else if(p>0)sum+=70;else if(s.indexOf(x)>=0)sum+=40;else if(k.indexOf(x)>=0)sum+=30;else if(d.indexOf(x)>=0)sum+=15;else return -1}
+    return sum+(r.w||0)}
+  function hl(t,ts){var h=esc(t);ts.forEach(function(x){var i=h.toLowerCase().indexOf(x.toLowerCase());
+    if(i>=0)h=h.slice(0,i)+'<mark>'+h.slice(i,i+x.length)+'</mark>'+h.slice(i+x.length)});return h}
+  function href(u){return /^https?:/.test(u)?u:'../'+u}
+  document.getElementById('tags').innerHTML=HOT.map(function(h){return '<button type="button">'+esc(h)+'</button>'}).join('');
+  document.getElementById('tags').addEventListener('click',function(e){
+    if(e.target.tagName==='BUTTON'){q.value=e.target.textContent;run()}});
+  function run(){
+    var v=q.value.trim();
+    history.replaceState(null,'',v?'?q='+encodeURIComponent(v):'./');
+    if(!v||!DATA){out.innerHTML='';return}
+    var ts=terms(v),res=[];
+    DATA.forEach(function(r,i){var s=score(r,ts);if(s>=0)res.push([s,i,r])});
+    res.sort(function(a,b){return b[0]-a[0]||a[1]-b[1]});
+    if(!res.length){out.innerHTML='<p class="sp-empty">找不到「'+esc(v)+'」。換個說法試試，或看 <a href="../learn/">學習中心</a> 的完整清單。</p>';return}
+    out.innerHTML='<p class="sp-note" style="margin:16px 0 0">找到 '+res.length+' 筆</p><ul class="sp-res">'+
+      res.slice(0,60).map(function(x){var r=x[2];
+        return '<li><a href="'+esc(href(r.u))+'"'+(/^https?:/.test(r.u)?' target="_blank" rel="noopener"':'')+'>'+
+          '<span class="k">'+esc(r.s)+'</span><b>'+hl(r.t,ts)+'</b><p>'+esc(r.d)+'</p></a></li>'}).join('')+'</ul>';
+  }
+  q.addEventListener('input',run);
+  document.querySelector('.sp-form').addEventListener('submit',function(e){e.preventDefault();run()});
+  var init=new URLSearchParams(location.search).get('q')||'';
+  if(init)q.value=init;
+  fetch('../assets/search-index.json').then(function(r){return r.json()}).then(function(j){DATA=j.d;run()})
+    .catch(function(){out.innerHTML='<p class="sp-empty">搜尋索引載入失敗，請重新整理。</p>'});
+})();
+</script>
+<script src="../assets/search.js" defer></script>
+</body>
+</html>

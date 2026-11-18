@@ -134,5 +134,6 @@ if(navigator.share){navigator.share({title:t,url:u}).catch(function(){});}else{n
 (function(){var OFFSET=0,n=0,t=setInterval(function(){var el=document.getElementById('busuanzi_value_page_pv'),v=parseInt(el&&el.textContent,10);
   if(v>0){clearInterval(t);el.textContent=(v+OFFSET).toLocaleString('en-US');document.getElementById('visits').hidden=false}else if(++n>40)clearInterval(t)},500)})();
 </script>
+<script src="../assets/search.js" defer></script>
 </body>
 </html>

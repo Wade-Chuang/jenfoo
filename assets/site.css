@@ -352,3 +352,9 @@ footer .brand small{color:#c7cedb}
 .notice.notice-apcs a{color:#fff}
 .notice.notice-apcs b{color:#F3D77A}
 .notice.notice-apcs em{color:#F3D77A}
+
+/* 首頁「11 月剛上線」三格：一排三個，手機一行一個。
+   .tiles.three 比 .tiles 多一個 class，所以上面 900px 的兩欄規則不會蓋過來。 */
+.tiles.three{grid-template-columns:repeat(3,1fr)}
+.tiles.three .tile{min-height:224px}
+@media (max-width:900px){.tiles.three{grid-template-columns:1fr}.tiles.three .tile{min-height:0}}
