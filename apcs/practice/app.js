@@ -51,7 +51,7 @@ const Gen = {
   w: null, ready: null, catalog: null,
   init() {
     if (!this.ready) {
-      this.w = new Worker('py-worker.js?v=1118165224');
+      this.w = new Worker('py-worker.js?v=1118165553');
       this.ready = callWorker(this.w, { type: 'init', files: BUNDLE.gens }).then((r) => (this.catalog = r.catalog));
     }
     return this.ready;
@@ -61,7 +61,7 @@ const Gen = {
 };
 const Runner = {
   py: null, pyReady: null, cpp: null, spare: null,
-  makePy() { const w = new Worker('py-worker.js?v=1118165224'); return callWorker(w, { type: 'init' }).then(() => w); },
+  makePy() { const w = new Worker('py-worker.js?v=1118165553'); return callWorker(w, { type: 'init' }).then(() => w); },
   getPy() {
     if (!this.pyReady) { this.pyReady = this.spare || this.makePy(); this.spare = null; this.pyReady.then((w) => (this.py = w)); }
     return this.pyReady;
@@ -72,7 +72,7 @@ const Runner = {
     if (!inputs.length) return [];
     if (maxTle <= 0) { const rs = inputs.map(() => ({ out: '', err: '', sec: 0, tle: true, skipped: true })); rs.forEach((r, i) => onEach && onEach(i, r)); return rs; }
     if (lang === 'py' && inputs.length > 1) this.warmSpare();
-    const w = lang === 'py' ? await this.getPy() : (this.cpp || (this.cpp = new Worker('cpp-worker.js?v=1118165224')));
+    const w = lang === 'py' ? await this.getPy() : (this.cpp || (this.cpp = new Worker('cpp-worker.js?v=1118165553')));
     return new Promise((resolve) => {
       const id = Math.random(); const results = []; let timer = null; let cur = 0;
       const arm = () => {

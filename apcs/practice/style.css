@@ -173,3 +173,8 @@ footer .small a{color:var(--gold)}
 .card.dl b{font-size:17px;color:var(--navy)}
 .card.dl .pill{align-self:flex-start}
 .card.dl em{font-style:normal;font-weight:700;color:var(--navy2);margin-top:auto}
+
+.crumb{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:14px;margin:-8px auto 14px;color:var(--sub)}
+.crumb a{color:var(--navy2);font-weight:700;text-decoration:none;background:#fff;border:1px solid var(--line);padding:4px 12px;border-radius:999px}
+.crumb a:hover{border-color:var(--gold)}
+.crumb b{color:var(--navy)}
