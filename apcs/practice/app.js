@@ -51,7 +51,7 @@ const Gen = {
   w: null, ready: null, catalog: null,
   init() {
     if (!this.ready) {
-      this.w = new Worker('py-worker.js?v=1118164916');
+      this.w = new Worker('py-worker.js?v=1118165224');
       this.ready = callWorker(this.w, { type: 'init', files: BUNDLE.gens }).then((r) => (this.catalog = r.catalog));
     }
     return this.ready;
@@ -61,7 +61,7 @@ const Gen = {
 };
 const Runner = {
   py: null, pyReady: null, cpp: null, spare: null,
-  makePy() { const w = new Worker('py-worker.js?v=1118164916'); return callWorker(w, { type: 'init' }).then(() => w); },
+  makePy() { const w = new Worker('py-worker.js?v=1118165224'); return callWorker(w, { type: 'init' }).then(() => w); },
   getPy() {
     if (!this.pyReady) { this.pyReady = this.spare || this.makePy(); this.spare = null; this.pyReady.then((w) => (this.py = w)); }
     return this.pyReady;
@@ -72,7 +72,7 @@ const Runner = {
     if (!inputs.length) return [];
     if (maxTle <= 0) { const rs = inputs.map(() => ({ out: '', err: '', sec: 0, tle: true, skipped: true })); rs.forEach((r, i) => onEach && onEach(i, r)); return rs; }
     if (lang === 'py' && inputs.length > 1) this.warmSpare();
-    const w = lang === 'py' ? await this.getPy() : (this.cpp || (this.cpp = new Worker('cpp-worker.js?v=1118164916')));
+    const w = lang === 'py' ? await this.getPy() : (this.cpp || (this.cpp = new Worker('cpp-worker.js?v=1118165224')));
     return new Promise((resolve) => {
       const id = Math.random(); const results = []; let timer = null; let cur = 0;
       const arm = () => {
@@ -149,7 +149,16 @@ views.home = () => {
       <div class="box"><b>${best(im, (h) => h.total)}</b>實作最高分／300</div>
     </div>
   </section>
-  <div class="grid g3" style="margin-top:20px">
+  <div class="card" style="margin-top:20px">
+    <div class="row"><h3 style="margin:0">📥 免費下載：APCS 中級特訓三件套（PDF）</h3><span class="pill ok">不用註冊・直接下載</span></div>
+    <div class="grid g3" style="margin-top:14px">
+      <a class="card dl" href="pdf/apcs_plan_20270110.pdf" download="APCS 中級實作 150 分訓練計畫表.pdf"><b>訓練計畫表</b><span class="pill gold">2027/1/10 場專用</span><span class="muted small">11/18～1/10 每天要做什麼都排好，表格可打勾。12 頁</span><em>下載 PDF ↓</em></a>
+      <a class="card dl" href="pdf/apcs_concepts_python.pdf" download="APCS 中級必會觀念與範例（Python）.pdf"><b>必會觀念與範例（Python）</b><span class="pill">15 章</span><span class="muted small">每個觀念都有範例程式、輸入輸出範例、什麼時候用、常見錯誤。41 頁</span><em>下載 PDF ↓</em></a>
+      <a class="card dl" href="pdf/apcs_mock_exams.pdf" download="APCS 歷屆試題與仿真題（中級）.pdf"><b>歷屆試題與仿真題</b><span class="pill">3 回模擬卷</span><span class="muted small">歷屆中級題清單（附 ZeroJudge 連結）＋ 3 回 APCS 格式模擬卷與詳解。29 頁</span><em>下載 PDF ↓</em></a>
+    </div>
+    <p class="small muted" style="margin:10px 0 0">建議用法：照計畫表每天練 → 卡住翻觀念講義 → 週末寫模擬卷，再到本站「實作題」用新題目練到穩。</p>
+  </div>
+  <div class="grid g3" style="margin-top:18px">
     <div class="card feature" data-go="reading"><div class="ico">📝</div><h3>觀念題（程式識讀）</h3><p class="muted">選題數與目標級分，答錯立刻看詳解，最後打分、分析弱點章節。</p><span class="pill">滿分 100</span></div>
     <div class="card feature" data-go="impl"><div class="ico">💻</div><h3>實作題（一次三題）</h3><p class="muted">選初級／中級／中高級／高級，網頁寫程式、執行、全部測資驗證，送出後詳細分析。</p><span class="pill">滿分 300</span></div>
     <div class="card feature" data-go="learn"><div class="ico">📘</div><h3>觀念學習</h3><p class="muted">15 章教材，每個觀念都有比喻、輸入輸出範例、什麼時候用、常見錯誤。</p><span class="pill">從零開始也看得懂</span></div>
