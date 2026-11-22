@@ -421,7 +421,7 @@ function renderReport(){
   $("kpis").innerHTML=`<div class="kpi"><div class="k">全國位置</div><div class="v">${overall}</div><div class="s">${osub}</div></div>
    <div class="kpi"><div class="k">穩上＋可上</div><div class="v">${cnt("safe")+cnt("good")} 系</div><div class="s">機率 55% 以上</div></div>
    <div class="kpi"><div class="k">可衝</div><div class="v">${cnt("reach")} 系</div><div class="s">機率 25～55%</div></div>
-   <div class="kpi"><div class="k">最高可上等級</div><div class="v" style="font-size:19px">${best>=0?TIERS[best][0]:"—"}</div><div class="s">機率 55% 以上</div></div>`;
+   <div class="kpi"><div class="k">一階最高可過等級</div><div class="v" style="font-size:19px">${best>=0?TIERS[best][0]:"—"}</div><div class="s">一階篩選過關 55% 以上<br>過一階不等於錄取，還要比二階</div></div>`;
   // 各科位置與檢定
   $("subjTbl").innerHTML=`<tr><th class="l">科目</th><th>級分</th><th>贏過</th><th>達到</th></tr>`+SUBJ.map((s,i)=>{const v=st.sc[i];if(v==null)return"";
     const t=topOf(String(i),v),nx=topOf(String(i),v+1)||0;const beat=t==null?"—":Math.round(100-t+(t-nx)/2)+"%";
@@ -559,6 +559,7 @@ window.__LD={judgeWith,eqScore,poolCount,st,D,RJ:()=>RJ,TIERS,RG,REG,RN,S5,save,
 <script src="stage2.js?v=027f09e5"></script>
 <script src="cal.js?v=a11afb9b"></script>
 <script src="share_ld.js?v=96da9a52"></script>
+<script src="intro.js?v=f9f25a30"></script>
 <div style="text-align:center;font-size:13px;color:#8a93a3;margin:10px 0 24px;line-height:2">
   <span id="visits" hidden>落點分析累計使用 <b id="busuanzi_value_page_pv"></b> 人次</span>
   <span id="brandTotal" hidden>　正賦全站累計 <b></b> 人次</span>
