@@ -1,11 +1,11 @@
-/* 學測落點：模擬考成績紀錄、趨勢與比較
+/* 學測落點：模擬考成績紀錄、趨勢、離目標還差多少
  *
  * 為什麼要這一支：
  *   高三一路要考好幾次模擬考，每次範圍都比上次大（第一二冊 → 第一到三冊 → 全範圍）。
- *   學生真正想知道的不是「這次幾級分」，是「我有沒有在往上」。
- *   原本的工具只存一組成績，換一組就把上一組蓋掉，看不出變化。
+ *   學生真正想知道的不是「這次幾級分」，是「我有沒有在往上、離想上的系還差多少」。
+ *   原本的工具只存一組成績，換一組就把上一組蓋掉，什麼都看不出來。
  *
- * 存的是整組級分（六科＋英聽），不是算出來的結果——因為資料每年會更新，
+ * 存的是整組級分（六科＋英聽），不是算出來的結果——資料每年會更新，
  * 存結果會過期，存成績才永遠能重算。
  *
  * 排序依「考試日期」而不是存檔時間：學生很可能同一天把前幾次模擬考一起補存，
@@ -14,6 +14,10 @@
  * 可上校系數要和報告區 KPI 的「穩上＋可上」同一個定義，不能用 poolCount()：
  * poolCount 刻意排除「沒有篩選門檻」的校系（那種系人人都過一階、分數變了也不會變，
  * 它是給「多 1 級分最划算」用的）。兩個數字並排卻不一樣，看的人只會以為有一邊算錯。
+ *
+ * 效能：poolOf 要掃 2240 個校系，一次 render 會用到四次。所以
+ *   ① 同一組（成績＋英聽＋篩選條件）的結果記在 MEMO 裡不重算
+ *   ② render 做防抖，使用者連點六科下拉時只重算一次（原本會算六次）
  *
  * 依賴主程式全域匯出：window.__LD（st, save, all, toast, poolCount, inPool, judgeWith, D）
  * 與 window.LD_TOP
@@ -33,8 +37,17 @@ const today=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth
 
 let pickA=null,pickB=null;          // 使用者選的比較對象（存 id）
 
+/* ---------- 資料 ---------- */
 function load(){
-  try{const v=JSON.parse(localStorage.getItem(KEY)||'[]');return Array.isArray(v)?v:[]}catch(e){return[]}
+  try{
+    const v=JSON.parse(localStorage.getItem(KEY)||'[]');
+    if(!Array.isArray(v))return [];
+    // 舊版沒有考試日期欄位，補一個，不然排序和列表會是空白
+    return v.filter(r=>r&&Array.isArray(r.sc)).map(r=>{
+      if(!r.at)r.at=r.saved?new Date(r.saved).toISOString().slice(0,10):today();
+      return r;
+    });
+  }catch(e){return []}
 }
 // 存不進去要讓使用者知道。無痕視窗、關掉網站資料、容量滿都會失敗，
 // 原本吞掉例外還照樣跳「已存」，使用者會以為存好了，其實什麼都沒有。
@@ -53,18 +66,29 @@ function topOf(sc){
   return v==null?null:{pc:v,sum:s,nm:c.map(i=>AB[i]).join('')};
 }
 const pcTxt=v=>v==null?'—':'前 '+(v<1?v.toFixed(1):Math.round(v))+'%';
+
+// 掃 2240 系很慢，同一組條件只算一次。篩選條件變了就換一個 key，等於自動失效。
+const MEMO={};
+const filterKey=()=>JSON.stringify([L.st.g,L.st.r,L.st.sp]);
 // lt＝那一次的英聽等級，要用該筆紀錄自己的，不是現在輸入欄裡的
 function poolOf(sc,lt){
+  const k=filterKey()+'|'+JSON.stringify(sc)+'|'+(lt||'');
+  if(k in MEMO)return MEMO[k];
+  let out=null;
   try{
-    if(!L.inPool||!L.judgeWith)return L.poolCount?L.poolCount(sc):null;
-    let n=0;
-    for(const d of L.D){
-      if(!L.inPool(d))continue;
-      const j=L.judgeWith(d,sc,lt==null?L.st.lt:lt);
-      if(j&&(j.cat==='safe'||j.cat==='good'))n++;
+    if(!L.inPool||!L.judgeWith)out=L.poolCount?L.poolCount(sc):null;
+    else{
+      let n=0;
+      for(const d of L.D){
+        if(!L.inPool(d))continue;
+        const j=L.judgeWith(d,sc,lt==null?L.st.lt:lt);
+        if(j&&(j.cat==='safe'||j.cat==='good'))n++;
+      }
+      out=n;
     }
-    return n;
-  }catch(e){return null}
+  }catch(e){out=null}
+  MEMO[k]=out;
+  return out;
 }
 
 /* ---------- 存檔 ---------- */
@@ -75,7 +99,7 @@ function add(){
   if(a.length>=MAX){L.toast('紀錄最多 '+MAX+' 筆，先刪掉用不到的再存');return}
   const el=$('snapName'),dt=$('snapDate');
   const name=((el&&el.value.trim())||defaultName()).slice(0,30);
-  const at=(dt&&dt.value)||today();
+  const at=(dt&&/^\d{4}-\d{2}-\d{2}$/.test(dt.value))?dt.value:today();
   a.push({id:Date.now().toString(36)+Math.random().toString(36).slice(2,6),
           name:name,at:at,saved:Date.now(),sc:sc,lt:L.st.lt||null});
   if(!store(a)){
@@ -101,7 +125,6 @@ function apply(id){
   if(sel[6]){const v=r.lt||'';if(sel[6].value!==v){sel[6].value=v;sel[6].dispatchEvent(new Event('change',{bubbles:true}))}}
   L.toast('已套用「'+r.name+'」，下面的報告是這一次的成績');
   const i=$('report');if(i&&i.scrollIntoView)i.scrollIntoView({behavior:'smooth',block:'start'});
-  render();
 }
 function del(id){
   const a=load(),r=a.find(x=>x.id===id);
@@ -111,6 +134,12 @@ function del(id){
   if(pickA===id)pickA=null;
   if(pickB===id)pickB=null;
   render();
+}
+// 現在輸入欄裡這組成績，是不是任何一筆紀錄都沒有
+function unsaved(a){
+  const sc=L.st.sc,lt=L.st.lt||null;
+  if(!sc.some(v=>v!=null))return false;
+  return !a.some(r=>(r.lt||null)===lt&&r.sc.length===sc.length&&r.sc.every((v,i)=>v===sc[i]));
 }
 
 /* ---------- 趨勢 ---------- */
@@ -123,7 +152,7 @@ function spark(a){
   if(hi-lo<1){lo=Math.max(0,lo-1);hi=hi+1}
   const W=100,H=34,pad=3;
   const xy=pts.map((x,i)=>{
-    const px=pts.length===1?W/2:pad+i*(W-pad*2)/(pts.length-1);
+    const px=pad+i*(W-pad*2)/(pts.length-1);
     const py=pad+(x.t.pc-lo)/(hi-lo)*(H-pad*2);      // 顛倒：pc 大＝排名後面＝畫在下面
     return [px,py];
   });
@@ -134,8 +163,24 @@ function spark(a){
     'style="width:100%;max-width:420px;height:46px;display:block;margin:6px 0">'+
     '<polyline fill="none" stroke="'+col+'" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke" points="'+
     xy.map(p=>p[0].toFixed(1)+','+p[1].toFixed(1)).join(' ')+'"/>'+
-    xy.map(p=>'<circle cx="'+p[0].toFixed(1)+'" cy="'+p[1].toFixed(1)+'" r="1.8" fill="'+col+'" vector-effect="non-scaling-stroke"/>').join('')+
+    xy.map((p,i)=>'<circle cx="'+p[0].toFixed(1)+'" cy="'+p[1].toFixed(1)+'" r="1.8" fill="'+col+'" vector-effect="non-scaling-stroke"><title>'+
+      esc(pts[i].r.name)+'：'+pcTxt(pts[i].t.pc)+'</title></circle>').join('')+
     '</svg>';
+}
+// 各科從第一次到最新進步幾級——學生最想知道的是「我數學到底有沒有在動」
+function bySubject(f,n){
+  const items=SUBJ.map((s,i)=>{
+    if(f.sc[i]==null||n.sc[i]==null)return null;
+    return [AB[i],n.sc[i]-f.sc[i]];
+  }).filter(Boolean);
+  if(!items.length)return '';
+  return '<div style="display:flex;flex-wrap:wrap;gap:6px;margin:8px 0">'+items.map(x=>{
+    const d=x[1];
+    const bg=d>0?'rgba(30,142,78,.12)':d<0?'rgba(192,57,43,.1)':'rgba(0,0,0,.05)';
+    const fg=d>0?'var(--safe,#1e8e4e)':d<0?'var(--no,#c0392b)':'var(--mute,#6b7280)';
+    return '<span style="background:'+bg+';color:'+fg+';border-radius:999px;padding:3px 10px;font-size:13.5px;font-weight:700">'+
+      x[0]+' '+(d>0?'+'+d:d===0?'±0':d)+'</span>';
+  }).join('')+'</div>';
 }
 function trend(a){
   if(a.length<2)return '';
@@ -143,23 +188,75 @@ function trend(a){
   const tf=topOf(f.sc),tn=topOf(n.sc);
   const pf=poolOf(f.sc,f.lt),pn=poolOf(n.sc,n.lt);
   let line='';
-  if(tf&&tn)line='全國位置 '+pcTxt(tf.pc)+' → <b>'+pcTxt(tn.pc)+'</b>';
+  if(tf&&tn&&tf.nm===tn.nm)line='全國位置 '+pcTxt(tf.pc)+' → <b>'+pcTxt(tn.pc)+'</b>';
   if(pf!=null&&pn!=null)line+=(line?'　｜　':'')+'可上的校系 '+pf+' → <b>'+pn+'</b> 個';
-  return '<div style="margin-top:14px">'+
+  return '<div style="margin-top:16px">'+
     '<div class="lbl">整體走勢：'+esc(f.name)+' 到 '+esc(n.name)+'（共 '+a.length+' 次）</div>'+
-    spark(a)+
+    spark(a)+bySubject(f,n)+
     (line?'<div>'+line+'</div>':'')+
-    '<p class="note" style="margin-top:4px">線往上走＝全國排名往前。模擬考範圍每次都不一樣，級分不是同一把尺，看趨勢不要看單點。</p></div>';
+    '<p class="note" style="margin-top:4px">線往上走＝全國排名往前，圓點可以停上去看是哪一次。模擬考範圍每次都不一樣，級分不是同一把尺，看趨勢不要看單點。</p></div>';
+}
+
+/* ---------- 離目標還差多少 ---------- */
+// 用「我的志願」第一個當目標。這是把紀錄和真正想上的系連起來的地方：
+// 進步幾級分很抽象，「離台大資工還差 1.5 級」才是學生真的在問的事。
+function goal(a){
+  const codes=L.st.wish||[];
+  if(!codes.length)
+    return '<div class="note" style="margin-top:14px">把想讀的系放進下面的「我的志願」，這裡就會告訴你離它還差幾級分、每次模擬考有沒有拉近。</div>';
+  const d=L.D.find(x=>x.c===codes[0]);
+  if(!d||!d.p||!d.p.length||!d.pr||!d.pr.length||d.pr[0][0]==null)
+    return '<div class="note" style="margin-top:14px">你排第一的那個系沒有可以比較的歷年門檻，換一個志願排第一就看得到進度。</div>';
+  const nm=d.p[0][0].map(i=>AB[i]).join('');
+  const one=r=>{try{return L.judgeWith(d,r.sc,r.lt)||null}catch(e){return null}};
+  const n=a.length?one(a[a.length-1]):null;
+  const o=a.length>1?one(a[a.length-2]):null;
+  if(!n)return '';
+  // 檢定沒過是硬門檻：總級分再高也會被刷掉，這時候更要講，不能整塊不顯示。
+  if(n.cat==='fail')
+    return '<div class="callout" style="margin-top:14px">🎯 你排第一的 <b>'+esc(d.s)+' '+esc(d.n)+'</b>：'+
+      '<b style="color:var(--no,#c0392b)">'+esc(n.why||'檢定沒過')+'</b>。'+
+      '檢定是硬門檻，沒過的話總級分再高也會被刷掉，這一科要優先補。'+
+      '<div class="note" style="margin-top:4px">檢定標準是「頂標／前標／均標」這種全國位置，不是固定級分，每年會動。</div></div>';
+  if(n.cat==='miss')
+    return '<div class="callout" style="margin-top:14px">🎯 你排第一的 <b>'+esc(d.s)+' '+esc(d.n)+'</b>：'+
+      esc(n.mw||'還有科目沒填')+'，所以算不出離它還差多少。把那一科的級分補上去就看得到。</div>';
+  if(n.m==null)return '';
+  const gap=n.m;                                   // 正＝已經超過門檻，負＝還差
+  const now=gap>=0?'已經高出 <b>'+gap.toFixed(1)+'</b> 級'
+                  :'還差 <b>'+Math.abs(gap).toFixed(1)+'</b> 級';
+  let move='';
+  if(o&&o.m!=null){
+    const dm=+(n.m-o.m).toFixed(1);
+    if(dm>0)move='　比上一次拉近了 <b style="color:var(--safe,#1e8e4e)">'+dm+'</b> 級';
+    else if(dm<0)move='　比上一次退了 <b style="color:var(--no,#c0392b)">'+Math.abs(dm)+'</b> 級';
+    else move='　和上一次一樣';
+  }else if(o&&o.cat==='fail'){
+    // 上次卡在檢定、這次過了，是最值得講的好消息，不要默默跳過
+    move='　<b style="color:var(--safe,#1e8e4e)">上一次還卡在「'+esc(o.why||'檢定')+'」，這次檢定過了</b>';
+  }
+  const pt=n.p==null?'':'　一階通過機率約 <b>'+Math.round(n.p*100)+'%</b>'+
+    (o&&o.p!=null?'（上一次 '+Math.round(o.p*100)+'%）':'');
+  return '<div class="callout" style="margin-top:14px">'+
+    '🎯 你排第一的 <b>'+esc(d.s)+' '+esc(d.n)+'</b>：第一關看 '+esc(nm)+'，'+
+    '門檻大約 '+d.pr[0][0].toFixed(1)+' 級，你'+now+'。'+move+pt+
+    '<div class="note" style="margin-top:4px">門檻是近 '+d.pr[0][1]+' 年換算後的平均，今年會上下浮動，當方向看就好。</div></div>';
 }
 
 /* ---------- 比較 ---------- */
 const arrow=d=>d>0?'<b style="color:var(--safe,#1e8e4e)">▲ '+d+'</b>':d<0?'<b style="color:var(--no,#c0392b)">▼ '+Math.abs(d)+'</b>':'<span class="note">—</span>';
+function picker(a,o,n){
+  const opt=sel=>a.map(r=>'<option value="'+r.id+'"'+(r.id===sel.id?' selected':'')+'>'+esc(r.name)+'</option>').join('');
+  return '<div class="lbl">比較：</div><div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">'+
+    '<select id="snapA" style="flex:0 1 auto;max-width:46%">'+opt(o)+'</select><span>對</span>'+
+    '<select id="snapB" style="flex:0 1 auto;max-width:46%">'+opt(n)+'</select></div>';
+}
 function cmpBlock(a){
   if(a.length<2)return '';
   const byId=id=>a.find(x=>x.id===id);
   const o=byId(pickA)||a[a.length-2];
   const n=byId(pickB)||a[a.length-1];
-  if(o.id===n.id)return '<div class="note" style="margin-top:12px">比較的兩次是同一筆，請換一個。</div>'+picker(a,o,n);
+  if(o.id===n.id)return '<div style="margin-top:16px">'+picker(a,o,n)+'<div class="note" style="margin-top:8px">比較的兩次是同一筆，換一個就會出現比較表。</div></div>';
   let rows=SUBJ.map((s,i)=>{
     if(o.sc[i]==null&&n.sc[i]==null)return '';
     const ov=o.sc[i],nv=n.sc[i];
@@ -191,7 +288,7 @@ function cmpBlock(a){
   }else{
     say='其中一次的科目填得不夠（官方的人數累計表至少要有國文、英文再加一科），所以算不出全國位置。';
   }
-  return '<div style="margin-top:14px">'+picker(a,o,n)+
+  return '<div style="margin-top:16px">'+picker(a,o,n)+
     '<div style="overflow-x:auto;margin-top:8px"><table class="t"><tr><th class="l">科目</th><th>'+esc(o.name)+'</th><th>'+esc(n.name)+'</th><th>變化</th></tr>'+rows+
     '<tr><td class="l"><b>全國位置</b></td><td>'+pcTxt(to&&to.pc)+'</td><td>'+pcTxt(tn&&tn.pc)+'</td><td>'+(same?arrow(tn.sum-to.sum)+' 級分':'<span class="note">科目組合不同</span>')+'</td></tr>'+
     '<tr><td class="l"><b>可上的校系</b></td><td>'+(po==null?'—':po+' 個')+'</td><td>'+(pn==null?'—':pn+' 個')+'</td><td>'+((po!=null&&pn!=null)?arrow(pn-po)+' 個':'—')+'</td></tr>'+
@@ -199,17 +296,12 @@ function cmpBlock(a){
     (say?'<div class="callout" style="margin-top:8px">'+say+'</div>':'')+
     '<p class="note" style="margin-top:6px">「可上的校系」是機率 55% 以上、而且符合你現在選的學群與地區的數量，兩次都用同一組條件算。</p></div>';
 }
-function picker(a,o,n){
-  const opt=(sel)=>a.map(r=>'<option value="'+r.id+'"'+(r.id===sel.id?' selected':'')+'>'+esc(r.name)+'</option>').join('');
-  return '<div class="lbl">比較：</div><div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">'+
-    '<select id="snapA" style="flex:0 1 auto;max-width:46%">'+opt(o)+'</select><span>對</span>'+
-    '<select id="snapB" style="flex:0 1 auto;max-width:46%">'+opt(n)+'</select></div>';
-}
 
 /* ---------- 畫面 ---------- */
 function render(){
   const box=$('snapBox');if(!box)return;
   const a=sorted(load());
+  const warn=unsaved(a)?'<div class="callout" style="margin-top:10px">上面這組成績還沒有存起來。按「存下現在這組成績」才留得住，重新整理或改分數就沒了。</div>':'';
   const list=a.length?('<div style="overflow-x:auto;margin-top:10px"><table class="t"><tr><th class="l">紀錄</th><th>考試日期</th><th>級分</th><th>全國位置</th><th></th></tr>'+
     a.map(r=>{const t=topOf(r.sc);
       return '<tr><td class="l">'+esc(r.name)+'</td><td style="white-space:nowrap">'+esc(r.at)+'</td><td>'+
@@ -224,9 +316,12 @@ function render(){
     '<input id="snapDate" type="date" value="'+today()+'" aria-label="考試日期" style="flex:0 1 auto;padding:8px 10px;border:1px solid var(--line,#dfd8c8);border-radius:8px;font-family:inherit;font-size:15px">'+
     '<button class="btn navy" id="snapAdd">存下現在這組成績</button></div>'+
     '<p class="note" style="margin-top:4px">日期填那次模擬考考的時間。補存以前的場次時記得改，順序是照考試日期排的。</p>'+
-    list+trend(a)+cmpBlock(a)+
+    warn+list+trend(a)+goal(a)+cmpBlock(a)+
     '<p class="note" style="margin-top:8px">紀錄只存在這台裝置的瀏覽器裡，不會上傳，手機和電腦不互通。存的是級分本身，所以資料更新後重新套用一次，算出來的都是最新的。</p>';
 }
+// 使用者連點六科下拉時，原本會重算六次（一次掃 2240 系）。合併成一次。
+let timer=null;
+function later(ms){clearTimeout(timer);timer=setTimeout(render,ms||150)}
 function mount(){
   const anchor=$('input');if(!anchor)return;
   let box=$('snapBox');
@@ -240,8 +335,10 @@ function mount(){
 document.addEventListener('click',function(e){
   const t=e.target;if(!t||!t.closest)return;
   if(t.closest('#snapAdd')){add();return}
-  const ap=t.closest('[data-snap-apply]');if(ap){apply(ap.getAttribute('data-snap-apply'));return}
+  const ap=t.closest('[data-snap-apply]');if(ap){apply(ap.getAttribute('data-snap-apply'));later(200);return}
   const dl=t.closest('[data-snap-del]');if(dl){del(dl.getAttribute('data-snap-del'));return}
+  // 換學群／地區、或動了「我的志願」，都會影響可上校系數與目標進度
+  if(t.closest('#gchips,#rchips,[data-w]'))later(200);
 });
 document.addEventListener('change',function(e){
   const t=e.target;if(!t)return;
@@ -250,12 +347,9 @@ document.addEventListener('change',function(e){
     pickB=$('snapB')?$('snapB').value:null;
     render();return;
   }
-  // 改級分或換學群／地區之後，「可上的校系」要跟著重算
-  if(t.closest&&t.closest('#scores'))setTimeout(render,80);
-});
-document.addEventListener('click',function(e){
-  if(e.target&&e.target.closest&&e.target.closest('#gchips,#rchips'))setTimeout(render,120);
+  if(t.id==='spOn'){later(200);return}
+  if(t.closest&&t.closest('#scores'))later(150);
 });
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mount);else mount();
-window.__SNAP={load:load,sorted:sorted,add:add,apply:apply,topOf:topOf,poolOf:poolOf,render:render,MAX:MAX};
+window.__SNAP={load:load,sorted:sorted,add:add,apply:apply,topOf:topOf,poolOf:poolOf,render:render,unsaved:unsaved,MAX:MAX};
 })();
