@@ -282,6 +282,9 @@ footer{font-size:12.5px;color:var(--mute);padding:10px 16px 60px;max-width:1080p
       <tr><td>甄試日期撞期檢查</td><td class="y">✔</td><td class="n">—</td></tr>
       <tr><td>哪一科多 1 級分最划算</td><td class="y">✔</td><td class="n">—</td></tr>
       <tr><td>二階學測佔比、面試／筆試比例、預計甄試人數</td><td class="y">✔</td><td>部分</td></tr>
+      <tr><td><b>二階總成績試算</b>（學測鎖住幾分、備審面試還要幾分）</td><td class="y">✔</td><td class="n">—</td></tr>
+      <tr><td><b>你在門檻以上的人裡面排前幾%</b></td><td class="y">✔</td><td class="n">—</td></tr>
+      <tr><td><b>繳件截止／甄試／放榜行事曆，可加進手機日曆</b></td><td class="y">✔</td><td class="n">—</td></tr>
       <tr><td>級分換算成往年級分</td><td class="y">✔</td><td>部分</td></tr>
       <tr><td>18 學群、地區、採計科目、二階方式篩選</td><td class="y">✔</td><td>部分</td></tr>
       <tr><td>免登入、資料不上傳</td><td class="y">✔</td><td>多數要登入</td></tr></table>
@@ -294,6 +297,8 @@ footer{font-size:12.5px;color:var(--mute);padding:10px 16px 60px;max-width:1080p
     <details><summary>機率 70% 是什麼意思？</summary><p>在歷史資料裡，跟你差不多情況的考生，大約每 10 個有 7 個通過第一階段。它不是保證；建議 6 個志願裡衝、穩、保都要有。</p></details>
     <details><summary>為什麼有些系顯示「採計改變」或「無歷年資料」？</summary><p>今年篩選科目或順序跟往年不同，或是新設、改名、拆組的系，歷年門檻不能直接比，所以不給機率，請看該系的篩選方式自行評估。</p></details>
     <details><summary>還沒考學測可以用嗎？</summary><p>可以先填模擬考成績試算，看自己大概在哪個等級、哪一科最值得加強。正式成績公布後再算一次。</p></details>
+    <details><summary>一階過了之後呢？二階怎麼準備？</summary><p>每個校系卡片裡有「二階怎麼拿分（試算）」：會算出這個系的<b>二階錄取率</b>（名額 ÷ 預計甄試人數）、你的學測在門檻以上的人裡面大約排前幾%，以及學測佔比已經鎖住幾分、備審面試還要拿幾分。官方不公布二階錄取的最低總成績，所以這裡不給錄取機率，只讓你看清楚分數結構，知道該把力氣花在哪。</p></details>
+    <details><summary>繳件截止日會不會忘記？</summary><p>把志願放進「我的志願」後，下面會出現這幾個志願的繳件截止、甄試、放榜時間軸，並且可以下載 .ics 一次加進手機日曆（Google 日曆、iPhone 行事曆都支援），每一項會在 3 天前提醒。日期依 116 學年度簡章，簡章若更新以甄選會公告為準。</p></details>
     <details><summary>撞期檢查怎麼看？</summary><p>放進「我的志願」的校系，如果第二階段甄試是同一天，會跳出提醒。有些系的甄試日期是兩天擇一或分組，會標「可能撞期」，請看簡章確認。</p></details>
     <details><summary>檢定標準用哪一年的五標？</summary><p>116 學測五標公布前，暫用 115 學年度官方五標；公布後會立刻更新。</p></details>
   </section>
@@ -451,7 +456,8 @@ function renderWish(){
   const w=st.wish.filter(c=>BYC[c]);st.wish=w;
   $("wcount").hidden=!w.length;$("wcount").textContent=w.length;
   $("wishList").innerHTML=w.length?w.map((c,i)=>{const d=BYC[c],j=RJ[c]||{};return`<div class="wi"><span class="no">${i+1}</span><div><b style="color:var(--navy)">${d.s} ${d.n}</b> <span class="note">${TIERS[tierOf(d)][0]}</span>
-     <div class="note">甄試 ${dateTxt(d)}・${s2Txt(d)}${d.s2&&d.s2.fee&&d.s2.fee!=="--"?"・甄試費 "+d.s2.fee+" 元":""}</div>${j.p!=null?probBar(j):`<div class="note">${j.cat?CAT[j.cat][0]:""}</div>`}</div>
+     <div class="note">甄試 ${dateTxt(d)}・${s2Txt(d)}${d.s2&&d.s2.fee&&d.s2.fee!=="--"?"・甄試費 "+d.s2.fee+" 元":""}</div>${j.p!=null?probBar(j):`<div class="note">${j.cat?CAT[j.cat][0]:""}</div>`}
+     ${(d.s2&&(d.s2.it||[]).length)?`<details class="s2a no-print" data-s2a="${c}"><summary>二階怎麼拿分（試算）</summary><div class="s2b"></div></details>`:""}</div>
      <div class="ops no-print"><button data-up="${i}" title="往上">↑</button><button data-dn="${i}" title="往下">↓</button><button data-del="${i}" title="移除">✕</button></div></div>`}).join(""):
     '<div class="empty">還沒有志願。在下面「找校系」按「＋志願」，或用上面「把這 6 個放進我的志願」。</div>';
   document.querySelectorAll("[data-up]").forEach(b=>b.onclick=()=>{const i=+b.dataset.up;if(i>0){[st.wish[i-1],st.wish[i]]=[st.wish[i],st.wish[i-1]];save();renderWish()}});
@@ -501,7 +507,8 @@ function card(d,j){
    ${j&&j.p!=null?`${probBar(j)}<span class="stars">${stars(j.p)}</span>`:""}
    <div class="meta">${j&&j.mw?`<div><span class="k">缺考</span><b style="color:var(--no)">${j.mw}，你沒有填這科</b></div>`:""}${d.sp?`<div><span class="k">注意</span><b style="color:var(--reach)">${d.sp}</b></div>`:""}<div><span class="k">116 篩選</span>${planTxt(d)}</div>${std.trim()?`<div><span class="k">檢定</span>${std}${j&&j.why?` <b style="color:var(--no)">（${j.why}）</b>`:""}</div>`:""}${pred}
    <div><span class="k">第二階段</span>${s2Txt(d)}</div><div><span class="k">甄試日期</span>${dateTxt(d)}${s.en?`・預計甄試 ${s.en} 人${ratio}`:""}</div>
-   <details class="more-info"><summary>歷年最低級分</summary>${hist||'<div class="note">沒有歷年資料</div>'}</details></div></div>`;
+   <details class="more-info"><summary>歷年最低級分</summary>${hist||'<div class="note">沒有歷年資料</div>'}</details>
+   ${(s.it||[]).length?`<details class="s2a" data-s2a="${d.c}"><summary>二階怎麼拿分（試算）</summary><div class="s2b"></div></details>`:""}</div></div>`;
 }
 const has=(d,x)=>d.p.some(([a])=>a.includes(x));
 function renderList(){
@@ -547,6 +554,8 @@ window.__LD={judgeWith,eqScore,poolCount,st,D,RJ:()=>RJ,TIERS,RG,REG,RN,S5,save,
 <script src="ast_app.js?v=c54603a1"></script>
 <script src="report_qr.js?v=80eee7b1"></script>
 <script src="report_pdf.js?v=e0276ea4"></script>
+<script src="stage2.js?v=027f09e5"></script>
+<script src="cal.js?v=a11afb9b"></script>
 <script src="share_ld.js?v=96da9a52"></script>
 <div style="text-align:center;font-size:13px;color:#8a93a3;margin:10px 0 24px;line-height:2">
   <span id="visits" hidden>落點分析累計使用 <b id="busuanzi_value_page_pv"></b> 人次</span>
