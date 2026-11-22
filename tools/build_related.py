@@ -28,6 +28,7 @@ ITEMS = [
     ("social", "國中社會", "social/", "18 冊重點漫畫＋講義"),
     ("apcs", "APCS 程式設計", "apcs/", "12 單元 36 支影片＋講義"),
     ("apcspractice", "APCS 特訓站", "apcs/practice/", "觀念題＋實作題線上練習"),
+    ("explore", "學群探索", "explore/", "還不知道要讀什麼？21 題縮到三個方向"),
     ("luodian", "學測落點分析", "luodian/", "一階通過機率、推薦志願"),
     ("portfolio", "備審小幫手", "portfolio/", "學習歷程、動機、面試"),
     ("tc", "統測落點分析", "luodian/tc.html", "四技二專甄選・登記分發機率"),
@@ -36,6 +37,7 @@ ITEMS = [
 
 # 這一頁看完最可能想去的下一站，排在最前面並且標起來
 NEXT = {
+    "explore": ("luodian", "想知道這些學群的系要幾分？"),
     "luodian": ("portfolio", "志願排好了，接著整理備審"),
     "portfolio": ("luodian", "還沒算落點？先看哪些校系有機會"),
     "tc": ("portfolio", "志願排好了，接著準備二階備審"),
@@ -68,6 +70,7 @@ PAGES = {
     "social/index.html": ("social", "../"),
     "apcs/index.html": ("apcs", "../"),
     "apcs/practice/index.html": ("apcspractice", "../../"),
+    "explore/index.html": ("explore", "../"),
     "luodian/index.html": ("luodian", "../"),
     "portfolio/index.html": ("portfolio", "../"),
     "luodian/tc.html": ("tc", "../"),

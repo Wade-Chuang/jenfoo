@@ -186,8 +186,37 @@ function render(){
   el.dataset.c=c;
   el.innerHTML=html(c,done()||hasData(c));
 }
+/* 從學群探索帶學群過來：#g=資訊,工程
+   直接點真正的 chip，不要去改 st.g——chip 的 onclick 裡有存檔和重算，自己設狀態會漏掉。 */
+function applyGroups(){
+  const m=String(location.hash||'').match(/[#&]g=([^&]+)/);
+  if(!m)return;
+  const want=m[1].split(',').map(x=>{try{return decodeURIComponent(x)}catch(e){return x}}).filter(Boolean);
+  // 從學群探索過來的人多半還沒考，固定帶到申請入學；
+  // 不然上次停在分科模式的人會落在分科頁，而學群籤是申請入學那一區的，等於沒作用
+  try{if(window.__AST&&window.__AST.A.mode!=='apply')window.__AST.setMode('apply')}catch(e){}
+  if(!document.querySelectorAll('#gchips .chip').length)return;
+  // 換成這幾個學群，不是加上去：上次留下的勾選要先拿掉，不然清單會混進別的方向。
+  // 每點一下 chips() 會整個重畫，所以每一輪都要重新查，不能用快取的節點。
+  let n=0;
+  for(let i=0;i<40;i++){
+    const chips=[...document.querySelectorAll('#gchips .chip')];
+    const b=chips.find(function(x){
+      const nm=x.textContent.trim(),on=x.classList.contains('on');
+      return want.indexOf(nm)>=0?!on:on;
+    });
+    if(!b)break;
+    b.click();n++;
+  }
+  history.replaceState(null,'',location.pathname+location.search);
+  const say=window.__LD&&window.__LD.toast;
+  if(n&&say)say('已經幫你勾好「'+want.join('、')+'」，下面只會列這幾個學群的校系');
+  if(n){const i=document.getElementById('input');if(i&&i.scrollIntoView)i.scrollIntoView({behavior:'smooth',block:'start'})}
+}
+
 function boot(){
   const s=document.createElement('style');s.textContent=CSS;document.head.appendChild(s);
+  try{applyGroups()}catch(e){}
   render();
   document.addEventListener('click',function(e){
     if(e.target.closest('[data-ldx-close]')){try{localStorage.setItem(KEY,'1')}catch(_){}render();return}
