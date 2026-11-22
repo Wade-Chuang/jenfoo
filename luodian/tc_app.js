@@ -201,6 +201,8 @@ document.addEventListener("click",e=>{const b=e.target.closest("button");if(!b)r
   else if(b.id==="share"||b.id==="share2"){const t="統測落點分析：輸入統測成績，看四技二專甄選入學一階通過機率和登記分發錄取機率，免費👇",u=location.href.split("#")[0];
     if(navigator.share)navigator.share({title:"統測落點分析",text:t,url:u}).catch(()=>{});else navigator.clipboard&&navigator.clipboard.writeText(t+"\n"+u).then(()=>toast("已複製連結"),()=>toast("請複製網址列的網址分享"))}});
 // 打開家長分享連結：#s=模式,群類,國,英,數,專一,專二
+// 從官網／學習中心直接指定分頁：#a 甄選入學、#u 聯合登記分發
+(function(){const h=location.hash;if(h==="#a"||h==="#u")st.mode=h.slice(1)})();
 (function(){const m=location.hash.match(/^#s=([au]),(\d{2}),([\d.,]*)$/);if(!m)return;const v=m[3].split(",");st.mode=m[1];st.gc=m[2];K.forEach((k,i)=>st.sc[k]=v[i]===""||v[i]==null?null:Math.min(100,Math.max(0,+v[i])));
   $("grp").value=st.gc;K.forEach(k=>$("s_"+k).value=st.sc[k]==null?"":st.sc[k]);history.replaceState(null,"",location.pathname+location.search+"#report");save()})();
 window.__TC={judgeU,judgeA,topFrac,lv,st,U,AU,J:()=>J,render,tcCodes,BEISHEN,toast,TIERS,tierOf,stepName,catName,CAT,KN,save,renderWish,renderList};

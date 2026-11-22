@@ -358,3 +358,6 @@ footer .brand small{color:#c7cedb}
 .tiles.three{grid-template-columns:repeat(3,1fr)}
 .tiles.three .tile{min-height:224px}
 @media (max-width:900px){.tiles.three{grid-template-columns:1fr}.tiles.three .tile{min-height:0}}
+
+/* 磚裡內文要強調數字時用 <b>，但 .tile b 是 21px 標題樣式，會把數字撐得比標題還大 */
+.tile .sub b{font:inherit;font-weight:700;color:#fff}
