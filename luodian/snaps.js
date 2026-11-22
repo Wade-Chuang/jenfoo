@@ -194,7 +194,8 @@ function trend(a){
     '<div class="lbl">整體走勢：'+esc(f.name)+' 到 '+esc(n.name)+'（共 '+a.length+' 次）</div>'+
     spark(a)+bySubject(f,n)+
     (line?'<div>'+line+'</div>':'')+
-    '<p class="note" style="margin-top:4px">線往上走＝全國排名往前，圓點可以停上去看是哪一次。模擬考範圍每次都不一樣，級分不是同一把尺，看趨勢不要看單點。</p></div>';
+    '<p class="note" style="margin-top:4px">線往上走＝全國排名往前。<span class="snap-ui">圓點可以停上去看是哪一次。</span>'+
+    '模擬考範圍每次都不一樣，級分不是同一把尺，看趨勢不要看單點。</p></div>';
 }
 
 /* ---------- 離目標還差多少 ---------- */
@@ -247,7 +248,7 @@ function goal(a){
 const arrow=d=>d>0?'<b style="color:var(--safe,#1e8e4e)">▲ '+d+'</b>':d<0?'<b style="color:var(--no,#c0392b)">▼ '+Math.abs(d)+'</b>':'<span class="note">—</span>';
 function picker(a,o,n){
   const opt=sel=>a.map(r=>'<option value="'+r.id+'"'+(r.id===sel.id?' selected':'')+'>'+esc(r.name)+'</option>').join('');
-  return '<div class="lbl">比較：</div><div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">'+
+  return '<div class="lbl snap-ui">比較：</div><div class="snap-ui" style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">'+
     '<select id="snapA" style="flex:0 1 auto;max-width:46%">'+opt(o)+'</select><span>對</span>'+
     '<select id="snapB" style="flex:0 1 auto;max-width:46%">'+opt(n)+'</select></div>';
 }
@@ -301,35 +302,50 @@ function cmpBlock(a){
 function render(){
   const box=$('snapBox');if(!box)return;
   const a=sorted(load());
-  const warn=unsaved(a)?'<div class="callout" style="margin-top:10px">上面這組成績還沒有存起來。按「存下現在這組成績」才留得住，重新整理或改分數就沒了。</div>':'';
-  const list=a.length?('<div style="overflow-x:auto;margin-top:10px"><table class="t"><tr><th class="l">紀錄</th><th>考試日期</th><th>級分</th><th>全國位置</th><th></th></tr>'+
+  box.dataset.empty=a.length?'0':'1';
+  const warn=unsaved(a)?'<div class="callout snap-ui" style="margin-top:10px">上面這組成績還沒有存起來。按「存下現在這組成績」才留得住，重新整理或改分數就沒了。</div>':'';
+  const list=a.length?('<div style="overflow-x:auto;margin-top:10px"><table class="t"><tr><th class="l">紀錄</th><th>考試日期</th><th>級分</th><th>全國位置</th><th class="snap-ui"></th></tr>'+
     a.map(r=>{const t=topOf(r.sc);
       return '<tr><td class="l">'+esc(r.name)+'</td><td style="white-space:nowrap">'+esc(r.at)+'</td><td>'+
         SUBJ.map((s,i)=>r.sc[i]==null?'':AB[i]+r.sc[i]).filter(Boolean).join(' ')+(r.lt?' 英聽'+r.lt:'')+'</td><td>'+pcTxt(t&&t.pc)+'</td>'+
-        '<td style="white-space:nowrap"><button class="btn ghost" data-snap-apply="'+r.id+'">套用</button> '+
+        '<td class="snap-ui" style="white-space:nowrap"><button class="btn ghost" data-snap-apply="'+r.id+'">套用</button> '+
         '<button class="btn ghost" data-snap-del="'+r.id+'">刪除</button></td></tr>'}).join('')+
-    '</table></div>'+(a.length>=MAX?'<p class="note" style="margin-top:6px">已經存到上限 '+MAX+' 筆，要再存請先刪掉用不到的。</p>':''))
-    :'<div class="empty" style="margin-top:10px">還沒有紀錄。填好這次模擬考的級分，按上面的按鈕存起來，下次考完再存一次就能比較。</div>';
-  box.innerHTML='<h2>📈 模擬考紀錄 <small>存起來，下次考完就看得出有沒有在往上</small></h2>'+
-    '<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:8px">'+
+    '</table></div>'+(a.length>=MAX?'<p class="note snap-ui" style="margin-top:6px">已經存到上限 '+MAX+' 筆，要再存請先刪掉用不到的。</p>':''))
+    :'<div class="empty snap-ui" style="margin-top:10px">還沒有紀錄。填好這次模擬考的級分，按上面的按鈕存起來，下次考完再存一次就能比較。</div>';
+  box.innerHTML='<h2>📈 模擬考紀錄 <small class="snap-ui">存起來，下次考完就看得出有沒有在往上</small></h2>'+
+    '<div class="snap-ui" style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:8px">'+
     '<input id="snapName" type="text" maxlength="30" placeholder="例如：11月模擬考（一～三冊）" style="flex:1 1 200px;min-width:0;padding:8px 10px;border:1px solid var(--line,#dfd8c8);border-radius:8px;font-family:inherit;font-size:15px">'+
     '<input id="snapDate" type="date" value="'+today()+'" aria-label="考試日期" style="flex:0 1 auto;padding:8px 10px;border:1px solid var(--line,#dfd8c8);border-radius:8px;font-family:inherit;font-size:15px">'+
     '<button class="btn navy" id="snapAdd">存下現在這組成績</button></div>'+
-    '<p class="note" style="margin-top:4px">日期填那次模擬考考的時間。補存以前的場次時記得改，順序是照考試日期排的。</p>'+
+    '<p class="note snap-ui" style="margin-top:4px">日期填那次模擬考考的時間。補存以前的場次時記得改，順序是照考試日期排的。</p>'+
     warn+list+trend(a)+goal(a)+cmpBlock(a)+
-    '<p class="note" style="margin-top:8px">紀錄只存在這台裝置的瀏覽器裡，不會上傳，手機和電腦不互通。存的是級分本身，所以資料更新後重新套用一次，算出來的都是最新的。</p>';
+    '<p class="note snap-ui" style="margin-top:8px">紀錄只存在這台裝置的瀏覽器裡，不會上傳，手機和電腦不互通。存的是級分本身，所以資料更新後重新套用一次，算出來的都是最新的。</p>';
 }
 // 使用者連點六科下拉時，原本會重算六次（一次掃 2240 系）。合併成一次。
 let timer=null;
 function later(ms){clearTimeout(timer);timer=setTimeout(render,ms||150)}
+// 列印給家長看的時候，家長要看的就是「有沒有在進步」，所以走勢和目標要印出來，
+// 但輸入框、套用／刪除按鈕、比較下拉這些操作介面不該出現在紙上。
+// 一筆紀錄都沒有時整塊不印，免得版面多一塊空的。
+function printCSS(){
+  if($('snapPrintCSS'))return;
+  const s=document.createElement('style');
+  s.id='snapPrintCSS';
+  s.textContent='@media print{#snapBox .snap-ui{display:none!important}'+
+    '#snapBox[data-empty="1"]{display:none!important}'+
+    '#snapBox .btn,#snapBox select,#snapBox input{display:none!important}'+
+    '#snapBox svg{max-width:340px}}';
+  document.head.appendChild(s);
+}
 function mount(){
   const anchor=$('input');if(!anchor)return;
   let box=$('snapBox');
   if(!box){
     box=document.createElement('section');
-    box.id='snapBox';box.className='panel no-print';
+    box.id='snapBox';box.className='panel';
     anchor.parentNode.insertBefore(box,anchor.nextSibling);
   }
+  printCSS();
   render();
 }
 document.addEventListener('click',function(e){
