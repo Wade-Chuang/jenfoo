@@ -37,23 +37,30 @@ const today=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth
 
 let pickA=null,pickB=null;          // 使用者選的比較對象（存 id）
 
-/* ---------- 資料 ---------- */
-function load(){
-  try{
-    const v=JSON.parse(localStorage.getItem(KEY)||'[]');
-    if(!Array.isArray(v))return [];
-    // 舊版沒有考試日期欄位，補一個，不然排序和列表會是空白
-    return v.filter(r=>r&&Array.isArray(r.sc)).map(r=>{
-      if(!r.at)r.at=r.saved?new Date(r.saved).toISOString().slice(0,10):today();
-      return r;
-    });
-  }catch(e){return []}
+/* ---------- 資料（分科那支也用同一套，不要各寫一份，不然 bug 要修兩次）---------- */
+// ok(r) 判斷一筆紀錄是不是完整的——學測看 sc，分科看 a60，所以由呼叫端決定。
+function makeStore(key,ok){
+  return {
+    load:function(){
+      try{
+        const v=JSON.parse(localStorage.getItem(key)||'[]');
+        if(!Array.isArray(v))return [];
+        // 舊版沒有考試日期欄位，補一個，不然排序和列表會是空白
+        return v.filter(r=>r&&ok(r)).map(function(r){
+          if(!r.at)r.at=r.saved?new Date(r.saved).toISOString().slice(0,10):today();
+          return r;
+        });
+      }catch(e){return []}
+    },
+    // 存不進去要讓使用者知道。無痕視窗、關掉網站資料、容量滿都會失敗，
+    // 原本吞掉例外還照樣跳「已存」，使用者會以為存好了，其實什麼都沒有。
+    store:function(a){
+      try{localStorage.setItem(key,JSON.stringify(a));return true}catch(e){return false}
+    }
+  };
 }
-// 存不進去要讓使用者知道。無痕視窗、關掉網站資料、容量滿都會失敗，
-// 原本吞掉例外還照樣跳「已存」，使用者會以為存好了，其實什麼都沒有。
-function store(a){
-  try{localStorage.setItem(KEY,JSON.stringify(a));return true}catch(e){return false}
-}
+const DB=makeStore(KEY,r=>Array.isArray(r.sc));
+const load=DB.load,store=DB.store;
 // 依考試日期排序；同一天的照存檔先後
 const sorted=a=>a.slice().sort((x,y)=>(x.at||'').localeCompare(y.at||'')||(x.saved||0)-(y.saved||0));
 
@@ -143,29 +150,39 @@ function unsaved(a){
 }
 
 /* ---------- 趨勢 ---------- */
-// 全國位置的走勢。數字越小越前面，所以畫的時候要上下顛倒過來。
-function spark(a){
-  const pts=a.map(r=>({r:r,t:topOf(r.sc)})).filter(x=>x.t);
+/* 走勢折線。pts＝[{name, v, txt}]，opts.lowerBetter＝數字越小越好（例如「全國前 X%」）。
+   畫的時候「好」永遠在上面，所以 lowerBetter 的要上下顛倒。分科那支也用這個。 */
+function spark(pts,opts){
+  opts=opts||{};
+  pts=(pts||[]).filter(p=>p&&p.v!=null&&isFinite(p.v));
   if(pts.length<2)return '';
-  const vs=pts.map(x=>x.t.pc);
+  const low=!!opts.lowerBetter;
+  const vs=pts.map(p=>p.v);
   let lo=Math.min(...vs),hi=Math.max(...vs);
-  if(hi-lo<1){lo=Math.max(0,lo-1);hi=hi+1}
+  if(hi-lo<1e-9){lo=lo-1;hi=hi+1}
   const W=100,H=34,pad=3;
-  const xy=pts.map((x,i)=>{
+  const xy=pts.map(function(p,i){
     const px=pad+i*(W-pad*2)/(pts.length-1);
-    const py=pad+(x.t.pc-lo)/(hi-lo)*(H-pad*2);      // 顛倒：pc 大＝排名後面＝畫在下面
+    const f=(p.v-lo)/(hi-lo);                       // 0＝最小、1＝最大
+    const py=pad+(low?f:1-f)*(H-pad*2);             // 好的畫在上面
     return [px,py];
   });
-  const first=pts[0].t.pc,last=pts[pts.length-1].t.pc;
-  const col=last<first?'var(--safe,#1e8e4e)':last>first?'var(--no,#c0392b)':'var(--gold,#c69e46)';
+  const a=pts[0].v,b=pts[pts.length-1].v;
+  const better=low?b<a:b>a, worse=low?b>a:b<a;
+  const col=better?'var(--safe,#1e8e4e)':worse?'var(--no,#c0392b)':'var(--gold,#c69e46)';
   return '<svg viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="none" role="img" '+
-    'aria-label="全國位置走勢，從 '+pcTxt(first)+' 到 '+pcTxt(last)+'" '+
+    'aria-label="'+esc(opts.label||'走勢')+'，從 '+esc(pts[0].txt)+' 到 '+esc(pts[pts.length-1].txt)+'" '+
     'style="width:100%;max-width:420px;height:46px;display:block;margin:6px 0">'+
     '<polyline fill="none" stroke="'+col+'" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke" points="'+
     xy.map(p=>p[0].toFixed(1)+','+p[1].toFixed(1)).join(' ')+'"/>'+
     xy.map((p,i)=>'<circle cx="'+p[0].toFixed(1)+'" cy="'+p[1].toFixed(1)+'" r="1.8" fill="'+col+'" vector-effect="non-scaling-stroke"><title>'+
-      esc(pts[i].r.name)+'：'+pcTxt(pts[i].t.pc)+'</title></circle>').join('')+
+      esc(pts[i].name)+'：'+esc(pts[i].txt)+'</title></circle>').join('')+
     '</svg>';
+}
+// 學測用的是「全國前 X%」，數字越小越前面
+function sparkLD(a){
+  return spark(a.map(function(r){const t=topOf(r.sc);return t?{name:r.name,v:t.pc,txt:pcTxt(t.pc)}:null}).filter(Boolean),
+               {lowerBetter:true,label:'全國位置走勢'});
 }
 // 各科從第一次到最新進步幾級——學生最想知道的是「我數學到底有沒有在動」
 function bySubject(f,n){
@@ -192,7 +209,7 @@ function trend(a){
   if(pf!=null&&pn!=null)line+=(line?'　｜　':'')+'可上的校系 '+pf+' → <b>'+pn+'</b> 個';
   return '<div style="margin-top:16px">'+
     '<div class="lbl">整體走勢：'+esc(f.name)+' 到 '+esc(n.name)+'（共 '+a.length+' 次）</div>'+
-    spark(a)+bySubject(f,n)+
+    sparkLD(a)+bySubject(f,n)+
     (line?'<div>'+line+'</div>':'')+
     '<p class="note" style="margin-top:4px">線往上走＝全國排名往前。<span class="snap-ui">圓點可以停上去看是哪一次。</span>'+
     '模擬考範圍每次都不一樣，級分不是同一把尺，看趨勢不要看單點。</p></div>';
@@ -327,14 +344,15 @@ function later(ms){clearTimeout(timer);timer=setTimeout(render,ms||150)}
 // 列印給家長看的時候，家長要看的就是「有沒有在進步」，所以走勢和目標要印出來，
 // 但輸入框、套用／刪除按鈕、比較下拉這些操作介面不該出現在紙上。
 // 一筆紀錄都沒有時整塊不印，免得版面多一塊空的。
-function printCSS(){
-  if($('snapPrintCSS'))return;
+function printCSS(boxId){
+  const id=boxId||'snapBox',sid='snapPrintCSS_'+id;
+  if($(sid))return;
   const s=document.createElement('style');
-  s.id='snapPrintCSS';
-  s.textContent='@media print{#snapBox .snap-ui{display:none!important}'+
-    '#snapBox[data-empty="1"]{display:none!important}'+
-    '#snapBox .btn,#snapBox select,#snapBox input{display:none!important}'+
-    '#snapBox svg{max-width:340px}}';
+  s.id=sid;
+  s.textContent='@media print{#'+id+' .snap-ui{display:none!important}'+
+    '#'+id+'[data-empty="1"]{display:none!important}'+
+    '#'+id+' .btn,#'+id+' select,#'+id+' input{display:none!important}'+
+    '#'+id+' svg{max-width:340px}}';
   document.head.appendChild(s);
 }
 function mount(){
@@ -368,4 +386,7 @@ document.addEventListener('change',function(e){
 });
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mount);else mount();
 window.__SNAP={load:load,sorted:sorted,add:add,apply:apply,topOf:topOf,poolOf:poolOf,render:render,unsaved:unsaved,MAX:MAX};
+// 分科那支共用這些，不要各寫一份
+window.__SNAPLIB={makeStore:makeStore,sorted:sorted,arrow:arrow,printCSS:printCSS,
+                  esc:esc,today:today,MAX:MAX,spark:spark};
 })();

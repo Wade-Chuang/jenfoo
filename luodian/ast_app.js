@@ -197,5 +197,5 @@ function setMode(m){A.mode=m;save();$("modeApply").hidden=m!=="apply";box.hidden
 document.querySelectorAll(".mode").forEach(b=>b.onclick=()=>setMode(b.dataset.mode));
 if(location.hash==="#ast")A.mode="ast";
 setMode(A.mode);
-window.__AST={judge,est60,sc60,A,D,all,setMode,PMAX};   // 測試用
+window.__AST={judge,est60,sc60,A,D,all,setMode,PMAX,inPool,S60,AB,renderInputs};   // 測試用
 })();
