@@ -140,7 +140,8 @@ h3{font:700 16px var(--sans);margin:16px 0 8px;color:var(--muted)}
 footer{margin-top:30px;padding-top:16px;border-top:1px solid var(--line);color:var(--muted);font-size:13px;display:flex;flex-wrap:wrap;gap:6px 16px}
 footer a{font-weight:700}
 #confetti{position:fixed;inset:0;pointer-events:none;z-index:50}
-@media (max-width:520px){.tabs{gap:2px}.tabs a{padding:8px 9px;font-size:14.5px;white-space:nowrap}}
+/* 三個分頁在 320px 窄機上排不下，改成可左右滑，不要把整頁撐寬 */
+@media (max-width:520px){.tabs{gap:2px;overflow-x:auto;scrollbar-width:none}.tabs::-webkit-scrollbar{display:none}.tabs a{padding:8px 9px;font-size:14.5px;white-space:nowrap;flex:none}}
 /* ===== 闖關對戰（移植自啟賦小學堂，改成正賦 CI） ===== */
 :root{--sun:#d9a520}
 .big.game{background:linear-gradient(135deg,#16223a,#23382f);color:#eef1e8;border-color:#16223a}.big.game b{color:#e3c26a}.big.game span{color:#cfd6cc}

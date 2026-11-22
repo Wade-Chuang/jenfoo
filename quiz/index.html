@@ -163,10 +163,19 @@ details[open]>.grade-head>span::before{transform:rotate(90deg)}
 .paper .foot{margin-top:6mm;padding-top:2mm;border-top:.6px solid var(--paper-line);font-family:var(--f-body);font-size:7.5pt;color:var(--paper-soft);display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}
 .paper mjx-container{color:var(--paper-ink)}
 .paper mjx-container[jax="SVG"]{direction:ltr}
+
 .loading{font-family:var(--f-body);color:var(--paper-soft);text-align:center;padding:30mm 0}
 .raw{font-family:ui-monospace,Consolas,monospace;font-size:.9em}
 
 @media (max-width:620px){
+  /* 手機不能左右捲：grid 項目預設 min-width:auto，詳解頁的 QR 文字撐到 388px
+     就把整欄撐寬，整頁跟著歪。讓欄位可以縮、英文字可以斷行。 */
+  .stage>*{min-width:0}
+  /* 長公式（MathJax 輸出是 display:inline 的 SVG，不會自己換行）在窄螢幕上
+     會把整頁撐寬。改成 inline-block 才吃得到 max-width，超過就在自己的框裡左右捲。 */
+  .paper mjx-container{display:inline-block;max-width:100%;overflow-x:auto;overflow-y:hidden;vertical-align:middle}
+  .paper .cta-box{grid-template-columns:auto minmax(0,1fr)}
+  .paper .cta-box b,.paper .cta-box p{overflow-wrap:anywhere}
   .paper{padding:8mm 5mm 10mm;font-size:11pt}
   .qs{grid-template-columns:1fr}
   .paper .mhead{grid-template-columns:auto 1fr}

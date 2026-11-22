@@ -34,7 +34,8 @@ header.top .wrap{display:flex;align-items:center;gap:12px;min-height:60px}
 .brand small{display:block;font:400 12px/1.4 var(--sans);color:#c9d1de;margin-top:4px}
 .top .saved{margin-left:auto;font-size:13px;color:#c9d1de}
 .top a.home{font-size:14px;color:#e7d3a0;text-decoration:none;white-space:nowrap}
-@media(max-width:520px){.top .saved{display:none}.top a.home{margin-left:auto}}
+/* 手機：頁首有 4 個工具互連＋搜尋鈕，不換行的話品牌字會被擠成一個字一行 */
+@media(max-width:760px){header.top .wrap{flex-wrap:wrap;gap:4px 10px;min-height:0;padding-top:9px;padding-bottom:9px}.top .saved{display:none}.brand{flex:0 0 100%;min-width:0}.top a.home{font-size:13px;margin-left:0}}
 nav.tabs{position:sticky;top:0;z-index:5;background:var(--surface);border-bottom:1px solid var(--line)}
 nav.tabs .wrap{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none}
 nav.tabs .wrap::-webkit-scrollbar{display:none}
