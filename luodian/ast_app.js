@@ -149,9 +149,10 @@ function renderWish(){
     if(!ps.some(p=>p>=.75))msgs.push(`<div class="warn">⚠ 沒有「穩上」志願（機率 75% 以上），建議在後段放幾個保底。</div>`);
     let inv=0;for(let i=1;i<A.wish.length;i++){const a=RJ[A.wish[i-1]],b=RJ[A.wish[i]];if(a&&b&&a.p!=null&&b.p!=null&&a.p>=.75&&b.p<.5)inv++}
     if(inv)msgs.push(`<div class="warn">💡 有 ${inv} 處是「穩上的系排在想衝的系前面」。分發會依志願序錄取，穩上的系排太前面，後面想衝的系就沒機會了；想讀的、難的放前面，保底放後面。</div>`);
-    const none=ps.length?ps.reduce((a,p)=>a*(1-p),1):1;
     if(!msgs.length)msgs.push(`<div class="ok">✔ 衝穩保順序 OK。</div>`);
-    msgs.push(`<div class="note" style="margin-top:6px">${ps.length?`至少錄取 1 個的機率約 <b>${1-none>=.99?"99% 以上":Math.round((1-none)*100)+"%"}</b>（各系組視為獨立估計）・`:""}已填 ${A.wish.length}/100 個</div>`);
+    // 「至少錄取 1 個」改由下面的志願序模擬給（同一次套用同一個門檻變動），
+    // 原本各系獨立相乘會算得太樂觀，兩個數字並排只會讓人困惑。
+    msgs.push(`<div class="note" style="margin-top:6px">已填 ${A.wish.length}/100 個</div>`);
   }
   $("aWishCheck").innerHTML=msgs.join("");
 }
