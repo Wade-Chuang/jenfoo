@@ -120,7 +120,7 @@ function renderReport(){
   $("aKpi").innerHTML=`<div class="kpi"><div class="k">穩上＋可上</div><div class="v">${cnt("safe")+cnt("good")} 系組</div><div class="s">機率 50% 以上</div></div>
    <div class="kpi"><div class="k">可衝</div><div class="v">${cnt("reach")} 系組</div><div class="s">機率 20～50%</div></div>
    <div class="kpi"><div class="k">最高可上等級</div><div class="v" style="font-size:19px">${best>=0?TIERS[best][0]:"—"}</div><div class="s">機率 50% 以上</div></div>
-   <div class="kpi"><div class="k">缺考科目而無法計算</div><div class="v">${cnt("miss")} 系組</div><div class="s">補填成績就會出現</div></div>`;
+   <div class="kpi"><div class="k">你的科目能報的</div><div class="v">${pool.filter(r=>r.j.cat!=="miss"&&r.j.cat!=="art").length} 系組</div><div class="s">另有 ${cnt("miss")} 系組要考你沒考的科目</div></div>`;
   $("aSubj").innerHTML=`<tr><th class="l">科目</th><th>60 級分</th><th>贏過</th></tr>`+S60.map((s,i)=>{const v=sc60(i);if(v==null)return"";const t=TOP60[String(i)];const p=t&&t[v]!=null?Math.round(100-t[v]+((t[v]-(v<60&&t[v+1]!=null?t[v+1]:0))/2)):null;
     return`<tr><td class="l">${s}${i<6&&A.g60[i]==null?' <span class="note">(估計)</span>':""}</td><td><b>${v}</b></td><td>${p==null?"—":p+"%"}</td></tr>`}).join("");
   const cntP=b=>D.reduce((n,d)=>{if(!inPool(d))return n;const j=judge(d,{bump:b});return n+(j.p!=null&&j.p>=.5?1:0)},0);

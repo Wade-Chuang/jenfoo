@@ -30,12 +30,14 @@ ITEMS = [
     ("apcspractice", "APCS 特訓站", "apcs/practice/", "觀念題＋實作題線上練習"),
     ("luodian", "學測落點分析", "luodian/", "一階通過機率、推薦志願"),
     ("portfolio", "備審小幫手", "portfolio/", "學習歷程、動機、面試"),
+    ("tc", "統測落點分析", "luodian/tc.html", "四技二專甄選・登記分發機率"),
 ]
 
 # 這一頁看完最可能想去的下一站，排在最前面並且標起來
 NEXT = {
     "luodian": ("portfolio", "志願排好了，接著整理備審"),
     "portfolio": ("luodian", "還沒算落點？先看哪些校系有機會"),
+    "tc": ("portfolio", "志願排好了，接著準備二階備審"),
     "practice": ("quiz", "想印成紙本？這裡可以出卷"),
     "quiz": ("practice", "想線上作答、馬上批改？"),
     "voc": ("exam", "統測數學 C 的歷屆真題在這"),
@@ -67,6 +69,7 @@ PAGES = {
     "apcs/practice/index.html": ("apcspractice", "../../"),
     "luodian/index.html": ("luodian", "../"),
     "portfolio/index.html": ("portfolio", "../"),
+    "luodian/tc.html": ("tc", "../"),
 }
 
 CSS = (

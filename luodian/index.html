@@ -2,11 +2,21 @@
 <html lang="zh-Hant">
 <head>
 <meta charset="utf-8">
+<script>/* 家長分享連結：#s=… 先寫進 localStorage，主程式載入時就會還原（share_ld.js 產生） */
+(function(){var m=location.hash.match(/^#s=(apply|ast)\|([^|]*)\|([^|]*)\|([^|]*)\|([^|]*)\|([01])(?:\|([^|]*)\|([^|]*))?$/);if(!m)return;
+ var num=function(t,n){var a=(t||"").split(",");var o=[];for(var i=0;i<n;i++){var v=a[i];o.push(v===""||v==null||isNaN(+v)?null:+v)}return o};
+ var ids=function(t){return t?t.split(".").filter(function(x){return x!==""}).map(Number).filter(function(x){return !isNaN(x)}):[]};
+ try{var st=JSON.parse(localStorage.getItem("ld3")||"{}");st.sc=num(m[2],6).map(function(v){return v==null?null:Math.max(0,Math.min(15,v))});st.lt=/^[ABCF]$/.test(m[3])?m[3]:null;st.g=ids(m[4]);st.r=ids(m[5]);st.sp=m[6]==="1";
+  localStorage.setItem("ld3",JSON.stringify(st));var A=JSON.parse(localStorage.getItem("ldast")||"{}");A.mode=m[1];
+  if(m[1]==="ast"){A.g60=num(m[7],6).map(function(v){return v==null?null:Math.max(0,Math.min(60,v))});A.a60=num(m[8],8).map(function(v){return v==null?null:Math.max(0,Math.min(60,v))})}
+  localStorage.setItem("ldast",JSON.stringify(A))}catch(e){}
+ history.replaceState(null,"",location.pathname+location.search+(m[1]==="ast"?"#aRep":"#report"))})();</script>
+
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>學測落點分析｜莊老數學教室・正賦文理</title>
 <meta name="description" content="116 學測申請入學落點分析：2,240 個校系一階通過機率、推薦 6 志願、二階甄試日期撞期檢查、多 1 級分試算。甄選會與大考中心官方資料，回測公開，完全免費。">
 <meta property="og:title" content="學測落點分析｜莊老數學教室・正賦文理">
-<meta property="og:description" content="輸入學測級分，看每個校系的一階通過機率、推薦 6 志願、甄試撞期檢查。完全免費。">
+<meta property="og:description" content="116 學測申請入學落點分析：2,240 個校系一階通過機率、推薦 6 志願、二階甄試日期撞期檢查、多 1 級分試算。甄選會與大考中心官方資料，回測公開，完全免費。">
 <style>
 :root{--navy:#0f2747;--navy2:#1b3a66;--gold:#c9a23a;--gold2:#f3e3b0;--gold3:#fbf5e3;--bg:#f4f5f8;--card:#fff;--ink:#1d2433;--mute:#6b7280;--line:#e3e6ec;
 --safe:#1f8a4c;--good:#2f6fd6;--reach:#e08a00;--no:#b42318;--gray:#98a2b3}
@@ -140,6 +150,13 @@ footer{font-size:12.5px;color:var(--mute);padding:10px 16px 60px;max-width:1080p
 <meta name="referrer" content="no-referrer-when-downgrade">
 <link rel="canonical" href="https://wade-chuang.github.io/jenfoo/luodian/">
 <meta property="og:url" content="https://wade-chuang.github.io/jenfoo/luodian/">
+<meta name="theme-color" content="#1b2430">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="正賦文理短期補習班">
+<meta property="og:image" content="https://wade-chuang.github.io/jenfoo/img/og.jpg">
+<meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+<meta property="og:locale" content="zh_TW">
+<meta name="twitter:card" content="summary_large_image">
 </head>
 <body>
 <header><div class="wrap">
@@ -150,6 +167,8 @@ footer{font-size:12.5px;color:var(--mute);padding:10px 16px 60px;max-width:1080p
   <div class="modes no-print"><button class="mode on" data-mode="apply">申請入學<small>學測</small></button><button class="mode" data-mode="ast">分科分發<small>學測＋分科</small></button></div>
   <div class="badges" id="badgesApply"><span>2,240 個校系</span><span>官方資料 5 年</span><span>回測公開</span><span>甄試撞期檢查</span><span>免登入・完全免費</span></div>
   <div class="badges" id="badgesAst" hidden><span>1,777 個系組</span><span>官方資料 5 年</span><span>回測公開</span><span>最多 100 志願排序</span><span>免登入・完全免費</span></div>
+  <a class="no-print" id="toTC" href="tc.html" style="display:inline-block;margin-top:8px;color:var(--gold2);font-size:13px">高職生看這裡：統測落點分析（四技二專）→</a>
+  <script>(function(){var a=document.getElementById("toTC");if(location.port==="8765")a.href="http://localhost:8772/tc.html";else if(!/github\.io$/.test(location.hostname)){a.href="https://claude.ai/artifact/MzULvEkEPYXiUwpEYGodrb";a.target="_blank";a.rel="noopener"}})();</script>
 </div></header>
 <div id="modeApply">
 <nav class="tabs no-print"><div class="wrap">
@@ -202,6 +221,9 @@ footer{font-size:12.5px;color:var(--mute);padding:10px 16px 60px;max-width:1080p
       <h2>推薦 6 志願 <small>2 衝・2 穩・2 保，每段挑排名最前面、不同學校、甄試不撞期的系</small></h2>
       <div class="picks" id="picks"></div>
       <div class="no-print" style="margin-top:8px"><button class="btn ghost" id="usePicks">把這 6 個放進我的志願</button></div>
+      <div class="no-print" style="margin-top:12px;padding:12px 14px;border:1.5px dashed var(--gold);border-radius:12px;background:#fff8e6"><b style="color:var(--navy)">📝 下一步：準備備審資料</b>
+        <div class="note" style="margin:4px 0 8px">把你的志願（還沒排就帶上面推薦的 6 個系）帶到備審小幫手，每個系的審查項目、必備資料、字數上限和面試日期會自動帶進去。</div>
+        <a class="btn navy" id="pickBS" href="#" target="_blank" rel="noopener" style="text-decoration:none">帶到備審小幫手開始準備 →</a></div>
     </div>
     <div class="panel" id="wish">
       <h2><span class="n">3</span>我的志願 <small>申請入學最多 6 個；自動檢查撞期、衝穩保比例、甄試費</small></h2>
@@ -210,7 +232,8 @@ footer{font-size:12.5px;color:var(--mute);padding:10px 16px 60px;max-width:1080p
       <div class="no-print bs-link" id="bsLink" style="margin-top:12px;padding:12px 14px;border:1.5px dashed var(--gold);border-radius:12px;background:var(--gold3)">
         <b style="color:var(--navy)">📝 下一步：準備備審資料</b>
         <div class="note" style="margin:4px 0 8px">把這幾個志願帶到「備審小幫手」，116 官方審查項目、必備項目、字數規定、二階比例、繳件與甄試日期會自動帶進去，還會幫你整理哪些資料可以共用。</div>
-        <button class="btn navy" id="toBeishen">帶到備審小幫手開始準備</button> <button class="btn ghost" id="copyCodes">複製志願代碼</button>
+        <a class="btn navy" id="toBeishen" href="#" target="_blank" rel="noopener" style="text-decoration:none">帶到備審小幫手開始準備 →</a> <button class="btn ghost" id="copyCodes">複製志願代碼</button>
+        <div id="codeWrap" hidden style="margin-top:8px"><div class="note">如果打開後沒有自動帶入：在備審小幫手的「目標校系」按「從落點分析匯入」，貼上這串代碼（點一下就會全選）：</div><input id="codeBox" readonly onclick="this.select()" style="margin-top:4px;width:100%;font-family:monospace;font-size:13px;padding:6px 8px;border:1.5px solid var(--line);border-radius:8px"></div>
       </div>
       <div class="no-print" style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap"><a class="btn" style="background:#06c755;color:#fff;text-decoration:none" href="https://line.me/R/ti/p/@chuanglaomath" target="_blank" rel="noopener">想請莊老師幫你看志願？加官方 LINE @chuanglaomath</a></div>
     </div>
@@ -284,11 +307,15 @@ footer{font-size:12.5px;color:var(--mute);padding:10px 16px 60px;max-width:1080p
 </div><!-- /modeApply -->
 <div id="modeAst" hidden></div>
 <div class="toast" id="toast"></div>
+<!--related-->
+<style>.jrel{background:#16223a;color:#fff;padding:34px 0 30px;font-family:system-ui,'Noto Sans TC',sans-serif}.jrel *{box-sizing:border-box}.jrel-in{max-width:1120px;margin:0 auto;padding:0 20px}.jrel-h{display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:0 0 16px;font-size:13px;font-weight:700;letter-spacing:.08em;color:#c7cedb}.jrel-h a{color:#c69e46;text-decoration:none;font-weight:700;letter-spacing:0}.jrel-h a:hover{text-decoration:underline}.jrel-h nav{display:flex;flex-wrap:wrap;gap:4px 14px;letter-spacing:0}.jrel-h nav a{color:#c7cedb;font-weight:500}.jrel-h nav a:hover{color:#c69e46}.jrel-g{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}@media (max-width:900px){.jrel-g{grid-template-columns:1fr 1fr}}@media (max-width:520px){.jrel-g{grid-template-columns:1fr}}.jrel-g a{display:block;padding:11px 13px;border:1px solid rgba(255,255,255,.14);border-radius:12px;text-decoration:none;color:#fff;background:rgba(255,255,255,.03)}.jrel-g a:hover{border-color:#c69e46;background:rgba(198,158,70,.12)}.jrel-g b{display:block;font-size:15px;font-weight:700;margin-bottom:2px}.jrel-g span{display:block;font-size:12.5px;color:#aab3c4;line-height:1.5}.jrel-g a.next{grid-column:span 2;border-color:#c69e46;background:rgba(198,158,70,.14)}@media (max-width:520px){.jrel-g a.next{grid-column:span 1}}.jrel-g a.next em{display:block;font-style:normal;font-size:12px;font-weight:700;color:#e6c879;margin-bottom:3px}</style>
+<section class="jrel" aria-label="其他免費資源"><div class="jrel-in"><div class="jrel-h"><span>其他免費資源・全部免費不用註冊</span><nav aria-label="網站其他頁"><a href="../">首頁</a><a href="../classes/">班別課程</a><a href="../teacher/">莊老師</a><a href="../news/">最新消息</a><a href="../learn/">學習中心</a><a href="../search/">搜尋站內</a></nav></div><div class="jrel-g"><a href="../portfolio/" class="next"><em>志願排好了，接著整理備審</em><b>備審小幫手</b><span>學習歷程、動機、面試</span></a><a href="../practice/"><b>數學線上練習</b><span>國中到技高 133 單元，答完馬上批改</span></a><a href="../quiz/"><b>數學練習卷</b><span>164 單元一鍵出卷，可列印</span></a><a href="../practice/#/exam"><b>會考・統測真題</b><span>原題作答，官方答案與詳解</span></a><a href="../voc/"><b>技高專業科目</b><span>電機電子群八科＋統測專業科目</span></a><a href="../cards/"><b>段考重點圖卡</b><span>考前只看這 12 格</span></a><a href="../videos/"><b>影片專區</b><span>段考複習、一分鐘觀念</span></a><a href="../science/"><b>國中自然</b><span>影片＋講義 PDF</span></a><a href="../social/"><b>國中社會</b><span>18 冊重點漫畫＋講義</span></a><a href="../apcs/"><b>APCS 程式設計</b><span>12 單元 36 支影片＋講義</span></a><a href="../apcs/practice/"><b>APCS 特訓站</b><span>觀念題＋實作題線上練習</span></a><a href="../luodian/tc.html"><b>統測落點分析</b><span>四技二專甄選・登記分發機率</span></a></div></div></section>
+<!--/related-->
 <footer>
   資料來源：大學甄選入學委員會「111～115 學年度申請入學各校系篩選標準一覽表」「116 學年度校系分則」、大學入學考試中心「各科及 2 至 4 科組合級分人數累計表」，由莊老數學教室（正賦文理）整理。歷年資料由圖片辨識轉成文字並經多重檢查，個別校系仍可能有誤，填志願前請以甄選會官網為準。本工具僅供參考，不保證錄取。LINE 官方帳號 @chuanglaomath
 </footer>
 
-<script src="data.js?v=ce16e1f4"></script>
+<script src="data.js?v=6cfc09c5"></script>
 <script>
 (function(){
 const SUBJ=["國文","英文","數學A","數學B","社會","自然"], AB=["國","英","數A","數B","社","自"], LEVELS=["頂標","前標","均標","後標","底標"];
@@ -380,8 +407,8 @@ function renderReport(){
   const any=st.sc.some(v=>v!=null);$("report").classList.toggle("show",any);$("emptyHint").hidden=any;if(!any)return;
   const pool=R.filter(r=>inPool(r.d));
   const cnt=c=>pool.filter(r=>r.j.cat===c).length;
-  const combos=[[0,1,2,5],[0,1,3,4],[0,1,2,4],[0,1,3,5],[0,1,2,3]].filter(a=>a.every(x=>st.sc[x]!=null));
-  let overall="—",osub="至少要有國英＋2 科";const ck=combos.length?combos[0].join(","):null;
+  const combos=[[0,1,2,5],[0,1,3,4],[0,1,2,4],[0,1,3,5],[0,1,2,3],[0,1,2],[0,1,3],[0,1,4],[0,1,5]].filter(a=>a.every(x=>st.sc[x]!=null));   // 考幾科就用幾科的組合（官方有 2～4 科組合人數表）
+  let overall="—",osub="至少要有國文、英文＋1 科";const ck=combos.length?combos[0].join(","):null;
   if(ck){const t=topOf(ck,sum(combos[0]));if(t!=null){overall=`前 ${t<1?t.toFixed(1):Math.round(t)}%`;osub=`${combos[0].map(x=>AB[x]).join("")} ${sum(combos[0])} 級分`}}
   const best=TIERS.findIndex((_,ti)=>pool.some(r=>tierOf(r.d)===ti&&(r.j.cat==="safe"||r.j.cat==="good")&&r.d.p.length));
   $("kpis").innerHTML=`<div class="kpi"><div class="k">全國位置</div><div class="v">${overall}</div><div class="s">${osub}</div></div>
@@ -412,6 +439,8 @@ function renderReport(){
     for(const r of c){if(out.length===2)break;if(!out.includes(r)&&!clash(r.d)){out.push(r);take(r.d)}}return out};
   const used=new Set();window._picks=[["衝","var(--reach)","機率 25～55%",pick(.25,.55,used)],["穩","var(--good)","機率 55～80%",pick(.55,.8,used)],["保","var(--safe)","機率 80% 以上",pick(.8,1.01,used)]];
   $("picks").innerHTML=window._picks.map(([t,c,lab,a])=>`<div class="pick"><h3><i style="background:${c}">${t}</i>${lab}</h3>${a.length?a.map(({d,j})=>`<div class="pc"><div class="t">${d.s} ${d.n}</div><div class="m">${TIERS[tierOf(d)][0]}・${planTxt(d)}<br>甄試 ${dateTxt(d)}</div>${probBar(j)}</div>`).join(""):'<div class="note">這段沒有符合的校系，可以放寬學群或地區。</div>'}</div>`).join("");
+  if(!st.g.length)$("picks").insertAdjacentHTML("afterend",'<p class="note no-print" id="pickHint" style="margin:6px 0 0">💡 推薦目前涵蓋所有學群。在上面「想讀的學群」選 1～3 個，推薦會只挑你想讀的方向。</p>');else{const h=document.getElementById("pickHint");h&&h.remove()}
+  {const h=document.querySelectorAll("#pickHint");h.forEach((x,k)=>{if(k>0||st.g.length)x.remove()})}
   $("printHead").innerHTML=`<h2 style="margin:0 0 4px;color:#0f2747">學測落點分析報告｜莊老數學教室・正賦文理</h2><div class="note">級分：${SUBJ.map((s,i)=>st.sc[i]==null?"":s+" "+st.sc[i]).filter(Boolean).join("、")}${st.lt?"、英聽 "+st.lt:""}　學群：${st.g.map(i=>GN[i]).join("、")||"全部"}　地區：${st.r.map(i=>RN[i]).join("、")||"全部"}　產生日期：${new Date().toLocaleDateString("zh-TW")}　本報告只預測第一階段篩選，僅供參考。</div>`;
 }
 $("usePicks").onclick=()=>{const cs=(window._picks||[]).flatMap(x=>x[3].map(r=>r.d.c));if(!cs.length)return;st.wish=cs.slice(0,6);save();renderWish();renderList();$("wish").scrollIntoView();toast("已放進我的志願")};
@@ -447,10 +476,17 @@ function renderWish(){
   $("wishCheck").innerHTML=msgs.join("");
 }
 // ---------- 串接備審小幫手 ----------
-const BEISHEN=location.port==="8765"?"http://localhost:8771/":/github\.io$/.test(location.hostname)?"../portfolio/":"https://claude.ai/artifact/6e7hkh2HcELAQS5huihsUF";
+const BEISHEN=location.port==="8765"?"http://localhost:8771/":/github\.io$/.test(location.hostname)?"../portfolio/":"portfolio/index.html?b=hs";
+const BT=location.port!=="8765"&&!/github\.io$/.test(location.hostname)?"_self":"_blank";   // 私人預覽：備審在同一個預覽的 portfolio/ 子頁，同框架跳轉
 const wishCodes=()=>st.wish.filter(c=>BYC[c]).map(c=>{const j=RJ[c];return c+(j&&j.p!=null?"-"+Math.round(j.p*100):"")}).join(",");
-$("toBeishen").onclick=()=>{if(!st.wish.length){toast("先把志願加進來");return}window.open(BEISHEN+"#import="+wishCodes(),"_blank","noopener")};
-$("copyCodes").onclick=async()=>{if(!st.wish.length){toast("先把志願加進來");return}const t=wishCodes();try{await navigator.clipboard.writeText(t);toast("已複製！到備審小幫手按「從落點分析匯入」貼上")}catch(e){prompt("複製這串代碼，到備審小幫手貼上：",t)}};
+$("toBeishen").target=BT;
+$("pickBS").target=BT;
+$("pickBS").onclick=e=>{const cs=st.wish.length?st.wish.filter(c=>BYC[c]):(window._picks||[]).flatMap(x=>x[3].map(r=>r.d.c)).slice(0,6);
+  if(!cs.length){e.preventDefault();toast("先輸入級分、選學群，才會有推薦志願");return}
+  e.currentTarget.href=BEISHEN+"#import="+cs.map(c=>{const j=RJ[c];return c+(j&&j.p!=null?"-"+Math.round(j.p*100):"")}).join(",")};
+$("toBeishen").onclick=e=>{if(!st.wish.length){e.preventDefault();toast("先把志願加進來");return}const c=wishCodes();e.currentTarget.href=BEISHEN+"#import="+c;$("codeBox").value=c;$("codeWrap").hidden=false};   // 用一般連結開新分頁（私人預覽的框架會擋程式開分頁）
+$("copyCodes").onclick=async()=>{if(!st.wish.length){toast("先把志願加進來");return}const t=wishCodes(),box=$("codeBox");box.value=t;$("codeWrap").hidden=false;box.focus();box.select();let ok=false;try{ok=document.execCommand("copy")}catch(e){}
+  if(!ok){try{await navigator.clipboard.writeText(t);ok=true}catch(e){}}toast(ok?"已複製！到備審小幫手按「從落點分析匯入」貼上":"代碼已選取，請按 Ctrl+C（手機長按）複製")};
 function toggleWish(c){if(st.wish.includes(c))st.wish=st.wish.filter(x=>x!==c);else{if(st.wish.length>=6){toast("最多 6 個志願");return}st.wish.push(c);toast("已加入我的志願")}save();renderWish();renderList()}
 
 // ---------- 找校系 ----------
@@ -500,16 +536,17 @@ function renderFavs(){
 }
 function all(){compute();renderReport();renderWish();renderList();renderFavs()}
 const share=async()=>{const u=location.href.split("#")[0];try{if(navigator.share){await navigator.share({title:"學測落點分析｜莊老數學教室・正賦文理",url:u});return}}catch(e){}
-  try{await navigator.clipboard.writeText(u);toast("網址已複製，貼給同學吧！")}catch(e){prompt("複製這個網址分享：",u)}};
+  try{await navigator.clipboard.writeText(u);toast("網址已複製，貼給同學吧！")}catch(e){toast("請複製網址列的網址分享給同學")}};
 document.querySelectorAll("[data-share]").forEach(b=>b.onclick=share);
 all();
 window.__LD={judgeWith,eqScore,poolCount,st,D,RJ:()=>RJ,TIERS,RG,REG,RN,S5,save,all,toast,share,GN,wishCodes,BEISHEN};   // 測試用（唯讀檢查）
 })();
 </script>
-<script src="ast_data.js?v=8e043f00"></script>
-<script src="ast_app.js?v=27322b7c"></script>
+<script src="ast_data.js?v=1268c866"></script>
+<script src="ast_app.js?v=c54603a1"></script>
 <script src="report_qr.js?v=80eee7b1"></script>
-<script src="report_pdf.js?v=1903c3a4"></script>
+<script src="report_pdf.js?v=e0276ea4"></script>
+<script src="share_ld.js?v=96da9a52"></script>
 <div style="text-align:center;font-size:13px;color:#8a93a3;margin:10px 0 24px;line-height:2">
   <span id="visits" hidden>落點分析累計使用 <b id="busuanzi_value_page_pv"></b> 人次</span>
   <span id="brandTotal" hidden>　正賦全站累計 <b></b> 人次</span>
@@ -521,5 +558,6 @@ window.__LD={judgeWith,eqScore,poolCount,st,D,RJ:()=>RJ,TIERS,RG,REG,RN,S5,save,
 (function(){var n=0,t=setInterval(function(){var el=document.getElementById('busuanzi_value_page_pv'),v=parseInt(el&&el.textContent,10);
   if(v>0){clearInterval(t);el.textContent=v.toLocaleString('en-US');document.getElementById('visits').hidden=false}else if(++n>40)clearInterval(t)},500)})();
 </script>
+<script src="../assets/search.js" defer></script>
 </body>
 </html>

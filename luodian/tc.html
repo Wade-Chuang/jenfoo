@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="referrer" content="no-referrer-when-downgrade">
+<title>統測落點分析｜莊老數學教室・正賦文理</title>
+<meta name="description" content="輸入統測成績，看四技二專聯合登記分發各校系的錄取機率。用 111～115 年官方最低錄取總成績與全體登記考生分布換算排名，回測與校準公開。完全免費、不用登入。">
+<meta property="og:title" content="統測落點分析｜莊老數學教室・正賦文理">
+<meta property="og:description" content="輸入統測成績，看四技二專聯合登記分發各校系的錄取機率。用 111～115 年官方最低錄取總成績與全體登記考生分布換算排名，回測與校準公開。完全免費、不用登入。">
+<style>
+:root{--navy:#0f2747;--navy2:#1b3a66;--gold:#c9a23a;--gold2:#f3e3b0;--gold3:#fbf5e3;--bg:#f4f5f8;--card:#fff;--ink:#1d2433;--mute:#6b7280;--line:#e3e6ec;
+ --safe:#1f9254;--good:#2f6fd6;--reach:#e08a0b;--no:#c0392b;--gray:#9aa3b2}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.65 "Noto Sans TC","Microsoft JhengHei","PingFang TC",sans-serif}
+.wrap{max-width:1080px;margin:0 auto;padding:0 16px}
+header{background:var(--navy);color:#fff;padding:22px 0 18px;border-bottom:5px solid var(--gold)}
+header .brand{color:var(--gold2);font-size:13px;letter-spacing:.12em}header h1{margin:6px 0 4px;font-size:28px}header h1 b{color:var(--gold)}
+header p{margin:0;color:#c9d1de;font-size:14px}.badges{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}.badges span{border:1px solid rgba(243,227,176,.5);color:var(--gold2);border-radius:99px;padding:2px 10px;font-size:12.5px}
+.back{display:inline-block;margin-top:8px;color:var(--gold2);font-size:13px}
+.modes{display:flex;gap:8px;margin-top:12px}.mode{border:2px solid var(--gold);background:transparent;color:#fff;border-radius:12px;padding:6px 16px;font:inherit;font-weight:bold;cursor:pointer;line-height:1.3}.mode small{display:block;font-weight:normal;font-size:11.5px;color:var(--gold2)}.mode.on{background:var(--gold);color:var(--navy)}.mode.on small{color:var(--navy)}
+nav.tabs{position:sticky;top:0;z-index:5;background:#fff;border-bottom:1px solid var(--line)}nav.tabs .wrap{display:flex;gap:4px;overflow-x:auto}
+nav.tabs a{padding:11px 12px;color:var(--ink);text-decoration:none;white-space:nowrap;font-size:14px}nav.tabs a:hover{color:var(--navy);background:var(--gold3)}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 18px;margin:14px 0;box-shadow:0 1px 2px rgba(15,39,71,.04)}
+h2{font-size:19px;color:var(--navy);margin:0 0 10px}h2 .n{display:inline-block;width:26px;height:26px;border-radius:50%;background:var(--navy);color:#fff;text-align:center;line-height:26px;font-size:14px;margin-right:6px}h2 small{color:var(--mute);font-weight:normal;font-size:13px;margin-left:6px}
+.note{color:var(--mute);font-size:13px}.warnbox{background:#fff4e5;border:1px solid #f5c27a;color:#7a4300;border-radius:10px;padding:10px 12px;font-size:13.5px;margin:10px 0}
+.row{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px}.row label{display:flex;flex-direction:column;font-size:13px;color:var(--mute);gap:4px}
+select,input{font:inherit;padding:7px 9px;border:1.5px solid var(--line);border-radius:8px;background:#fff;width:100%;min-width:0}input:focus,select:focus{outline:2px solid var(--gold);border-color:var(--gold)}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.kpi{background:var(--gold3);border:1px solid var(--gold2);border-radius:12px;padding:12px}.kpi .k{font-size:12.5px;color:var(--mute)}.kpi .v{font-size:24px;font-weight:bold;color:var(--navy)}.kpi .s{font-size:12.5px;color:#4b5563}
+.filters{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:8px;margin-bottom:8px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}.chip{border:1.5px solid var(--line);background:#fff;border-radius:99px;padding:4px 12px;cursor:pointer;font:inherit;font-size:13.5px}.chip b{margin-left:5px;color:var(--mute);font-weight:normal}.chip.on{background:var(--navy);color:#fff;border-color:var(--navy)}.chip.on b{color:var(--gold2)}
+.item{border:1px solid var(--line);border-left:5px solid var(--gray);border-radius:12px;padding:10px 14px;margin:8px 0;background:#fff}
+.item.safe{border-left-color:var(--safe)}.item.good{border-left-color:var(--good)}.item.reach{border-left-color:var(--reach)}.item.no,.item.fail{border-left-color:var(--no)}
+.top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}.nm{font-weight:bold;color:var(--navy)}.nm small{display:block;font-weight:normal;color:var(--mute);font-size:12.5px}
+.tl{display:inline-block;background:var(--gold3);color:#8a6a12;border:1px solid var(--gold2);border-radius:6px;font-size:11.5px;padding:0 6px;margin-right:6px;font-weight:normal}
+.tag{border-radius:99px;padding:2px 10px;font-size:12.5px;color:#fff;white-space:nowrap}.tag.safe{background:var(--safe)}.tag.good{background:var(--good)}.tag.reach{background:var(--reach)}.tag.no,.tag.fail{background:var(--no)}.tag.miss,.tag.unf,.tag.nodata{background:var(--gray)}
+.prob{display:flex;align-items:center;gap:8px;margin:6px 0 2px}.prob .bar{flex:1;height:9px;background:#eef0f4;border-radius:5px;overflow:hidden}.prob .bar i{display:block;height:100%}.prob b{min-width:46px;text-align:right}
+.meta{font-size:13px;color:#374151;margin-top:4px}.meta div{margin:2px 0}.meta .k{display:inline-block;min-width:68px;color:var(--mute)}
+.sb{display:inline-block;border:1px solid var(--line);border-radius:5px;padding:0 5px;margin-right:3px;font-size:12px}.sb.off{color:#b6bcc8;text-decoration:line-through}
+.est{color:var(--reach);font-size:12px}
+details.h summary{cursor:pointer;color:var(--navy2);font-size:13px}table.t{border-collapse:collapse;width:100%;font-size:13px}table.t th,table.t td{border-bottom:1px solid var(--line);padding:5px 6px;text-align:center}table.t th{color:var(--mute);font-weight:normal}
+.btn{display:inline-block;border:0;border-radius:99px;padding:8px 16px;font:inherit;font-weight:bold;cursor:pointer;text-decoration:none}.btn.navy{background:var(--navy);color:#fff}.btn.line{background:#06c755;color:#fff}.btn.ghost{background:#fff;border:1.5px solid var(--line);color:var(--ink)}.btn.yt{background:#e62117;color:#fff}
+.more{display:block;margin:10px auto;border:1.5px solid var(--line);background:#fff;border-radius:99px;padding:8px 22px;cursor:pointer;font:inherit}
+.acc{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.acc div{background:var(--gold3);border-radius:10px;padding:10px}.acc b{font-size:22px;color:var(--navy);display:block}
+.cta{text-align:center;margin:26px 0}.cta .row2{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:8px}
+footer{color:var(--mute);font-size:12.5px;line-height:1.8;padding:16px 0 30px;border-top:1px solid var(--line)}
+.empty{color:var(--mute);text-align:center;padding:16px}
+.wi{display:flex;gap:8px;align-items:center;border:1px solid var(--line);border-radius:10px;padding:7px 10px;margin:6px 0}.wi .no{width:24px;height:24px;border-radius:50%;background:var(--navy);color:#fff;text-align:center;line-height:24px;font-size:12px;flex:none}.wi .x{margin-left:auto;display:flex;gap:4px}.wi .x button{border:1px solid var(--line);background:#fff;border-radius:6px;cursor:pointer}
+.add{border:1.5px solid var(--navy);background:#fff;color:var(--navy);border-radius:99px;padding:1px 10px;cursor:pointer;font:inherit;font-size:12.5px}.add.on{background:var(--navy);color:#fff}
+@media (max-width:760px){.row{grid-template-columns:repeat(3,minmax(0,1fr))}.kpis{grid-template-columns:repeat(2,1fr)}.filters{grid-template-columns:1fr 1fr}.filters input{grid-column:1/-1}.acc{grid-template-columns:1fr}header h1{font-size:23px}.top{flex-direction:column}}
+@media print{nav,.no-print,.cta,#explore,#how,#faq{display:none!important}body{background:#fff}.panel{break-inside:avoid;box-shadow:none}}
+</style>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-NSNBQNLSDN"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-NSNBQNLSDN');
+</script>
+<link rel="canonical" href="https://wade-chuang.github.io/jenfoo/luodian/tc.html">
+<meta property="og:url" content="https://wade-chuang.github.io/jenfoo/luodian/tc.html">
+<meta name="theme-color" content="#1b2430">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="正賦文理短期補習班">
+<meta property="og:image" content="https://wade-chuang.github.io/jenfoo/img/og.jpg">
+<meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+<meta property="og:locale" content="zh_TW">
+<meta name="twitter:card" content="summary_large_image">
+</head>
+<body>
+<header><div class="wrap">
+  <div class="brand">莊老數學教室｜正賦文理</div>
+  <h1>統測<b>落點分析</b>・116 四技二專</h1>
+  <p id="heroTxt"></p>
+  <div class="badges"><span id="nDept">2,279 個校系</span><span>官方資料 5 年</span><span>回測＋校準公開</span><span>116 選採科目已對照</span><span>免登入・完全免費</span></div>
+  <div class="modes no-print"><button class="mode" data-mode="a">甄選入學<small>第一階段篩選</small></button><button class="mode" data-mode="u">聯合登記分發<small>統測加權總分</small></button></div>
+  <a class="back no-print" href="./">← 高中生看這裡：學測落點分析</a>
+</div></header>
+<nav class="tabs no-print"><div class="wrap"><a href="#input">輸入成績</a><a href="#report">落點報告</a><a href="#wish">我的志願</a><a href="#explore">找校系</a><a href="#favs">收藏比較</a><a href="#how">準確度</a><a href="#faq">常見問題</a></div></nav>
+<div class="wrap">
+  <div class="warnbox"><b>116 年統測改為「自主選考」</b>：很多校系改成只採部分科目（例如只採國文＋專業一）。倍率和名額要等 116 簡章（往年 12 月初）公布。在那之前：<b>甄選入學</b>只對「篩選科目和 115 一樣」的系算機率，改了科目的系只列歷年資料；<b>登記分發</b>先用 115 年倍率，科目改變的系標「估計」。簡章公布後本站會更新。</div>
+
+  <section class="panel" id="input">
+    <h2><span class="n">1</span>輸入統測成績 <small>還沒考？先填模擬考成績試算（每科 0～100 分，沒考就空白）</small></h2>
+    <div class="row">
+      <label>群（類）別<select id="grp"></select></label>
+      <label>國文<input id="s_c" type="number" min="0" max="100" step="0.01" inputmode="decimal"></label>
+      <label>英文<input id="s_e" type="number" min="0" max="100" step="0.01" inputmode="decimal"></label>
+      <label>數學<input id="s_m" type="number" min="0" max="100" step="0.01" inputmode="decimal"></label>
+      <label>專業(一)<input id="s_p1" type="number" min="0" max="100" step="0.01" inputmode="decimal"></label>
+      <label>專業(二)<input id="s_p2" type="number" min="0" max="100" step="0.01" inputmode="decimal"></label>
+    </div>
+    <p class="note" style="margin:8px 0 0">成績只存在你自己的瀏覽器，不會上傳。甄選入學會自動把分數換成級分（用 115 年級距表）。</p>
+  </section>
+
+  <section id="report" hidden>
+    <div class="panel">
+      <div class="top"><h2 style="margin:0"><span class="n">2</span>你的落點報告</h2><div class="no-print" style="display:flex;gap:8px"><button class="btn navy" onclick="print()">列印／存 PDF</button><button class="btn ghost" id="share">分享</button></div></div>
+      <div class="kpis" id="kpis" style="margin-top:10px"></div>
+      <p class="note" id="kpinote" style="margin:8px 0 0"></p>
+    </div>
+    <div class="panel" id="pickPanel"><h2 id="pickTitle">推薦志願</h2><div id="picks"></div>
+      <div class="no-print" style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap"><button class="btn ghost" id="usePicks">把這些放進我的志願</button><button class="btn ghost" id="shareParent">🔗 分享結果給家長</button></div>
+      <div id="pickBS" class="no-print" hidden style="margin-top:12px;padding:12px 14px;border:1.5px dashed var(--gold);border-radius:12px;background:var(--gold3)"></div>
+      <div id="shareBox" class="no-print" hidden style="margin-top:8px"><div class="note">把這個連結傳給家長，打開就會看到同一份結果（成績只放在連結裡，不會上傳到任何伺服器）：</div><input id="shareLink" readonly onclick="this.select()" style="margin-top:4px;font-size:13px"></div>
+    </div>
+    <div class="panel no-print" style="background:#eefaf2;border-color:#bfe6cc"><b>🔔 116 簡章公布後，機率會更新</b><div class="note" style="margin:4px 0 8px">116 學年度簡章（倍率、名額、二階規定）預計 12 月初公布，公布後本站會重新計算。加 LINE 官方帳號，更新時第一時間通知你，也可以直接問莊老師志願怎麼排。</div><a class="btn line" href="https://line.me/R/ti/p/@chuanglaomath" target="_blank" rel="noopener">加 LINE @chuanglaomath 收更新通知</a></div>
+  </section>
+
+  <section class="panel" id="wish">
+    <h2><span class="n">3</span>我的志願 <small id="wishSub"></small></h2>
+    <div id="wishList"></div>
+    <div class="no-print" style="margin-top:10px"><a class="btn line" href="https://line.me/R/ti/p/@chuanglaomath" target="_blank" rel="noopener">想請莊老師幫你排志願？加官方 LINE @chuanglaomath</a></div>
+  </section>
+
+  <section class="panel no-print" id="explore">
+    <h2><span class="n">4</span>找校系</h2>
+    <div class="filters"><input id="kw" type="search" placeholder="搜尋：電機、資工、北科、護理…"><select id="ftier"><option value="">全部等級</option></select><select id="fpub"><option value="">公私立不限</option><option>公立</option><option>私立</option></select><select id="farea"><option value="">全部地區</option></select></div>
+    <div class="chips" id="sortbar"></div>
+    <div class="chips" id="cchips"></div>
+    <div id="list"></div><button class="more" id="more" hidden>顯示更多</button>
+  </section>
+
+  <section class="panel no-print" id="favs">
+    <h2>♥ 收藏比較 <small id="favSub"></small></h2>
+    <div id="favBox"></div>
+  </section>
+
+  <section class="panel no-print" id="how">
+    <h2>準不準？公開回測</h2>
+    <div class="acc"><div><b id="acc1">—</b>平均誤差（每科分數）：用之前年度預測 113～115 年最低錄取分數</div><div><b id="acc2">—</b>只看去年最低分的誤差</div><div><b id="acc3">—</b>預測 90% 以上會上，實際錄取比例（輪流留一年校準）</div></div>
+    <p class="note">算法：①把歷年最低錄取總成績，換算成「該群全體登記考生的前百分之幾」（官方公布的各權重組合人數累計表）；②取最近 3 年平均；③116 採計科目改變的校系，用 115 年各權重組合反推各科的平均、變異與相關，估出新科目組合的總分分布（用其他組合驗證，排名誤差平均 0.3 個百分點）；④用回測誤差算機率，再輪流留一年做校準。</p>
+    <div style="overflow-x:auto"><table class="t" id="calT"></table></div>
+    <p class="note" id="howA"></p>
+  </section>
+
+  <section class="panel no-print" id="faq">
+    <h2>常見問題</h2>
+    <details class="h"><summary>116 年統測改成自主選考，這裡的機率還準嗎？</summary><p class="note">採計科目沒變的校系（五科都採），方法和回測一樣；科目改變的校系是用排名推估，會標「估計」，誤差比較大。116 簡章公布倍率後會重新計算。</p></details>
+    <details class="h"><summary>「去年未額滿」是什麼意思？</summary><p class="note">115 年登記分發錄取人數少於名額，代表有登記的人幾乎都錄取，所以不另外算機率。116 年名額、熱門程度可能改變，還是要看簡章。</p></details>
+    <details class="h"><summary>為什麼要選群（類）別？</summary><p class="note">同一個系在不同群（類）別有不同名額、加權和競爭對手，要用你報考的群（類）別來算。</p></details>
+    <details class="h"><summary>甄選入學的機率是什麼意思？</summary><p class="note">是「通過第一階段篩選、進入二階（備審、面試）」的機會。統測分數會依級距表換成級分，再照每個系的篩選順序逐關比對歷年最低級分。二階不在預測範圍內。116 採計科目改變的系，舊門檻不能比，只列歷年資料。</p></details>
+  </section>
+
+  <div class="cta no-print"><p>落點分析免費，分享給同班同學，大家一起填出好志願！</p><div class="row2"><button class="btn navy" id="share2">分享給同學</button><a class="btn line" href="https://line.me/R/ti/p/@chuanglaomath" target="_blank" rel="noopener">加官方 LINE @chuanglaomath</a><a class="btn yt" href="https://www.youtube.com/@chuanglaomath?sub_confirmation=1" target="_blank" rel="noopener">▶ 訂閱 YouTube</a></div></div>
+  <!--related-->
+<style>.jrel{background:#16223a;color:#fff;padding:34px 0 30px;font-family:system-ui,'Noto Sans TC',sans-serif}.jrel *{box-sizing:border-box}.jrel-in{max-width:1120px;margin:0 auto;padding:0 20px}.jrel-h{display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:0 0 16px;font-size:13px;font-weight:700;letter-spacing:.08em;color:#c7cedb}.jrel-h a{color:#c69e46;text-decoration:none;font-weight:700;letter-spacing:0}.jrel-h a:hover{text-decoration:underline}.jrel-h nav{display:flex;flex-wrap:wrap;gap:4px 14px;letter-spacing:0}.jrel-h nav a{color:#c7cedb;font-weight:500}.jrel-h nav a:hover{color:#c69e46}.jrel-g{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}@media (max-width:900px){.jrel-g{grid-template-columns:1fr 1fr}}@media (max-width:520px){.jrel-g{grid-template-columns:1fr}}.jrel-g a{display:block;padding:11px 13px;border:1px solid rgba(255,255,255,.14);border-radius:12px;text-decoration:none;color:#fff;background:rgba(255,255,255,.03)}.jrel-g a:hover{border-color:#c69e46;background:rgba(198,158,70,.12)}.jrel-g b{display:block;font-size:15px;font-weight:700;margin-bottom:2px}.jrel-g span{display:block;font-size:12.5px;color:#aab3c4;line-height:1.5}.jrel-g a.next{grid-column:span 2;border-color:#c69e46;background:rgba(198,158,70,.14)}@media (max-width:520px){.jrel-g a.next{grid-column:span 1}}.jrel-g a.next em{display:block;font-style:normal;font-size:12px;font-weight:700;color:#e6c879;margin-bottom:3px}</style>
+<section class="jrel" aria-label="其他免費資源"><div class="jrel-in"><div class="jrel-h"><span>其他免費資源・全部免費不用註冊</span><nav aria-label="網站其他頁"><a href="../">首頁</a><a href="../classes/">班別課程</a><a href="../teacher/">莊老師</a><a href="../news/">最新消息</a><a href="../learn/">學習中心</a><a href="../search/">搜尋站內</a></nav></div><div class="jrel-g"><a href="../portfolio/" class="next"><em>志願排好了，接著準備二階備審</em><b>備審小幫手</b><span>學習歷程、動機、面試</span></a><a href="../practice/"><b>數學線上練習</b><span>國中到技高 133 單元，答完馬上批改</span></a><a href="../quiz/"><b>數學練習卷</b><span>164 單元一鍵出卷，可列印</span></a><a href="../practice/#/exam"><b>會考・統測真題</b><span>原題作答，官方答案與詳解</span></a><a href="../voc/"><b>技高專業科目</b><span>電機電子群八科＋統測專業科目</span></a><a href="../cards/"><b>段考重點圖卡</b><span>考前只看這 12 格</span></a><a href="../videos/"><b>影片專區</b><span>段考複習、一分鐘觀念</span></a><a href="../science/"><b>國中自然</b><span>影片＋講義 PDF</span></a><a href="../social/"><b>國中社會</b><span>18 冊重點漫畫＋講義</span></a><a href="../apcs/"><b>APCS 程式設計</b><span>12 單元 36 支影片＋講義</span></a><a href="../apcs/practice/"><b>APCS 特訓站</b><span>觀念題＋實作題線上練習</span></a><a href="../luodian/"><b>學測落點分析</b><span>一階通過機率、推薦志願</span></a></div></div></section>
+<!--/related-->
+<footer>資料來源：技專校院招生委員會聯合會「111～115 學年度四技二專日間部聯合登記分發 各校系科組學程錄取總成績統計表（一般生）」「成績權重組合人數累計表」、「116 學年度統測選採科目查詢系統」，由莊老數學教室（正賦文理）整理計算。僅供參考，不保證錄取；填志願前請以聯合登記分發委員會公告為準。LINE 官方帳號 @chuanglaomath</footer>
+</div>
+<script src="union_data.js?v=759413a1"></script>
+<script src="apply_data.js?v=4fd8ccae"></script>
+<script src="report_qr.js?v=80eee7b1"></script>
+<script src="tc_app.js?v=52c3c2d2"></script>
+<script src="tc_stage2.js?v=6b940ccf"></script>
+<script src="tc_fav.js?v=64e5383c"></script>
+<script src="tc_report.js?v=6db01942"></script>
+<div style="text-align:center;font-size:13px;color:#8a93a3;margin:10px 0 24px;line-height:2">
+  <span id="visits" hidden>統測落點分析累計使用 <b id="busuanzi_value_page_pv"></b> 人次</span>
+  <span id="brandTotal" hidden>　正賦全站累計 <b></b> 人次</span>
+  <br><a href="../learn/" style="color:#8a93a3">← 回莊老數學教室｜正賦文理 學習中心</a>
+</div>
+<script src="../total.js"></script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<script>
+(function(){var n=0,t=setInterval(function(){var el=document.getElementById('busuanzi_value_page_pv'),v=parseInt(el&&el.textContent,10);
+  if(v>0){clearInterval(t);el.textContent=v.toLocaleString('en-US');document.getElementById('visits').hidden=false}else if(++n>40)clearInterval(t)},500)})();
+</script>
+<script src="../assets/search.js" defer></script>
+</body>
+</html>
