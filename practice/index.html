@@ -308,8 +308,27 @@ footer a{font-weight:700}
 </div>
 
 <script src="data/math_units.js?v=c9e36851"></script>
-<script src="data/huikao.js?v=4bdc135d"></script>
-<script src="data/tongce.js?v=0b39e58d"></script>
+<script>
+/* 會考與統測真題題庫改成「用到才載」。
+   原本一開頁就下載 huikao.js(113KB)+tongce.js(194KB)，但只想練單元的人完全用不到。
+   先放空的佔位變數，資料檔載進來時會用 var 重新賦值蓋掉。
+   只有真題相關的路由（hk/tc/exam/daily1/wrong、以及非 m- 開頭的單元）才會去載。 */
+var HK=[],HK_CH={},TC=[],TC_CH={};
+window.__EXAM={ready:false,loading:null};
+function loadExamData(){
+  const E=window.__EXAM;
+  if(E.ready)return Promise.resolve();
+  if(E.loading)return E.loading;
+  const one=src=>new Promise((res,rej)=>{
+    const el=document.createElement('script');
+    el.src=src;el.onload=res;el.onerror=()=>rej(new Error(src));
+    document.head.appendChild(el);
+  });
+  E.loading=Promise.all([one('data/huikao.js?v=4bdc135d'),one('data/tongce.js?v=0b39e58d')])
+    .then(()=>{E.ready=true;E.loading=null});
+  return E.loading;
+}
+</script>
 <script>
 /* ================= 基本設定 ================= */
 const $=s=>document.querySelector(s);
@@ -1544,9 +1563,24 @@ function topResult(st){
 }
 
 /* ---------- 路由 ---------- */
+/* 哪些路由需要真題題庫：會考、統測、歷屆試題區、真題每日一題、錯題本，
+   以及單元 id 不是 m- 開頭的（m- 是出題程式產生的單元，不需要真題）。 */
+function needExam(p){
+  if(['hk','tc','exam','daily1','wrong'].indexOf(p[0])>=0)return true;
+  if(p[0]==='q'){const id=p.slice(1).join('/');return id.slice(0,1)!=='m'}
+  return false;
+}
 function route(){
   if(Q)clearTimeout(Q.auto);topStop();
   const h=decodeURIComponent(location.hash.slice(1)||'/'),p=h.split('/').filter(Boolean);header();window.scrollTo(0,0);
+  // 真題題庫是用到才載的，沒載好就先顯示載入中，載完再走一次同一條路由
+  if(needExam(p)&&!window.__EXAM.ready){
+    $('#view').innerHTML='<div class="card" style="text-align:center;padding:28px"><div style="font-size:15px">正在載入歷屆真題題庫…</div><div class="note" style="margin-top:6px">第一次進來要下載，之後就不用了</div></div>';
+    loadExamData().then(route).catch(()=>{
+      $('#view').innerHTML='<div class="card" style="text-align:center;padding:28px"><div style="font-size:15px">真題題庫載入失敗</div><div class="note" style="margin-top:6px">檢查一下網路，重新整理再試一次。</div></div>';
+    });
+    return;
+  }
   if(p[0]==='game')return viewGame();
   if(p[0]==='adv'){if(p[2]!=null&&startAdv(+p[1],+p[2]))return;return viewAdv(p[1]!=null?+p[1]:null)}
   if(p[0]==='top')return viewTop();
