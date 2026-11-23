@@ -164,7 +164,40 @@ footer a{color:var(--brass)}
 </footer>
 
 <script src="data/bank.js?v=18930df6"></script>
-<script src="data/exams.js?v=6c11ce01"></script>
+<script>
+/* 統測真題題庫（exams.js，233KB）改成「用到才載」。
+   這一站主要是章節練習（用 bank.js），只有點「統測歷屆真題」才需要 EXAM。
+   先放空的佔位陣列，資料檔載進來時會用 var 重新賦值蓋掉。 */
+var EXAM=[];
+var __EXAM_READY=false,__EXAM_LOADING=null;
+function loadExamBank(){
+  if(__EXAM_READY)return Promise.resolve();
+  if(__EXAM_LOADING)return __EXAM_LOADING;
+  __EXAM_LOADING=new Promise(function(res,rej){
+    var el=document.createElement('script');
+    el.src='data/exams.js?v=6c11ce01';
+    el.onload=function(){__EXAM_READY=true;__EXAM_LOADING=null;res()};
+    el.onerror=function(){__EXAM_LOADING=null;rej(new Error('exams.js'))};
+    document.head.appendChild(el);
+  });
+  return __EXAM_LOADING;
+}
+/* exams() 是進統測真題的唯一入口（startExam 找不到卷、麵包屑、換一年都走它），
+   所以把載入掛在這裡就夠了。真正畫面在 examsView()。 */
+function exams(){
+  if(__EXAM_READY)return examsView();
+  if(typeof view!=='undefined'&&view)
+    view.innerHTML='<div class="card" style="text-align:center;padding:28px">'
+      +'<div style="font-size:15px">正在載入統測歷屆真題…</div>'
+      +'<div class="note" style="margin-top:6px">第一次進來要下載，之後就不用了</div></div>';
+  loadExamBank().then(examsView).catch(function(){
+    if(typeof view!=='undefined'&&view)
+      view.innerHTML='<div class="card" style="text-align:center;padding:28px">'
+        +'<div style="font-size:15px">統測真題載入失敗</div>'
+        +'<div class="note" style="margin-top:6px">檢查一下網路，重新整理再試一次。</div></div>';
+  });
+}
+</script>
 <script>
 var SUBJ = [
   {s:"基本電學", g:"高一上", color:"#4a6fa5", pdf:"基本電學", yt:"https://www.youtube.com/@chuanglaomath"},
@@ -385,7 +418,7 @@ function drawFig(f){
 if (typeof EXAM === 'undefined') { var EXAM = []; }
 var PAPER = {P1: '專業科目(一)', E2: '專業科目(二)　電機類', I2: '專業科目(二)　資電類'};
 
-function exams(){
+function examsView(){
   document.getElementById('heroTitle').textContent = '統測歷屆真題';
   document.getElementById('heroSub').textContent =
     '技專校院入學測驗中心公告的原題，111～115 學年度電機與電子群，一卷 50 題。'
