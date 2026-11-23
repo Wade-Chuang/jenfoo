@@ -24,7 +24,11 @@
  */
 (function(){
 const L=window.__LD;
-if(!L||!L.D)return;
+// 統測頁（tc.html）也載這支，為的是拿下面匯出的 __SNAPLIB（存檔、排序、走勢圖、
+// 列印規則是三個工具共用的）。那一頁沒有學測資料，所以只是不掛面板，
+// 不能整支中止——中止的話連 __SNAPLIB 都不會匯出。
+// 而且 tc.html 也有一個 #input，不擋的話學測的面板會長到統測頁上。
+const ACTIVE=!!(L&&L.D);
 const KEY='ld_snaps';
 const MAX=12;                       // 一屆最多考不到十次，留點餘裕就好
 const SUBJ=['國文','英文','數學A','數學B','社會','自然'];
@@ -356,6 +360,7 @@ function printCSS(boxId){
   document.head.appendChild(s);
 }
 function mount(){
+  if(!ACTIVE)return;                      // 統測頁只借用 __SNAPLIB，不要長出學測的面板
   const anchor=$('input');if(!anchor)return;
   let box=$('snapBox');
   if(!box){

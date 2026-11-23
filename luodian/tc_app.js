@@ -205,6 +205,6 @@ document.addEventListener("click",e=>{const b=e.target.closest("button");if(!b)r
 (function(){const h=location.hash;if(h==="#a"||h==="#u")st.mode=h.slice(1)})();
 (function(){const m=location.hash.match(/^#s=([au]),(\d{2}),([\d.,]*)$/);if(!m)return;const v=m[3].split(",");st.mode=m[1];st.gc=m[2];K.forEach((k,i)=>st.sc[k]=v[i]===""||v[i]==null?null:Math.min(100,Math.max(0,+v[i])));
   $("grp").value=st.gc;K.forEach(k=>$("s_"+k).value=st.sc[k]==null?"":st.sc[k]);history.replaceState(null,"",location.pathname+location.search+"#report");save()})();
-window.__TC={judgeU,judgeA,topFrac,lv,st,U,AU,R,lg,J:()=>J,render,tcCodes,BEISHEN,toast,TIERS,tierOf,stepName,catName,CAT,KN,save,renderWish,renderList};
+window.__TC={judgeU,judgeA,topFrac,lv,st,U,AU,R,lg,DATA,inGrp,letter,catOf,wishArr,GNAME,J:()=>J,render,tcCodes,BEISHEN,toast,TIERS,tierOf,stepName,catName,CAT,KN,save,renderWish,renderList};
 render();
 })();
