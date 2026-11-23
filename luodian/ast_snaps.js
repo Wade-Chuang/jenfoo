@@ -97,7 +97,8 @@ function apply(id){
     const v=(r.a60&&r.a60[+e.dataset.a]!=null)?String(r.a60[+e.dataset.a]):'';
     if(e.value!==v){e.value=v;e.dispatchEvent(new Event('input',{bubbles:true}))}
   });
-  L.toast('已套用「'+r.name+'」，下面的報告是這一次的成績');
+  // 學測級分是申請入學共用的，套用舊紀錄會把那邊也改回去，一定要講
+  L.toast('已套用「'+r.name+'」。注意：學測級分也跟著回到那一次，申請入學那邊的報告會一起變。');
   const t=$('aRep');if(t&&t.scrollIntoView)t.scrollIntoView({behavior:'smooth',block:'start'});
   setTimeout(render,250);
 }
@@ -223,6 +224,8 @@ function cmpBlock(a){
 }
 
 /* ---------- 畫面 ---------- */
+// 只有一筆的時候畫面上什麼都不會出現，使用者不知道還差什麼。講清楚。
+const needMore=a=>a.length===1?'<div class="note snap-ui" style="margin-top:10px">只有一筆，還看不出趨勢。下次模擬考考完再存一次，這裡就會出現走勢和兩次的比較。</div>':'';
 function render(){
   const box=$('astSnapBox');if(!box)return;
   const a=sorted(load());
@@ -243,7 +246,7 @@ function render(){
     '<input id="asnapDate" type="date" value="'+today()+'" aria-label="考試日期" style="flex:0 1 auto;padding:8px 10px;border:1px solid var(--line,#dfd8c8);border-radius:8px;font-family:inherit;font-size:15px">'+
     '<button class="btn navy" id="asnapAdd">存下現在這組成績</button></div>'+
     '<p class="note snap-ui" style="margin-top:4px">日期填那次模擬考考的時間。補存以前的場次時記得改，順序是照考試日期排的。</p>'+
-    warn+list+trend(a)+goal(a)+cmpBlock(a)+
+    warn+list+needMore(a)+trend(a)+goal(a)+cmpBlock(a)+
     '<p class="note snap-ui" style="margin-top:8px">紀錄只存在這台裝置的瀏覽器裡，不會上傳。要換手機或換電腦，用下面的「換手機、換電腦」下載備份檔帶過去。</p>';
 }
 let timer=null;

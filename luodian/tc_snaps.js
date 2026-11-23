@@ -1,8 +1,9 @@
 /* 統測落點：模擬考紀錄、趨勢、離目標還差多少
  *
  * 和學測（snaps.js）、分科（ast_snaps.js）是同一件事，但統測有兩個地方不一樣：
- *   ・成績是五科分數（0～100）不是級分。級分是「該群最高分的幾成」換算出來的，
- *     而且**同一個分數在不同群（類）別會換出不同級分**，所以紀錄要連群別一起存。
+ *   ・成績是五科分數（0～100）不是級分。級分是「該群滿分基準的幾成」換算出來的：
+ *     國英數的基準全 21 個群都是 100，所以換算一致；專業科目的基準各群不同
+ *     （94～100），同一個分數可能差一級。所以紀錄要連群別一起存。
  *   ・同一組成績要服務兩種模式（甄選一階／登記分發），切換模式時可上校系數會變。
  *     所以成績本身只存一份，統計是依「你現在看的那個模式」算的，畫面上會標明。
  *
@@ -213,13 +214,17 @@ function cmpBlock(a){
     '<div style="overflow-x:auto;margin-top:8px"><table class="t"><tr><th class="l">科目（分數）</th><th>'+esc(o.name)+'</th><th>'+esc(n.name)+'</th><th>分數變化</th></tr>'+rows+
     '<tr><td class="l"><b>可上的校系</b></td><td>'+(po==null?'—':po+' 個')+'</td><td>'+(pn==null?'—':pn+' 個')+'</td><td>'+
     ((po!=null&&pn!=null)?arrow(pn-po)+' 個':'—')+'</td></tr></table></div>'+
-    (diffG?'<div class="callout" style="margin-top:8px">這兩次報的群（類）別不一樣（'+esc((T.GNAME||{})[o.gc]||o.gc)+' vs '+esc((T.GNAME||{})[n.gc]||n.gc)+'），級分和可上校系是兩把不同的尺，分數可以比、級分不能直接比。</div>'
+    (diffG?'<div class="callout" style="margin-top:8px">這兩次報的群（類）別不一樣（'+esc((T.GNAME||{})[o.gc]||o.gc)+' vs '+esc((T.GNAME||{})[n.gc]||n.gc)+'）。'+
+      '國文、英文、數學的級分換算全國一樣，可以直接比；專業科目因為各群的滿分基準不同，同一個分數可能差一級。'+
+      '最重要的是兩群比的是不同的人、不同的校系，所以「可上的校系」不能直接比。</div>'
       :(say?'<div class="callout" style="margin-top:8px">'+say+'</div>':''))+
-    '<p class="note" style="margin-top:6px">括號裡是級分（滿級分 15），同一個分數在不同群別會換出不同級分。'+
+    '<p class="note" style="margin-top:6px">括號裡是級分（滿級分 15）。國英數的換算全國一樣，專業科目會依各群的滿分基準換算。'+
     '「可上的校系」是機率 50% 以上、而且是你選的群（類）別，用「'+modeName()+'」算的。</p></div>';
 }
 
 /* ---------- 畫面 ---------- */
+// 只有一筆的時候畫面上什麼都不會出現，使用者不知道還差什麼。講清楚。
+const needMore=a=>a.length===1?'<div class="note snap-ui" style="margin-top:10px">只有一筆，還看不出趨勢。下次模擬考考完再存一次，這裡就會出現走勢和兩次的比較。</div>':'';
 function render(){
   const box=$('tcSnapBox');if(!box)return;
   const a=sorted(load());
@@ -240,7 +245,7 @@ function render(){
     '<input id="tsnapDate" type="date" value="'+today()+'" aria-label="考試日期" style="flex:0 1 auto;padding:8px 10px;border:1px solid var(--line,#dfd8c8);border-radius:8px;font-family:inherit;font-size:15px">'+
     '<button class="btn navy" id="tsnapAdd">存下現在這組成績</button></div>'+
     '<p class="note snap-ui" style="margin-top:4px">日期填那次模擬考考的時間。補存以前的場次時記得改，順序是照考試日期排的。會連群（類）別一起存。</p>'+
-    warn+list+trend(a)+goal(a)+cmpBlock(a)+
+    warn+list+needMore(a)+trend(a)+goal(a)+cmpBlock(a)+
     '<p class="note snap-ui" style="margin-top:8px">紀錄只存在這台裝置的瀏覽器裡，不會上傳。要換手機或換電腦，用下面的「換手機、換電腦」下載備份檔帶過去。</p>';
 }
 let timer=null;

@@ -14,10 +14,12 @@
  * 依賴：window.__LD.toast（沒有就退回 alert）
  */
 (function(){
-const KEYS=['ld3','ldast','ld_snaps','ld_snaps_ast','tc1'];
+// 加新的模擬考紀錄時，這兩行一定要一起加——漏了的話畫面會說「已備份」，
+// 但那份資料其實沒有被包進去，學生換手機才會發現不見了。
+const KEYS=['ld3','ldast','ld_snaps','ld_snaps_ast','tc1','ld_snaps_tc'];
 const APP='jenfoo-luodian';
 const NAME={ld3:'學測成績與志願',ldast:'分科成績與志願',ld_snaps:'學測模擬考紀錄',
-            ld_snaps_ast:'分科模擬考紀錄',tc1:'統測成績與志願'};
+            ld_snaps_ast:'分科模擬考紀錄',tc1:'統測成績與志願',ld_snaps_tc:'統測模擬考紀錄'};
 const $=id=>document.getElementById(id);
 const say=t=>{const L=window.__LD,T=window.__TC;
   if(L&&L.toast)L.toast(t);else if(T&&T.toast)T.toast(t);else alert(t)};

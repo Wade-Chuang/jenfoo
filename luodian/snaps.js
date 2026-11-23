@@ -320,6 +320,8 @@ function cmpBlock(a){
 }
 
 /* ---------- 畫面 ---------- */
+// 只有一筆的時候畫面上什麼都不會出現，使用者不知道還差什麼。講清楚。
+const needMore=a=>a.length===1?'<div class="note snap-ui" style="margin-top:10px">只有一筆，還看不出趨勢。下次模擬考考完再存一次，這裡就會出現走勢和兩次的比較。</div>':'';
 function render(){
   const box=$('snapBox');if(!box)return;
   const a=sorted(load());
@@ -339,7 +341,7 @@ function render(){
     '<input id="snapDate" type="date" value="'+today()+'" aria-label="考試日期" style="flex:0 1 auto;padding:8px 10px;border:1px solid var(--line,#dfd8c8);border-radius:8px;font-family:inherit;font-size:15px">'+
     '<button class="btn navy" id="snapAdd">存下現在這組成績</button></div>'+
     '<p class="note snap-ui" style="margin-top:4px">日期填那次模擬考考的時間。補存以前的場次時記得改，順序是照考試日期排的。</p>'+
-    warn+list+trend(a)+goal(a)+cmpBlock(a)+
+    warn+list+needMore(a)+trend(a)+goal(a)+cmpBlock(a)+
     '<p class="note snap-ui" style="margin-top:8px">紀錄只存在這台裝置的瀏覽器裡，不會上傳，手機和電腦不互通。存的是級分本身，所以資料更新後重新套用一次，算出來的都是最新的。</p>';
 }
 // 使用者連點六科下拉時，原本會重算六次（一次掃 2240 系）。合併成一次。
