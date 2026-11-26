@@ -265,6 +265,138 @@ function goal(a){
     '<div class="note" style="margin-top:4px">門檻是近 '+d.pr[0][1]+' 年換算後的平均，今年會上下浮動，當方向看就好。</div></div>';
 }
 
+/* ---------- 接下來該拚什麼 ----------
+ * 建議一定要有根據，不能講「要加油」這種廢話。每一條都綁一個算得出來的數字：
+ *   ・這一科多 1 級分，符合你篩選條件、機率 55% 以上的校系會多幾個（實際重算，不是估的）
+ *   ・這一科在五標的哪個位置（低於均標＝最容易補的地方）
+ *   ・和上一次比有沒有退步
+ *   ・是不是你第一志願的採計科目或檢定科目
+ * 排序：檢定沒過的科目最優先（硬門檻），其次看多 1 級分的效益。
+ */
+const XUECE='2027-01-22';                 // 116 學測第一天
+function daysToExam(){
+  const t=new Date();t.setHours(0,0,0,0);
+  return Math.round((new Date(XUECE+'T00:00:00')-t)/864e5);
+}
+function advice(a){
+  if(!a.length)return '';
+  const n=a[a.length-1],o=a.length>1?a[a.length-2]:null;
+  const sc=n.sc,lt=n.lt;
+  const base=poolOf(sc,lt);
+  if(base==null)return '';
+
+  // 第一志願的採計科目與檢定狀況
+  let target=null,failSubj=null,useSet={};
+  const codes=L.st.wish||[];
+  if(codes.length){
+    const d=L.D.find(x=>x.c===codes[0]);
+    if(d){
+      target=d;
+      (d.p&&d.p[0]&&d.p[0][0]||[]).forEach(i=>useSet[i]=true);
+      try{
+        const j=L.judgeWith(d,sc,lt);
+        if(j&&j.cat==='fail'&&j.why){
+          // why 長得像「英文未達頂標」，把科目名挖出來
+          SUBJ.forEach((s,i)=>{if(j.why.indexOf(s)===0)failSubj=i});
+        }
+      }catch(e){}
+    }
+  }
+
+  const V=(L.S5&&L.S5.v)||{};
+  const rows=[];
+  SUBJ.forEach(function(s,i){
+    if(sc[i]==null||sc[i]>=15)return;
+    const up=sc.slice();up[i]=sc[i]+1;
+    const g=poolOf(up,lt);
+    const five=V[s]||null;
+    let pos='';
+    if(five){
+      // 低於均標要講「還沒到均標」，寫成「後標以上」會讓人以為沒事
+      pos=sc[i]>=five[0]?'已經在頂標以上':sc[i]>=five[1]?'在前標以上':sc[i]>=five[2]?'在均標以上':
+          '<b style="color:var(--reach,#d98c00)">還沒到均標</b>（均標 '+five[2]+' 級）';
+    }
+    rows.push({i:i,s:s,now:sc[i],
+      gain:(g==null?null:g-base),
+      pos:pos,
+      weak:five?sc[i]<five[2]:false,
+      drop:(o&&o.sc[i]!=null)?sc[i]-o.sc[i]:null,
+      used:!!useSet[i]});
+  });
+  // 每一科都滿級分：沒有「再拚哪一科」可言，但整塊憑空消失會讓人以為壞了
+  if(!rows.length)
+    return '<div class="callout" style="margin-top:14px"><b>💡 接下來該拚什麼</b>'+
+      '<div style="margin-top:6px">各科都滿級分了，學測這邊沒有再進步的空間。'+
+      '接下來的重點是二階——備審和面試，可以到「備審小幫手」開始準備。</div></div>';
+
+  rows.sort(function(x,y){
+    if(failSubj!=null){if(x.i===failSubj)return -1;if(y.i===failSubj)return 1}
+    const gx=x.gain==null?-1:x.gain,gy=y.gain==null?-1:y.gain;
+    if(gy!==gx)return gy-gx;
+    if(x.weak!==y.weak)return x.weak?-1:1;
+    return 0;
+  });
+
+  const pick=rows.slice(0,3);
+  const li=pick.map(function(r,k){
+    const bits=[];
+    if(r.i===failSubj&&target)
+      bits.push('<b style="color:var(--no,#c0392b)">這一科沒過 '+esc(target.s)+esc(target.n)+' 的檢定</b>，檢定是硬門檻，總級分再高也會被刷掉');
+    if(r.gain!=null&&r.gain>0)
+      bits.push('多 1 級分，可上的校系會多 <b>'+r.gain+'</b> 個');
+    else if(r.gain===0)
+      bits.push('多 1 級分對校系數沒有立即影響，但會墊高安全邊際');
+    if(r.pos)bits.push('目前'+r.pos);
+    if(r.used&&target)bits.push('是你第一志願的篩選科目');
+    if(r.drop!=null&&r.drop<0)bits.push('<b style="color:var(--no,#c0392b)">比上一次退了 '+Math.abs(r.drop)+' 級</b>');
+    else if(r.drop!=null&&r.drop>0)bits.push('比上一次進步 '+r.drop+' 級，維持住');
+    // 一條最多講三件事，全部串起來會變流水帳（檢定那條特別長）
+    return '<li style="margin:6px 0"><b>'+esc(r.s)+'</b>（現在 '+r.now+' 級）——'+bits.slice(0,3).join('；')+'。</li>';
+  }).join('');
+
+  // 退步的科目就算沒擠進前三也要講，那是最該注意的訊號
+  const dropped=rows.filter(r=>r.drop!=null&&r.drop<0&&pick.indexOf(r)<0);
+  const dropMsg=dropped.length
+    ? '<div class="note" style="margin-top:6px"><b style="color:var(--no,#c0392b)">另外要注意：</b>'+
+      dropped.map(r=>esc(r.s)+'比上一次退了 '+Math.abs(r.drop)+' 級').join('、')+
+      '。退一次可能只是這份卷的題型，連兩次退就要找原因。</div>'
+    : '';
+
+  const dd=daysToExam();
+  const when=dd>0?'距離學測還有 <b>'+dd+'</b> 天。'
+    :dd===0?'今天就是學測第一天。'
+    :'學測已經考完了，下面的建議改看分科或其他入學管道。';
+  const weakest=rows.filter(r=>r.weak);
+  const tail=failSubj!=null
+    ? '先把檢定那一科拉過門檻，其他科再好都沒用。'
+    : weakest.length
+      ? '低於均標的科目通常最好補——同樣的時間，從後段往前拉比從前標往頂標拉快得多。'
+      : '各科都在均標以上了，接下來拚的是把最有把握的那一科守住，不要退。';
+
+  /* 網站只能診斷，不能治療。
+     「要補數學」和「數學是哪一章在扣分」是兩件事，後者一定要看他的考卷。
+     所以把斷點放在這裡——學生剛看完自己的弱科，這時候開口最自然。
+     文案要帶他自己的科目和剩餘天數，制式的「加 LINE 問老師」沒有人會按。 */
+  const top=pick[0];
+  const ask='<div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--line,#dfd8c8)">'+
+    '<div>知道要補<b>'+esc(top.s)+'</b>，和知道「'+esc(top.s)+'是哪幾章在扣分」，是兩件事。</div>'+
+    '<div class="note" style="margin-top:4px">把你這次的模擬考卷拍起來傳給莊老師，'+
+    '我幫你圈出扣分的單元，'+(dd>0?'告訴你剩下這 '+dd+' 天該先補哪三章':'排出接下來的補強順序')+'。免費，不用先報名。</div>'+
+    '<a class="btn snap-ui" style="background:#06c755;color:#fff;text-decoration:none;display:inline-block;margin-top:8px" '+
+    'href="https://line.me/R/ti/p/@chuanglaomath" target="_blank" rel="noopener">'+
+    '加 LINE 傳考卷給莊老師</a>'+
+    // 列印那份是給家長看的，按鈕在紙上按不下去，改成寫出帳號
+    '<div class="print-only" style="margin-top:8px;font-weight:700">'+
+    '想知道孩子是哪幾章在扣分？加 LINE 官方帳號 @chuanglaomath，把考卷拍給莊老師看。</div></div>';
+
+  return '<div class="callout" style="margin-top:14px">'+
+    '<b>💡 接下來該拚什麼</b>'+
+    '<ol style="margin:8px 0 0;padding-left:1.3em">'+li+'</ol>'+dropMsg+
+    '<div class="note" style="margin-top:6px">'+when+tail+'</div>'+
+    '<div class="note" style="margin-top:4px">「多 1 級分會多幾個校系」是把那一科加 1 級、其他不動，重新算一次符合你學群與地區條件、機率 55% 以上的校系數量，不是估計值。</div>'+
+    ask+'</div>';
+}
+
 /* ---------- 比較 ---------- */
 const arrow=d=>d>0?'<b style="color:var(--safe,#1e8e4e)">▲ '+d+'</b>':d<0?'<b style="color:var(--no,#c0392b)">▼ '+Math.abs(d)+'</b>':'<span class="note">—</span>';
 function picker(a,o,n){
@@ -341,7 +473,7 @@ function render(){
     '<input id="snapDate" type="date" value="'+today()+'" aria-label="考試日期" style="flex:0 1 auto;padding:8px 10px;border:1px solid var(--line,#dfd8c8);border-radius:8px;font-family:inherit;font-size:15px">'+
     '<button class="btn navy" id="snapAdd">存下現在這組成績</button></div>'+
     '<p class="note snap-ui" style="margin-top:4px">日期填那次模擬考考的時間。補存以前的場次時記得改，順序是照考試日期排的。</p>'+
-    warn+list+needMore(a)+trend(a)+goal(a)+cmpBlock(a)+
+    warn+list+needMore(a)+trend(a)+goal(a)+advice(a)+cmpBlock(a)+
     '<p class="note snap-ui" style="margin-top:8px">紀錄只存在這台裝置的瀏覽器裡，不會上傳，手機和電腦不互通。存的是級分本身，所以資料更新後重新套用一次，算出來的都是最新的。</p>';
 }
 // 使用者連點六科下拉時，原本會重算六次（一次掃 2240 系）。合併成一次。
